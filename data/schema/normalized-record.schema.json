@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sgiacinto/CivicTech/blob/main/data/schema/normalized-record.schema.json",
+  "title": "NormalizedRecord",
+  "description": "A single timestamped water-quality observation, in canonical units, as emitted by a connector. See ADR-0003 for design rationale.",
+  "type": "object",
+  "required": ["source_id", "station_id", "site_ids", "observed_at", "parameter", "value", "units"],
+  "additionalProperties": false,
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "description": "Stable identifier for the upstream data source. Matches the connector directory name.",
+      "examples": ["usgs-nwis", "anacostia-riverkeeper", "doee-sondes", "epa-hmw", "noaa-precip"],
+      "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+    },
+    "station_id": {
+      "type": "string",
+      "description": "The source's native station identifier. Format varies by source.",
+      "minLength": 1
+    },
+    "site_ids": {
+      "type": "array",
+      "description": "Our internal site IDs that this station informs. Resolved via the join step against data/sites.json.",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+      },
+      "minItems": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp from the source. NEVER our ingestion time."
+    },
+    "parameter": {
+      "type": "string",
+      "description": "Closed enum of supported parameters. Adding a value requires updating the grading function and UI formatter.",
+      "enum": [
+        "e_coli",
+        "enterococcus",
+        "turbidity",
+        "dissolved_oxygen",
+        "water_temp",
+        "gauge_height",
+        "streamflow",
+        "precipitation_48h",
+        "chlorophyll",
+        "pH",
+        "impairment_status"
+      ]
+    },
+    "value": {
+      "type": "number",
+      "description": "Numeric value in canonical units (see ADR-0003)."
+    },
+    "units": {
+      "type": "string",
+      "description": "Canonical units string. Must match the canonical-units table in ADR-0003.",
+      "examples": ["MPN/100mL", "NTU", "mg/L", "°C", "feet", "cubic feet per second", "inches", "µg/L", "unitless"]
+    },
+    "qc_flag": {
+      "type": "string",
+      "description": "Source-reported quality-control flag, if any.",
+      "enum": ["estimated", "provisional", "final"]
+    },
+    "raw_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Direct link to the source page or row for citation. Optional but strongly encouraged."
+    }
+  }
+}
