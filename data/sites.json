@@ -1,0 +1,207 @@
+{
+  "_meta": {
+    "schema_version": "1.0.0",
+    "last_curated": "2026-05-13",
+    "note": "Phase 1 starter list. Coordinates are approximate and must be ground-truthed. Station IDs are best-effort placeholders; verify against each source's published station catalog before relying on this file. See docs/sites-curation.md for the full process and quality bar."
+  },
+  "sites": [
+    {
+      "id": "buzzard-point",
+      "name": "Buzzard Point Marina",
+      "subname": "Anacostia River, DC",
+      "lat": 38.8636,
+      "lon": -77.0218,
+      "jurisdiction": "DC",
+      "river": "Anacostia",
+      "activity_types": ["paddle", "row"],
+      "launch_type": "paved-ramp",
+      "parking": "available",
+      "fee": false,
+      "stations": [
+        { "source_id": "anacostia-riverkeeper", "station_id": "TODO-ARK-BUZZARD" },
+        { "source_id": "usgs-nwis", "station_id": "01651800" },
+        { "source_id": "doee-sondes", "station_id": "TODO-DOEE-ANA-LOWER" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "Public marina with paved launch ramp. Verify station IDs.",
+      "verified_at": null
+    },
+    {
+      "id": "key-bridge-boathouse",
+      "name": "Key Bridge Boathouse",
+      "subname": "Potomac River, DC",
+      "lat": 38.9018,
+      "lon": -77.0686,
+      "jurisdiction": "DC",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dock",
+      "parking": "limited",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "doee-sondes", "station_id": "TODO-DOEE-POT-UPPER" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "Rental + private launch under Francis Scott Key Bridge.",
+      "verified_at": null
+    },
+    {
+      "id": "thompson-boat-center",
+      "name": "Thompson Boat Center",
+      "subname": "Potomac River at Rock Creek mouth, DC",
+      "lat": 38.9036,
+      "lon": -77.0625,
+      "jurisdiction": "DC",
+      "river": "Potomac",
+      "activity_types": ["paddle", "row"],
+      "launch_type": "dock",
+      "parking": "available",
+      "fee": true,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "doee-sondes", "station_id": "TODO-DOEE-POT-UPPER" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "Major rowing and paddling launch near Rock Creek confluence.",
+      "verified_at": null
+    },
+    {
+      "id": "bladensburg-waterfront",
+      "name": "Bladensburg Waterfront Park",
+      "subname": "Anacostia River, MD (PG County)",
+      "lat": 38.9395,
+      "lon": -76.9389,
+      "jurisdiction": "MD-PG",
+      "river": "Anacostia",
+      "activity_types": ["paddle"],
+      "launch_type": "paved-ramp",
+      "parking": "available",
+      "fee": false,
+      "stations": [
+        { "source_id": "anacostia-riverkeeper", "station_id": "TODO-ARK-BLADENSBURG" },
+        { "source_id": "usgs-nwis", "station_id": "01649500" },
+        { "source_id": "noaa-precip", "station_id": "KCGS" }
+      ],
+      "notes": "Tidal head of Anacostia; major paddler launch with rental kayaks.",
+      "verified_at": null
+    },
+    {
+      "id": "belle-haven-marina",
+      "name": "Belle Haven Marina",
+      "subname": "Potomac River, VA (Fairfax)",
+      "lat": 38.7766,
+      "lon": -77.0466,
+      "jurisdiction": "VA",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "paved-ramp",
+      "parking": "available",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "NPS-managed marina south of Alexandria. Swimming legality in VA waters needs verification before enabling swim toggle.",
+      "verified_at": null
+    },
+    {
+      "id": "national-harbor",
+      "name": "National Harbor Marina",
+      "subname": "Potomac River, MD (PG County)",
+      "lat": 38.7900,
+      "lon": -77.0148,
+      "jurisdiction": "MD-PG",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dock",
+      "parking": "available",
+      "fee": true,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "Tourist marina; paddleboard rental available.",
+      "verified_at": null
+    },
+    {
+      "id": "four-mile-run-mouth",
+      "name": "Four Mile Run at Potomac",
+      "subname": "Four Mile Run / Potomac River, VA (Arlington)",
+      "lat": 38.8390,
+      "lon": -77.0494,
+      "jurisdiction": "VA",
+      "river": "Four Mile Run",
+      "activity_types": ["paddle"],
+      "launch_type": "dirt-putin",
+      "parking": "limited",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "Confluence put-in near Reagan National. Four Mile Run Conservatory Foundation samples this segment but does not currently have an API.",
+      "verified_at": null
+    },
+    {
+      "id": "kingman-island",
+      "name": "Kingman Island Launch",
+      "subname": "Anacostia River, DC",
+      "lat": 38.8964,
+      "lon": -76.9695,
+      "jurisdiction": "DC",
+      "river": "Anacostia",
+      "activity_types": ["paddle"],
+      "launch_type": "dirt-putin",
+      "parking": "limited",
+      "fee": false,
+      "stations": [
+        { "source_id": "anacostia-riverkeeper", "station_id": "TODO-ARK-KINGMAN" },
+        { "source_id": "usgs-nwis", "station_id": "01651800" },
+        { "source_id": "doee-sondes", "station_id": "TODO-DOEE-ANA-MID" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "Middle Anacostia put-in; trail access from Kingman Island.",
+      "verified_at": null
+    },
+    {
+      "id": "fletcher-cove",
+      "name": "Fletcher's Cove",
+      "subname": "Potomac River, DC",
+      "lat": 38.9173,
+      "lon": -77.1133,
+      "jurisdiction": "DC",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dock",
+      "parking": "available",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "Upper Potomac in DC; boat rental seasonal.",
+      "verified_at": null
+    },
+    {
+      "id": "rock-creek-mouth",
+      "name": "Rock Creek at Potomac",
+      "subname": "Rock Creek / Potomac River, DC",
+      "lat": 38.9028,
+      "lon": -77.0586,
+      "jurisdiction": "DC",
+      "river": "Rock Creek",
+      "activity_types": ["paddle"],
+      "launch_type": "dirt-putin",
+      "parking": "none",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01652500" },
+        { "source_id": "doee-sondes", "station_id": "TODO-DOEE-POT-UPPER" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "Confluence put-in. Limited recreation use; included for advocacy/data context.",
+      "verified_at": null
+    }
+  ]
+}
