@@ -1,8 +1,16 @@
 'use client';
 
-import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useCallback, useState } from 'react';
+import {
+  Button,
+  Column,
+  Heading,
+  Row,
+  Skeleton,
+  SmartLink,
+  Text,
+} from '@once-ui-system/core';
 import type {
   Activity,
   GradeOutput,
@@ -12,11 +20,10 @@ import type {
 import GradeHero from './GradeHero';
 import SignalRow from './SignalRow';
 
-// Recharts is heavy (~70 KB gzipped); keep it out of the initial bundle. The
-// sparkline only renders inside an opened detail card.
+// Recharts is heavy (~70 KB gzipped); keep it out of the initial bundle.
 const Sparkline = dynamic(() => import('./Sparkline'), {
   ssr: false,
-  loading: () => <div className="h-16 bg-slate-100 rounded animate-pulse" aria-label="Loading history…" />,
+  loading: () => <Skeleton shape="block" height="l" fillWidth aria-label="Loading history" />,
 });
 
 interface Props {
@@ -24,7 +31,7 @@ interface Props {
   grade: GradeOutput;
   activity: Activity;
   sources: SourceSummary[];
-  /** If true, render the standalone-page header (h1 + jurisdiction line). */
+  /** True if rendered on the standalone /site/[id] page (uses h1 + larger type). */
   standalone?: boolean;
 }
 
@@ -52,118 +59,133 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
     }
   }, [site.id, site.name, grade.reason]);
 
-  // Per UX § 4 — which sources contributed to this grade?
-  const contributingSourceIds = sourcesFromSignals(grade);
-  const contributingSources = sources.filter((s) => contributingSourceIds.has(s.id));
+  const contributingSources = sources.filter((s) =>
+    sourcesFromSignals(grade).has(s.id),
+  );
 
-  const HeadingTag = standalone ? 'h1' : 'h2';
-  const headingClass = standalone
-    ? 'text-2xl font-bold text-slate-900'
-    : 'text-lg font-semibold text-slate-900 leading-tight';
-  const subnameClass = standalone ? 'text-sm text-slate-500' : 'text-xs text-slate-500';
+  const headingId = `site-${site.id}-name`;
 
   return (
-    <article className="px-4 pb-6" aria-labelledby={`site-${site.id}-name`}>
-      <header className={standalone ? 'pt-4' : 'pt-3'}>
-        <HeadingTag id={`site-${site.id}-name`} className={headingClass}>
+    <Column
+      as="article"
+      paddingX="20"
+      paddingBottom="32"
+      gap="16"
+      aria-labelledby={headingId}
+    >
+      <Column gap="4" paddingTop={standalone ? '20' : '16'}>
+        <Heading
+          id={headingId}
+          variant={standalone ? 'display-strong-s' : 'heading-strong-l'}
+          as={standalone ? 'h1' : 'h2'}
+        >
           {site.name}
-        </HeadingTag>
-        {site.subname && <p className={subnameClass}>{site.subname}</p>}
-      </header>
-
+        </Heading>
+        {site.subname && (
+          <Text variant="body-default-s" onBackground="neutral-weak">
+            {site.subname}
+          </Text>
+        )}
+      </Column>
 
       <GradeHero grade={grade.grade} activity={activity} reason={grade.reason} />
 
-      <p className="text-xs text-slate-500 my-2">
-        Conditions can change between samples. Use your own judgment.
-      </p>
+      <Text variant="body-default-xs" onBackground="neutral-weak">
+        Conditions change between samples. Use your own judgment.
+      </Text>
 
-      <section aria-label="Signal breakdown">
-        <h3 className="text-sm font-medium text-slate-700 mt-3 mb-1">Signals</h3>
-        <ul className="divide-y divide-slate-100">
-          <SignalRow label="Bacteria" signal={grade.signals.bacteria} computedAt={grade.computed_at} />
-          <SignalRow label="Rainfall (48h)" signal={grade.signals.rainfall} computedAt={grade.computed_at} />
-          <SignalRow label="Real-time sonde" signal={grade.signals.sonde} computedAt={grade.computed_at} />
-          {grade.signals.chronic && (
-            <SignalRow
-              label="EPA impairment"
-              signal={grade.signals.chronic}
-              computedAt={grade.computed_at}
-            />
-          )}
-        </ul>
-      </section>
+      <Column gap="0" aria-label="Signal breakdown">
+        <Heading variant="label-default-s" as="h3" paddingBottom="4">
+          Signals
+        </Heading>
+        <SignalRow label="Bacteria" signal={grade.signals.bacteria} computedAt={grade.computed_at} />
+        <SignalRow label="Rainfall (48h)" signal={grade.signals.rainfall} computedAt={grade.computed_at} />
+        <SignalRow label="Real-time sonde" signal={grade.signals.sonde} computedAt={grade.computed_at} />
+        {grade.signals.chronic && (
+          <SignalRow
+            label="EPA impairment"
+            signal={grade.signals.chronic}
+            computedAt={grade.computed_at}
+          />
+        )}
+      </Column>
 
-      <section aria-label="30-day history" className="mt-4">
-        <h3 className="text-sm font-medium text-slate-700 mb-1">30-day history</h3>
+      <Column gap="8" aria-label="30-day history">
+        <Heading variant="label-default-s" as="h3">
+          30-day history
+        </Heading>
         <Sparkline siteId={site.id} />
-      </section>
+      </Column>
 
-      <section aria-label="Site details" className="mt-4 text-sm text-slate-700">
-        <h3 className="text-sm font-medium text-slate-700 mb-1">Site details</h3>
-        <ul className="space-y-1">
-          <li>
+      <Column gap="8" aria-label="Site details">
+        <Heading variant="label-default-s" as="h3">
+          Site details
+        </Heading>
+        <Column gap="4">
+          <Text variant="body-default-s">
             <strong>Launch:</strong> {site.launch_type.replace(/-/g, ' ')}
-          </li>
-          <li>
+          </Text>
+          <Text variant="body-default-s">
             <strong>Parking:</strong> {site.parking}
-            {site.fee && <span> · launch fee</span>}
-          </li>
-          <li>
+            {site.fee && ' · launch fee'}
+          </Text>
+          <Text variant="body-default-s">
             <strong>Activities:</strong> {site.activity_types.join(', ')}
-          </li>
+          </Text>
           {site.notes && (
-            <li className="text-slate-500">
-              <strong>Notes:</strong> {site.notes}
-            </li>
+            <Text variant="body-default-s" onBackground="neutral-weak">
+              {site.notes}
+            </Text>
           )}
-        </ul>
-      </section>
+        </Column>
+      </Column>
 
-      <section aria-label="Sources" className="mt-4 text-xs text-slate-600">
-        <strong className="block text-slate-700">Sources</strong>
+      <Column gap="8" aria-label="Sources">
+        <Heading variant="label-default-s" as="h3">
+          Sources
+        </Heading>
         {contributingSources.length === 0 ? (
-          <p className="text-slate-500">No data sources contributed fresh data to this grade.</p>
+          <Text variant="body-default-xs" onBackground="neutral-weak">
+            No data sources contributed fresh data to this grade.
+          </Text>
         ) : (
-          <ul className="flex flex-wrap gap-x-3 gap-y-1">
+          <Column gap="4">
             {contributingSources.map((s) => (
-              <li key={s.id}>
-                <span className="text-slate-900">{s.name}</span>
+              <Text key={s.id} variant="body-default-xs" onBackground="neutral-medium">
+                <strong>{s.name}</strong>
                 {s.last_updated && (
-                  <span className="text-slate-500">
+                  <span style={{ opacity: 0.7 }}>
                     {' '}
                     · updated {new Date(s.last_updated).toLocaleString()}
                   </span>
                 )}
-              </li>
+              </Text>
             ))}
-          </ul>
+          </Column>
         )}
-      </section>
+      </Column>
 
-      <footer className="flex flex-wrap items-center gap-3 mt-4 pt-3 border-t border-slate-200 text-sm">
-        <button
-          type="button"
+      <Row
+        gap="12"
+        vertical="center"
+        paddingTop="16"
+        borderTop="neutral-alpha-weak"
+      >
+        <Button
+          variant="primary"
+          size="s"
           onClick={onShare}
-          className="px-3 py-2 min-h-[44px] rounded bg-slate-900 text-white"
+          prefixIcon={copied ? 'check' : 'link'}
         >
           {copied ? 'Link copied' : 'Share'}
-        </button>
-        <Link
-          href="/methodology"
-          className="text-slate-700 no-underline hover:underline"
-        >
-          How is this grade calculated?
-        </Link>
-      </footer>
-    </article>
+        </Button>
+        <SmartLink href="/methodology">How is this grade calculated?</SmartLink>
+      </Row>
+    </Column>
   );
 }
 
 function sourcesFromSignals(grade: GradeOutput): Set<string> {
-  // Per UX § 4 / DATA_SOURCES.md § Source attribution rules: if a source
-  // contributed a signal, surface it; if it was stale or missing, still surface
-  // the absence rather than silently omitting.
   const ids = new Set<string>();
   if (grade.signals.bacteria) ids.add('anacostia-riverkeeper');
   if (grade.signals.rainfall) ids.add('noaa-precip');

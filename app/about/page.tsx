@@ -1,67 +1,97 @@
-import Link from 'next/link';
+import { Column, Heading, Row, Text, SmartLink, Card } from '@once-ui-system/core';
 import Header from '../components/Header';
 import Disclaimer from '../components/Disclaimer';
 
 export const metadata = {
-  title: 'About — DMV Water Watch',
-  description: 'Credits, data sources, and contact information.',
+  title: 'About',
+  description: 'Credits, data sources, and how this project came to be.',
 };
 
 export default function AboutPage() {
   return (
-    <main className="flex-1">
+    <Column as="main" fillWidth horizontal="center">
       <Header />
-      <article className="max-w-2xl mx-auto p-4 prose prose-slate prose-sm sm:prose-base">
-        <h1>About DMV Water Watch</h1>
-        <p>
-          DMV Water Watch is a mobile-first map that answers one question for paddlers, rowers,
-          and (where legal) swimmers across the inner DC Metro Area: <em>is it safe to get in
-          the water today?</em>
-        </p>
-        <p>
-          We unify bacterial sampling, real-time sondes, USGS streamflow, EPA impairment status,
-          and NOAA rainfall into a single traffic-light report card per recreation site. The
-          system is fully open source, MIT licensed, and built in the civic-tech tradition: the
-          full architecture, rubric, and data attributions are public from day one.
-        </p>
+      <Column maxWidth={36} paddingX="24" paddingY="48" gap="32" fillWidth as="article">
+        <Column gap="12">
+          <Text variant="label-default-s" onBackground="brand-medium">
+            ABOUT
+          </Text>
+          <Heading variant="display-strong-l" as="h1">
+            Built so paddlers don&rsquo;t guess.
+          </Heading>
+          <Text variant="body-default-l" onBackground="neutral-medium">
+            DMV Water Watch is an open-source map for paddlers, rowers, and (where legal)
+            swimmers across the inner DC Metro Area. One question, answered in five seconds:
+            is it safe to get in the water today?
+          </Text>
+        </Column>
 
-        <h2>Data sources</h2>
-        <p>
-          See the <Link href="/sources">Sources page</Link> for per-source last-updated
-          timestamps. The full data-source catalog with API endpoints and licensing lives in
-          our repo's <code>DATA_SOURCES.md</code>.
-        </p>
+        <Column gap="16">
+          <Heading variant="heading-strong-l" as="h2">
+            What we do
+          </Heading>
+          <Text variant="body-default-m" onBackground="neutral-medium">
+            We pull water-quality data from authoritative sources — USGS, EPA, NOAA, DC DOEE,
+            and the Anacostia Riverkeeper — apply a transparent rubric, and surface a single
+            traffic-light grade at every recreation site. The same data already exists; nobody
+            had unified it for the people actually getting in the water.
+          </Text>
+        </Column>
 
-        <h2>How grades are computed</h2>
-        <p>
-          See the <Link href="/methodology">methodology page</Link> for a plain-English
-          explanation of our rubric. The full specification is in <code>GRADING.md</code> in our
-          repo.
-        </p>
+        <Column gap="16">
+          <Heading variant="heading-strong-l" as="h2">
+            How to learn more
+          </Heading>
+          <Row gap="12" wrap>
+            <LinkCard
+              href="/methodology"
+              title="Methodology"
+              body="Every grade is derived. Read the rubric."
+            />
+            <LinkCard
+              href="/sources"
+              title="Sources"
+              body="Per-source last-updated timestamps."
+            />
+            <LinkCard
+              href="https://github.com/sgiacinto/CivicTech"
+              title="GitHub"
+              body="Open source under MIT. Contributions welcome."
+            />
+          </Row>
+        </Column>
 
-        <h2>Open source</h2>
-        <p>
-          The full source code and roadmap is open at our public repository. Contributions —
-          new data sources, new sites, copy edits — are welcome via pull request. See{' '}
-          <code>CONTRIBUTING.md</code> in the repo for the developer guide.
-        </p>
-
-        <h2>Acknowledgments</h2>
-        <p>
-          This project is part of Civic Tech DC's project nights and exists because of the
-          public data that USGS, EPA, NOAA, DC DOEE, the Anacostia Riverkeeper, and the
-          Potomac Riverkeeper Network make freely available. We aim to be a credible consumer
-          surface for the work those organizations do.
-        </p>
-
-        <h2>Contact</h2>
-        <p>
-          For feedback, corrections, or partnership inquiries, please open an issue on our
-          repository or reach out via the contact form on our project page.
-        </p>
+        <Column gap="16">
+          <Heading variant="heading-strong-l" as="h2">
+            Acknowledgments
+          </Heading>
+          <Text variant="body-default-m" onBackground="neutral-medium">
+            This project exists because of the public data that USGS, EPA, NOAA, DC DOEE, the
+            Anacostia Riverkeeper, and the Potomac Riverkeeper Network publish freely. We aim
+            to be a credible consumer surface for the work those organizations already do.
+            Built at Civic Tech DC project nights.
+          </Text>
+        </Column>
 
         <Disclaimer />
-      </article>
-    </main>
+      </Column>
+    </Column>
+  );
+}
+
+function LinkCard({ href, title, body }: { href: string; title: string; body: string }) {
+  return (
+    <SmartLink href={href} unstyled style={{ flex: '1 1 220px', minWidth: 220 }}>
+      <Card padding="16" radius="m" cursor="interactive" transition="micro-medium">
+        <Column gap="8">
+          <Text variant="label-default-m" onBackground="neutral-strong">
+            {title} →
+          </Text>
+          <Text variant="body-default-s" onBackground="neutral-medium">
+            {body}
+          </Text>
+        </Column>
+      </Card>
+    </SmartLink>
   );
 }

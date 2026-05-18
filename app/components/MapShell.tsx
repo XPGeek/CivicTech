@@ -2,6 +2,16 @@
 
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Banner,
+  Button,
+  Column,
+  Heading,
+  IconButton,
+  RevealFx,
+  Row,
+  Text,
+} from '@once-ui-system/core';
 import type {
   Activity,
   InitialData,
@@ -17,7 +27,7 @@ import Header from './Header';
 import StaleBanner from './StaleBanner';
 
 // MapLibre touches `window` at import time — load it client-only.
-const Map = dynamic(() => import('./Map'), { ssr: false });
+const SiteMap = dynamic(() => import('./Map'), { ssr: false });
 
 interface Props {
   initialData: InitialData;
@@ -27,11 +37,9 @@ export default function MapShell({ initialData }: Props) {
   const [activity, setActivity] = useActivity();
   const [data, setData] = useState<InitialData>(initialData);
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
-
   const [refreshError, setRefreshError] = useState(false);
 
-  // Refresh from the network on mount so a returning user gets the latest
-  // grades without waiting for the next Cloudflare Pages deploy.
+  // Refresh from the network on mount so a returning user gets the latest grades.
   useEffect(() => {
     let cancelled = false;
     Promise.all([fetchSites(), fetchGrades(), fetchManifest(), fetchSources()])
@@ -90,86 +98,158 @@ export default function MapShell({ initialData }: Props) {
   const activeGrade =
     selectedGrades && (activity === 'paddle' ? selectedGrades.paddle : selectedGrades.swim);
 
+  const tally = useMemo(() => {
+    const counts = { green: 0, yellow: 0, red: 0, unknown: 0 };
+    for (const f of data.sites.features) {
+      const g = activity === 'paddle' ? f.properties.grade_paddle : f.properties.grade_swim;
+      counts[g] += 1;
+    }
+    return counts;
+  }, [data.sites, activity]);
+
   return (
-    <div className="flex-1 flex flex-col">
+    <Column fillWidth fillHeight>
       <Header />
       <StaleBanner manifest={data.manifest} />
       {refreshError && (
-        <div
+        <Banner
           role="status"
-          className="bg-slate-100 border-b border-slate-300 text-slate-700 text-xs px-4 py-1"
+          fillWidth
+          paddingX="24"
+          paddingY="8"
+          background="neutral-alpha-weak"
+          borderBottom="neutral-alpha-medium"
         >
-          Couldn&rsquo;t refresh data — showing the most recent build.
-        </div>
+          <Text variant="body-default-xs" onBackground="neutral-medium">
+            Couldn&rsquo;t refresh data — showing the most recent build.
+          </Text>
+        </Banner>
       )}
-      <div className="relative flex-1 flex flex-col md:flex-row">
+      <Row fillWidth flex={1} s={{ direction: 'column' }}>
         {/* Map */}
-        <div className="relative flex-1 min-h-[60vh]">
-          <Map
+        <div
+          className="map-host"
+          style={{ position: 'relative', flex: 1, minHeight: '60vh' }}
+        >
+          <SiteMap
             sites={data.sites}
             activity={activity}
             selectedSiteId={selectedSiteId}
             onSelect={(id) => setSelectedSiteId(id)}
             onUserLocate={nearestPicker}
           />
-          <div className="absolute bottom-4 left-4 z-10">
+          <Row
+            gap="8"
+            vertical="center"
+            paddingX="12"
+            paddingY="8"
+            radius="full"
+            background="page"
+            shadow="m"
+            style={{
+              position: 'absolute',
+              bottom: 20,
+              left: 20,
+              zIndex: 10,
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+            }}
+          >
             <ActivityToggle
               activity={activity}
               onChange={(a) => setActivity(a)}
               swimAllowed={swimAllowed}
             />
-          </div>
+          </Row>
+          <Row
+            gap="8"
+            paddingX="12"
+            paddingY="4"
+            radius="full"
+            background="page"
+            shadow="s"
+            style={{
+              position: 'absolute',
+              top: 16,
+              left: 16,
+              zIndex: 10,
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+            }}
+          >
+            <Text variant="label-default-xs" onBackground="neutral-medium">
+              {tally.green} clean · {tally.yellow} caution · {tally.red} avoid · {tally.unknown}{' '}
+              no data
+            </Text>
+          </Row>
         </div>
 
-        {/* Detail panel: bottom sheet on mobile, sidebar on desktop. */}
-        <aside
+        {/* Detail panel */}
+        <Column
+          as="aside"
           aria-label="Site detail"
-          className="border-t border-slate-200 bg-white md:border-t-0 md:border-l md:w-[380px] overflow-y-auto max-h-[60vh] md:max-h-none"
+          background="page"
+          className="detail-panel"
         >
           {selectedSite && activeGrade ? (
-            <DetailCard
-              site={selectedSite}
-              grade={activeGrade}
-              activity={swimAllowed ? activity : 'paddle'}
-              sources={data.sources}
-            />
+            <RevealFx key={selectedSite.id} translateY="2" speed="fast">
+              <DetailCard
+                site={selectedSite}
+                grade={activeGrade}
+                activity={swimAllowed ? activity : 'paddle'}
+                sources={data.sources}
+              />
+            </RevealFx>
           ) : data.sites.features.length === 0 ? (
-            <div className="p-4 text-sm text-slate-600 space-y-3">
-              <p className="font-medium text-slate-900">No sites loaded.</p>
-              <p>
-                If you&rsquo;re running this locally, the build pipeline hasn&rsquo;t run yet.
-                Try <code className="bg-slate-100 px-1 rounded">npm run pipeline</code> and
-                reload. See{' '}
-                <a href="/about" className="underline">
-                  the About page
-                </a>{' '}
-                if you&rsquo;re visiting the live site and seeing this — something is wrong with
-                our deploy.
-              </p>
-            </div>
+            <Column padding="24" gap="12">
+              <Heading variant="heading-strong-m">Nothing to show yet.</Heading>
+              <Text variant="body-default-s" onBackground="neutral-medium">
+                If you&rsquo;re running this locally, the pipeline hasn&rsquo;t run yet. Try{' '}
+                <code style={{ background: 'var(--neutral-alpha-weak)', padding: '0 4px', borderRadius: 4 }}>
+                  npm run pipeline
+                </code>{' '}
+                and refresh.
+              </Text>
+            </Column>
           ) : (
-            <div className="p-4 text-sm text-slate-600 space-y-3">
-              <p>
-                Tap a pin to see its grade, or use the locate-me button (top right) to find the
-                nearest site.
-              </p>
-              <p>
-                {data.sites.features.length} site
-                {data.sites.features.length === 1 ? '' : 's'} loaded
-                {data.manifest && (
-                  <>
-                    {' '}
-                    · built {new Date(data.manifest.built_at).toLocaleString()}
-                  </>
-                )}
-              </p>
+            <Column padding="24" gap="16">
+              <Column gap="8">
+                <Heading variant="display-strong-xs">
+                  Is the water safe today?
+                </Heading>
+                <Text variant="body-default-m" onBackground="neutral-medium">
+                  Tap any pin to see a plain-English verdict for paddle or swim, with the data
+                  behind it.
+                </Text>
+              </Column>
+              <Row gap="8" wrap>
+                <Button
+                  size="s"
+                  variant="primary"
+                  onClick={() => {
+                    const btn = document.querySelector<HTMLButtonElement>(
+                      '.maplibregl-ctrl-geolocate',
+                    );
+                    btn?.click();
+                  }}
+                  prefixIcon="world"
+                >
+                  Find my nearest launch
+                </Button>
+              </Row>
+              <Column gap="4" paddingTop="8">
+                <Text variant="label-default-xs" onBackground="neutral-weak">
+                  {data.sites.features.length} sites loaded
+                  {data.manifest && ` · built ${new Date(data.manifest.built_at).toLocaleString()}`}
+                </Text>
+              </Column>
               <Disclaimer />
-            </div>
+            </Column>
           )}
-        </aside>
-      </div>
+        </Column>
+      </Row>
       <DisclaimerInterstitial />
-    </div>
+    </Column>
   );
 }
 

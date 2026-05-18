@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { Column, Heading, Row, Text, Button } from '@once-ui-system/core';
 import { captureError } from '@lib/sentry';
 
 export default function ErrorBoundary({
@@ -15,33 +16,39 @@ export default function ErrorBoundary({
   }, [error]);
 
   return (
-    <main className="flex-1 flex items-center justify-center p-6">
-      <div role="alert" className="max-w-md w-full bg-white rounded-lg shadow p-5">
-        <h1 className="text-lg font-semibold text-slate-900">Something went wrong</h1>
-        <p className="mt-2 text-sm text-slate-700">
-          The map ran into an unexpected error. The data is fine — this is a frontend hiccup. Refresh, or click below to retry.
-        </p>
-        <div className="mt-4 flex gap-2">
-          <button
-            type="button"
-            onClick={() => reset()}
-            className="px-3 py-2 min-h-[44px] rounded bg-slate-900 text-white text-sm font-medium"
-          >
+    <Column as="main" fillWidth fillHeight horizontal="center" vertical="center" padding="24">
+      <Column
+        maxWidth={28}
+        padding="32"
+        gap="16"
+        background="surface"
+        radius="l"
+        shadow="m"
+        border="neutral-alpha-weak"
+      >
+        <Column gap="8">
+          <Text variant="label-default-s" onBackground="danger-medium">
+            SOMETHING BROKE
+          </Text>
+          <Heading variant="heading-strong-l">Hmm, that wasn&rsquo;t supposed to happen.</Heading>
+          <Text variant="body-default-m" onBackground="neutral-medium">
+            The data is fine — this is a frontend hiccup. Reload, or click below to retry.
+          </Text>
+        </Column>
+        <Row gap="12" vertical="center" wrap>
+          <Button variant="primary" onClick={() => reset()}>
             Try again
-          </button>
-          <a
-            href="/"
-            className="px-3 py-2 min-h-[44px] rounded border border-slate-300 text-slate-700 text-sm font-medium no-underline"
-          >
-            Go to map
-          </a>
-        </div>
+          </Button>
+          <Button variant="secondary" href="/">
+            Back to map
+          </Button>
+        </Row>
         {error.digest && (
-          <p className="mt-3 text-xs text-slate-500">
+          <Text variant="body-default-xs" onBackground="neutral-weak">
             Error ref: <code>{error.digest}</code>
-          </p>
+          </Text>
         )}
-      </div>
-    </main>
+      </Column>
+    </Column>
   );
 }

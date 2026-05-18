@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Dialog, Column, Text, Button } from '@once-ui-system/core';
 
 const STORAGE_KEY = 'dmv-water-watch.disclaimer-acked';
 
@@ -15,8 +16,6 @@ export default function DisclaimerInterstitial() {
     }
   }, []);
 
-  if (!open) return null;
-
   const close = () => {
     try {
       window.localStorage.setItem(STORAGE_KEY, '1');
@@ -27,30 +26,26 @@ export default function DisclaimerInterstitial() {
   };
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="disclaimer-heading"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-3"
+    <Dialog
+      isOpen={open}
+      onClose={close}
+      title="Before you set off"
+      footer={
+        <Button onClick={close} variant="primary" fillWidth>
+          Got it
+        </Button>
+      }
     >
-      <div className="bg-white rounded-t-xl sm:rounded-xl max-w-md w-full p-5 shadow-xl">
-        <h2 id="disclaimer-heading" className="text-lg font-semibold text-slate-900">
-          Before you use this app
-        </h2>
-        <p className="mt-2 text-sm text-slate-700 leading-relaxed">
+      <Column gap="12">
+        <Text variant="body-default-m" onBackground="neutral-medium">
           DMV Water Watch shows water-quality grades aggregated from federal and local sources.
-          These grades are <strong>informational, not a safety guarantee</strong>. Conditions can
-          change between samples — observe posted signage and use your own judgment. Swimming is
-          prohibited in DC waters.
-        </p>
-        <button
-          type="button"
-          onClick={close}
-          className="mt-4 w-full min-h-[44px] rounded bg-slate-900 text-white font-medium"
-        >
-          I understand
-        </button>
-      </div>
-    </div>
+          These grades are <strong>informational</strong>, not a safety guarantee.
+        </Text>
+        <Text variant="body-default-m" onBackground="neutral-medium">
+          Conditions change between samples. Watch for posted signs, use your own judgment, and
+          remember swimming is prohibited in DC waters.
+        </Text>
+      </Column>
+    </Dialog>
   );
 }

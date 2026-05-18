@@ -1,11 +1,41 @@
 import type { Metadata, Viewport } from 'next';
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
+import {
+  ThemeInit,
+  DataThemeProvider,
+  LayoutProvider,
+  IconProvider,
+  ToastProvider,
+} from '@once-ui-system/core';
+
+import '@once-ui-system/core/css/styles.css';
+import '@once-ui-system/core/css/tokens.css';
 import './globals.css';
+
 import ServiceWorkerRegistration from './components/ServiceWorkerRegistration';
 
+const themeConfig = {
+  theme: 'system',
+  brand: 'cyan',
+  accent: 'emerald',
+  neutral: 'slate',
+  solid: 'contrast',
+  'solid-style': 'flat',
+  border: 'rounded',
+  surface: 'translucent',
+  transition: 'all',
+  scaling: '100',
+  'viz-style': 'chart',
+} as const;
+
 export const metadata: Metadata = {
-  title: 'DMV Water Watch — Is it safe to get in the water today?',
+  title: {
+    default: 'DMV Water Watch — is it safe to get in the water today?',
+    template: '%s · DMV Water Watch',
+  },
   description:
-    'Mobile-first water-quality report card for paddlers, rowers, and swimmers across DC, Arlington, Alexandria, PG, and Montgomery.',
+    "Real-time water-quality grades for the DMV's paddling, rowing, and swimming spots. Bacteria, rainfall, and live sondes — unified.",
   manifest: '/manifest.webmanifest',
   applicationName: 'DMV Water Watch',
   appleWebApp: {
@@ -21,7 +51,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'DMV Water Watch',
     description:
-      "Real-time water-quality grades for the region's recreation sites. Bacteria, rainfall, sondes — unified.",
+      "Real-time water-quality grades for the DMV's paddling, rowing, and swimming spots.",
     type: 'website',
     siteName: 'DMV Water Watch',
   },
@@ -29,7 +59,7 @@ export const metadata: Metadata = {
     card: 'summary',
     title: 'DMV Water Watch',
     description:
-      "Real-time water-quality grades for the region's recreation sites.",
+      "Real-time water-quality grades for the DMV's paddling, rowing, and swimming spots.",
   },
 };
 
@@ -40,15 +70,24 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col">
-        {children}
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+    >
+      <head>
+        <ThemeInit config={themeConfig} />
+      </head>
+      <body>
+        <DataThemeProvider>
+          <LayoutProvider>
+            <IconProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </IconProvider>
+          </LayoutProvider>
+        </DataThemeProvider>
         <ServiceWorkerRegistration />
       </body>
     </html>

@@ -1,19 +1,31 @@
-import Link from 'next/link';
+import { Column, Heading, Row, Text, Button } from '@once-ui-system/core';
 import Header from '../../components/Header';
 
 export default function NotFound() {
   return (
-    <main className="flex-1">
+    <Column as="main" fillWidth horizontal="center">
       <Header />
-      <div className="max-w-md mx-auto p-6 text-center">
-        <h1 className="text-2xl font-bold text-slate-900">Site not found</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          That site isn't in our catalog. It may have been removed, or the link could be a typo.
-        </p>
-        <Link href="/" className="inline-block mt-4 px-4 py-2 rounded bg-slate-900 text-white no-underline">
-          Back to map
-        </Link>
-      </div>
-    </main>
+      <Column
+        maxWidth={28}
+        paddingX="24"
+        paddingY="48"
+        gap="16"
+        fillWidth
+        horizontal="center"
+        align="center"
+      >
+        <Heading variant="display-strong-m" as="h1">
+          That site isn&rsquo;t on our map.
+        </Heading>
+        <Text variant="body-default-m" onBackground="neutral-medium">
+          It may have been removed, or the link could be a typo. Head back to browse the catalog.
+        </Text>
+        <Row paddingTop="8">
+          <Button href="/" variant="primary">
+            Back to map
+          </Button>
+        </Row>
+      </Column>
+    </Column>
   );
 }

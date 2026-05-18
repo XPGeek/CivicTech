@@ -1,27 +1,36 @@
-import Link from 'next/link';
+import { Row, Heading, SmartLink, Logo } from '@once-ui-system/core';
 
 export default function Header() {
   return (
-    <header
-      className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200"
+    <Row
+      as="header"
       role="banner"
+      fillWidth
+      paddingX="24"
+      paddingY="12"
+      vertical="center"
+      horizontal="between"
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 30,
+        backdropFilter: 'saturate(180%) blur(14px)',
+        WebkitBackdropFilter: 'saturate(180%) blur(14px)',
+        background: 'var(--surface-background)',
+        borderBottom: '1px solid var(--neutral-border-medium)',
+      }}
     >
-      <div className="max-w-6xl mx-auto h-14 flex items-center px-4 gap-3">
-        <Link href="/" className="font-semibold text-slate-900 no-underline">
-          DMV Water Watch
-        </Link>
-        <nav className="ml-auto flex items-center gap-4 text-sm">
-          <Link href="/methodology" className="text-slate-700 no-underline hover:underline">
-            Methodology
-          </Link>
-          <Link href="/sources" className="text-slate-700 no-underline hover:underline">
-            Sources
-          </Link>
-          <Link href="/about" className="text-slate-700 no-underline hover:underline">
-            About
-          </Link>
-        </nav>
-      </div>
-    </header>
+      <SmartLink href="/" unstyled>
+        <Row vertical="center" gap="8">
+          <Logo size="s" icon="/icon.svg" href="/" />
+          <Heading variant="heading-strong-s">DMV Water Watch</Heading>
+        </Row>
+      </SmartLink>
+      <Row gap="20" vertical="center" s={{ hide: true }}>
+        <SmartLink href="/methodology">Methodology</SmartLink>
+        <SmartLink href="/sources">Sources</SmartLink>
+        <SmartLink href="/about">About</SmartLink>
+      </Row>
+    </Row>
   );
 }

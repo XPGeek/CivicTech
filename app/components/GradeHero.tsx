@@ -1,3 +1,4 @@
+import { Row, Column, Heading, Text } from '@once-ui-system/core';
 import { GRADE_LABELS, GRADE_SWIM_LABELS, GRADE_PIN_SVG } from '@lib/grade-style';
 import type { Activity, Grade } from '@lib/types';
 
@@ -10,16 +11,27 @@ interface Props {
 export default function GradeHero({ grade, activity, reason }: Props) {
   const label = (activity === 'swim' ? GRADE_SWIM_LABELS : GRADE_LABELS)[grade];
   return (
-    <div
+    <Row
+      paddingY="16"
+      gap="16"
+      vertical="center"
       role="status"
       aria-live="polite"
-      className="flex items-start gap-3 py-3 border-b border-slate-200"
+      borderBottom="neutral-medium"
     >
-      <div className="flex-shrink-0" aria-hidden dangerouslySetInnerHTML={{ __html: GRADE_PIN_SVG[grade] }} />
-      <div className="min-w-0">
-        <div className="text-xl font-semibold text-slate-900">{label}</div>
-        <div className="text-sm text-slate-600 leading-snug">{reason}</div>
-      </div>
-    </div>
+      <div
+        aria-hidden
+        style={{ width: 44, height: 44, flexShrink: 0 }}
+        dangerouslySetInnerHTML={{ __html: GRADE_PIN_SVG[grade] }}
+      />
+      <Column gap="4" fillWidth>
+        <Heading variant="display-strong-xs" as="h2">
+          {label}
+        </Heading>
+        <Text variant="body-default-s" onBackground="neutral-weak">
+          {reason}
+        </Text>
+      </Column>
+    </Row>
   );
 }
