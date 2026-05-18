@@ -1,0 +1,167 @@
+{
+  "name": "ns1:timeSeriesResponseType",
+  "value": {
+    "queryInfo": {
+      "queryURL": "https://waterservices.usgs.gov/nwis/iv/format=json&sites=01646500,01651800&parameterCd=00010,00060,00065,00300,63680",
+      "criteria": {
+        "locationParam": "[ALL:01646500,01651800]",
+        "variableParam": "[00010,00060,00065,00300,63680]"
+      }
+    },
+    "timeSeries": [
+      {
+        "sourceInfo": {
+          "siteName": "POTOMAC RIVER NEAR WASH, DC LITTLE FALLS PUMP STA",
+          "siteCode": [{ "value": "01646500", "network": "NWIS", "agencyCode": "USGS" }],
+          "geoLocation": {
+            "geogLocation": { "latitude": 38.9498, "longitude": -77.1283 }
+          }
+        },
+        "variable": {
+          "variableCode": [{ "value": "00060" }],
+          "variableName": "Streamflow, ft&#179;/s",
+          "unit": { "unitCode": "ft^3/s" }
+        },
+        "values": [
+          {
+            "value": [
+              {
+                "value": "2820",
+                "qualifiers": ["P"],
+                "dateTime": "2026-05-18T09:30:00.000-04:00"
+              },
+              {
+                "value": "2840",
+                "qualifiers": ["P"],
+                "dateTime": "2026-05-18T09:45:00.000-04:00"
+              },
+              {
+                "value": "2810",
+                "qualifiers": ["P"],
+                "dateTime": "2026-05-18T10:00:00.000-04:00"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "sourceInfo": {
+          "siteName": "POTOMAC RIVER NEAR WASH, DC LITTLE FALLS PUMP STA",
+          "siteCode": [{ "value": "01646500", "network": "NWIS", "agencyCode": "USGS" }],
+          "geoLocation": {
+            "geogLocation": { "latitude": 38.9498, "longitude": -77.1283 }
+          }
+        },
+        "variable": {
+          "variableCode": [{ "value": "00010" }],
+          "variableName": "Temperature, water",
+          "unit": { "unitCode": "deg C" }
+        },
+        "values": [
+          {
+            "value": [
+              {
+                "value": "18.5",
+                "qualifiers": ["P"],
+                "dateTime": "2026-05-18T10:00:00.000-04:00"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "sourceInfo": {
+          "siteName": "POTOMAC RIVER NEAR WASH, DC LITTLE FALLS PUMP STA",
+          "siteCode": [{ "value": "01646500", "network": "NWIS", "agencyCode": "USGS" }],
+          "geoLocation": {
+            "geogLocation": { "latitude": 38.9498, "longitude": -77.1283 }
+          }
+        },
+        "variable": {
+          "variableCode": [{ "value": "00065" }],
+          "variableName": "Gage height",
+          "unit": { "unitCode": "ft" }
+        },
+        "values": [
+          {
+            "value": [
+              {
+                "value": "3.42",
+                "qualifiers": ["P"],
+                "dateTime": "2026-05-18T10:00:00.000-04:00"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "sourceInfo": {
+          "siteName": "ANACOSTIA RIVER AT BLADENSBURG, MD",
+          "siteCode": [{ "value": "01651800", "network": "NWIS", "agencyCode": "USGS" }],
+          "geoLocation": {
+            "geogLocation": { "latitude": 38.9395, "longitude": -76.9389 }
+          }
+        },
+        "variable": {
+          "variableCode": [{ "value": "63680" }],
+          "variableName": "Turbidity",
+          "unit": { "unitCode": "FNU" }
+        },
+        "values": [
+          {
+            "value": [
+              {
+                "value": "7.8",
+                "qualifiers": ["A", "e"],
+                "dateTime": "2026-05-18T09:45:00.000-04:00"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "sourceInfo": {
+          "siteName": "ANACOSTIA RIVER AT BLADENSBURG, MD",
+          "siteCode": [{ "value": "01651800", "network": "NWIS", "agencyCode": "USGS" }],
+          "geoLocation": {
+            "geogLocation": { "latitude": 38.9395, "longitude": -76.9389 }
+          }
+        },
+        "variable": {
+          "variableCode": [{ "value": "00300" }],
+          "variableName": "Dissolved oxygen",
+          "unit": { "unitCode": "mg/l" }
+        },
+        "values": [
+          {
+            "value": [
+              {
+                "value": "8.1",
+                "qualifiers": ["P"],
+                "dateTime": "2026-05-18T09:45:00.000-04:00"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "sourceInfo": {
+          "siteName": "OUT-OF-RANGE SENTINEL",
+          "siteCode": [{ "value": "01651800", "network": "NWIS", "agencyCode": "USGS" }]
+        },
+        "variable": { "variableCode": [{ "value": "00010" }] },
+        "values": [
+          {
+            "value": [
+              {
+                "value": "-999999",
+                "qualifiers": ["P"],
+                "dateTime": "2026-05-18T09:45:00.000-04:00"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

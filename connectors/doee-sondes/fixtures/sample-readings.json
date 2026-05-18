@@ -1,0 +1,29 @@
+[
+  {
+    "station_id": "TODO-DOEE-ANA-LOWER",
+    "observed_at": "2026-05-18T13:55:00Z",
+    "turbidity_ntu": 12.0,
+    "dissolved_oxygen_mgL": 7.8,
+    "water_temp_c": 19.2,
+    "ph": 7.4,
+    "chlorophyll_ugL": 3.5
+  },
+  {
+    "station_id": "TODO-DOEE-ANA-MID",
+    "observed_at": "2026-05-18T13:52:00Z",
+    "turbidity_ntu": 28.0,
+    "dissolved_oxygen_mgL": 6.4,
+    "water_temp_c": 19.6,
+    "ph": 7.3,
+    "chlorophyll_ugL": 7.1
+  },
+  {
+    "station_id": "TODO-DOEE-POT-UPPER",
+    "observed_at": "2026-05-18T13:48:00Z",
+    "turbidity_ntu": 4.0,
+    "dissolved_oxygen_mgL": 8.6,
+    "water_temp_c": 18.4,
+    "ph": 7.6,
+    "chlorophyll_ugL": 1.2
+  }
+]

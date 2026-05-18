@@ -1,0 +1,33 @@
+{
+  "items": [
+    {
+      "organizationIdentifier": "DCDOEE",
+      "organizationName": "District of Columbia Department of Energy and Environment",
+      "reportingCycle": 2022,
+      "assessmentUnits": [
+        {
+          "assessmentUnitIdentifier": "DCANA00E_00",
+          "assessmentUnitName": "Anacostia River (tidal) — mainstem",
+          "useAttainments": [
+            {
+              "useName": "Aquatic Life",
+              "useAttainmentCode": "X"
+            },
+            {
+              "useName": "Primary Contact Recreation",
+              "useAttainmentCode": "X"
+            },
+            {
+              "useName": "Secondary Contact Recreation",
+              "useAttainmentCode": "I"
+            },
+            {
+              "useName": "Fish Consumption",
+              "useAttainmentCode": "X"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

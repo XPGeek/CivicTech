@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DMV Water Watch">
+  <rect width="512" height="512" rx="96" fill="#0f172a"/>
+  <path d="M64 320 q64 -48 128 0 t128 0 t128 0 v 96 H 64 Z" fill="#10b981"/>
+  <circle cx="256" cy="180" r="60" fill="#10b981" stroke="white" stroke-width="12"/>
+  <text x="256" y="470" text-anchor="middle" font-family="system-ui,sans-serif" font-size="48" font-weight="700" fill="white">DMV</text>
+</svg>

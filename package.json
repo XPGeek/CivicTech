@@ -8,36 +8,44 @@
     "type": "git",
     "url": "https://github.com/sgiacinto/CivicTech"
   },
-  "scripts": {
-    "dev": "echo 'Phase 0 task: scaffold Next.js. See ROADMAP.md § Phase 0.' && exit 1",
-    "build": "echo 'Phase 0 task: scaffold Next.js. See ROADMAP.md § Phase 0.' && exit 1",
-    "start": "echo 'Phase 0 task: scaffold Next.js. See ROADMAP.md § Phase 0.' && exit 1",
-    "lint": "echo 'Phase 0 task: add ESLint config.' && exit 0",
-    "test": "echo 'Phase 0 task: add Vitest config.' && exit 0",
-    "connector:run": "echo 'Phase 1 task: implement build/run-connector.ts. See connectors/README.md § Local development.' && exit 1",
-    "connectors:run": "echo 'Phase 1 task: implement build/run-all-connectors.ts.' && exit 1",
-    "grading:test": "echo 'Phase 2 task: implement grading rubric tests.' && exit 1",
-    "validate:sites": "echo 'Phase 1 task: implement scripts/validate-sites.ts to lint data/sites.json against the schema.' && exit 1"
-  },
   "engines": {
     "node": ">=20"
   },
-  "workspaces": [
-    "web",
-    "connectors/*",
-    "build",
-    "scripts"
-  ],
-  "dependencies": {},
-  "devDependencies": {},
-  "_planned_dependencies_phase_0": {
-    "next": "^14.2.0",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
+  "scripts": {
+    "dev": "next dev",
+    "build:next": "next build",
+    "build:pipeline": "tsx pipeline/build.ts",
+    "build": "npm run pipeline && npm run build:next",
+    "pipeline": "tsx pipeline/build.ts",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "connector:run": "tsx scripts/run-connector.ts",
+    "connectors:run": "tsx scripts/run-all-connectors.ts",
+    "validate:sites": "tsx scripts/validate-sites.ts",
+    "grading:test": "vitest run grading"
+  },
+  "dependencies": {
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "maplibre-gl": "^4.5.0",
-    "typescript": "^5.5.0",
-    "zod": "^3.23.0",
-    "tailwindcss": "^3.4.0",
-    "_note": "Move into dependencies when Phase 0 begins. Keeping out for now so npm install does nothing until scaffolding starts."
+    "recharts": "^2.12.7",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.5",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.6",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.3"
   }
 }
