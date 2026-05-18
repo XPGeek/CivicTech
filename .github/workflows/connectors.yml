@@ -1,0 +1,80 @@
+name: connectors
+
+# Schedule:
+#   hourly         — USGS NWIS, NOAA precip, DOEE sondes
+#   six-hourly     — Anacostia Riverkeeper
+#   weekly         — EPA How's My Waterway
+#
+# All three jobs reuse the same `npm run pipeline` script — which runs every
+# connector and degrades gracefully on individual failures — so we don't have
+# to wire bucket-specific scripts. The cron schedules just stagger reruns so
+# the freshest signal each source publishes appears soon after.
+
+on:
+  schedule:
+    - cron: '7 * * * *'      # hourly at :07 (avoid the top-of-hour rush)
+    - cron: '17 */6 * * *'   # every 6 hours at :17
+    - cron: '0 12 * * 1'     # weekly Monday 12:00 UTC
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual rebuild'
+        required: false
+        default: 'manual'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: connectors-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CONNECTOR_USER_AGENT: ${{ vars.CONNECTOR_USER_AGENT || 'dmv-water-watch (admin@example.org)' }}
+      NEXT_PUBLIC_BUILD_ID: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Validate sites.json
+        run: npm run validate:sites
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run connector pipeline
+        run: npm run pipeline
+
+      - name: Upload artifacts to Cloudflare R2 (skipped if secrets absent)
+        if: ${{ env.R2_ACCESS_KEY_ID != '' }}
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+        run: |
+          aws s3 sync ./public/data "s3://${R2_BUCKET}/" \
+            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com" \
+            --content-type application/json \
+            --delete
+
+      - name: Snapshot artifacts (debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-snapshot
+          path: public/data
+          retention-days: 7

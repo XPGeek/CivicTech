@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+:root {
+  --grade-green: #10b981;
+  --grade-yellow: #f59e0b;
+  --grade-red: #dc2626;
+  --grade-unknown: #9ca3af;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: #f8fafc;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: #2563eb;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+[role='button']:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* MapLibre attribution control adjustments */
+.maplibregl-ctrl-attrib {
+  font-size: 10px;
+}
+
+/* The OSM/Mapbox attribution link must have a non-color signal to meet
+   WCAG 1.4.1; MapLibre's default styling drops the underline. */
+.maplibregl-ctrl-attrib a {
+  color: #0f172a;
+  text-decoration: underline;
+}
+
+/* Bottom sheet animation */
+.bottom-sheet-enter {
+  transform: translateY(100%);
+}
+.bottom-sheet-enter-active {
+  transform: translateY(0%);
+  transition: transform 200ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bottom-sheet-enter-active {
+    transition: none;
+  }
+}
+
+/* Pin shape utilities (svg overlays on map markers) */
+.pin {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}

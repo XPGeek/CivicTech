@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: General questions and discussion
+    url: https://github.com/sgiacinto/CivicTech/discussions
+    about: For open-ended questions, ideas, or paddling-community discussions.
+  - name: Read the Getting Started guide
+    url: https://github.com/sgiacinto/CivicTech/blob/main/GETTING_STARTED.md
+    about: A plain-English intro for non-technical contributors.

@@ -143,7 +143,7 @@ export class ConnectorError extends Error {
   code: string;
   recoverable: boolean;
   source_id: string;
-  cause?: unknown;
+  override cause?: unknown;
 
   constructor(params: {
     code: string;

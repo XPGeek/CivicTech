@@ -1,0 +1,74 @@
+[
+  {
+    "station_id": "buzzard-point",
+    "observed_at": "2026-05-15T13:30:00Z",
+    "e_coli_mpn": 95,
+    "turbidity_ntu": 9.2,
+    "ph": 7.3,
+    "water_temp_c": 19.1
+  },
+  {
+    "station_id": "buzzard-point",
+    "observed_at": "2026-05-08T13:30:00Z",
+    "e_coli_mpn": 412,
+    "turbidity_ntu": 14.1,
+    "ph": 7.2,
+    "water_temp_c": 18.4
+  },
+  {
+    "station_id": "anacostia-park",
+    "observed_at": "2026-05-15T13:45:00Z",
+    "e_coli_mpn": 188,
+    "turbidity_ntu": 11.4,
+    "ph": 7.3,
+    "water_temp_c": 19.4
+  },
+  {
+    "station_id": "hickey-run",
+    "observed_at": "2026-05-15T14:00:00Z",
+    "e_coli_mpn": 1240,
+    "turbidity_ntu": 28.5,
+    "ph": 7.1,
+    "water_temp_c": 20.2
+  },
+  {
+    "station_id": "kingman-lake",
+    "observed_at": "2026-05-15T15:00:00Z",
+    "e_coli_mpn": 640,
+    "turbidity_ntu": 19.5,
+    "ph": 7.1,
+    "water_temp_c": 20.0
+  },
+  {
+    "station_id": "national-arboretum",
+    "observed_at": "2026-05-15T14:30:00Z",
+    "e_coli_mpn": 305,
+    "turbidity_ntu": 14.2,
+    "ph": 7.2,
+    "water_temp_c": 19.7
+  },
+  {
+    "station_id": "bladensburg-waterfront-park",
+    "observed_at": "2026-05-15T14:15:00Z",
+    "e_coli_mpn": 215,
+    "turbidity_ntu": 11.0,
+    "ph": 7.4,
+    "water_temp_c": 19.3
+  },
+  {
+    "station_id": "northeast-branch-campus-drive",
+    "observed_at": "2026-05-15T15:45:00Z",
+    "e_coli_mpn": 410,
+    "turbidity_ntu": 16.8,
+    "ph": 7.2,
+    "water_temp_c": 19.0
+  },
+  {
+    "station_id": "lower-beaverdam-creek",
+    "observed_at": "2026-05-15T16:15:00Z",
+    "e_coli_mpn": 870,
+    "turbidity_ntu": 22.1,
+    "ph": 7.0,
+    "water_temp_c": 20.5
+  }
+]

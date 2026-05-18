@@ -1,0 +1,46 @@
+name: ci
+
+# Run on every PR and push to main: tests, type-check, build-pipeline dry run.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Validate sites.json
+        run: npm run validate:sites
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Build pipeline (smoke)
+        env:
+          CONNECTOR_USER_AGENT: 'dmv-water-watch-ci'
+        run: npm run pipeline
+
+      - name: Build Next.js
+        run: npm run build:next
+
+      - name: Lighthouse CI
+        run: npx lhci autorun --config=./lighthouserc.json || echo "Lighthouse assertions warned; non-blocking"
+        continue-on-error: true

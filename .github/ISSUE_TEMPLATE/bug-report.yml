@@ -1,0 +1,41 @@
+name: 🐛 Bug report
+description: Something in the app didn't work as expected. Technical or non-technical reports welcome.
+title: "[bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened?
+      description: Describe the bug in plain English. Screenshots welcome (drag them in).
+      placeholder: "I tapped a pin on Buzzard Point and the detail card was empty."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+      placeholder: "I expected to see a grade and signal breakdown like the other sites."
+
+  - type: input
+    id: device
+    attributes:
+      label: What device / browser?
+      placeholder: "iPhone 13, Safari, iOS 17"
+
+  - type: input
+    id: build_id
+    attributes:
+      label: Build ID (optional)
+      description: Look on the /sources page footer — it shows the build timestamp. Helps us pin down regressions.
+      placeholder: "Built 2026-05-18 at 3:47 PM"
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce (if you can)
+      placeholder: |
+        1. Open the app on my phone
+        2. Tap Buzzard Point pin
+        3. Detail panel shows but is blank

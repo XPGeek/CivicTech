@@ -12,9 +12,57 @@ We unify bacterial sampling from Riverkeeper networks, real-time DOEE sondes, US
 
 ## Status
 
-**Pre-MVP — planning complete, implementation phase 0.**
+**Phase 3 polish landed (everything that doesn't need an API key).** Drop in a Swim Guide token + Cloudflare account to publish.
 
-This repository currently contains the full implementation roadmap, requirements, architecture, grading rubric, and per-source connector specs. Code scaffolding begins in Phase 0 (see [`ROADMAP.md`](./ROADMAP.md)).
+What works today:
+
+- ✅ Next.js 14 App Router static export, MapLibre map with OSM raster tiles (token-free).
+- ✅ Five connectors wired up: USGS NWIS, NOAA precip, EPA ATTAINS (all real APIs); Anacostia Riverkeeper and DOEE sondes (fixture-backed, real integration paths confirmed by Phase 2 spike).
+- ✅ Deterministic grading rubric per [`GRADING.md`](./GRADING.md) — 17 tests covering all 5 worked examples + 12 edge cases.
+- ✅ Build pipeline: connectors → normalize → grade → emit `sites.geojson`, `grades.json`, `history/<id>.json`, `manifest.json`, `sources.json`.
+- ✅ **34 inner-DMV sites** in `data/sites.json`, validated against the bounding box + DC swim prohibition.
+- ✅ Site detail cards with grade hero, reason sentence, freshness-stamped signal breakdown, 30-day sparkline, source attribution, share button, deep-linkable `/site/<id>` pages.
+- ✅ Activity toggle (paddle ↔ swim) re-grades thresholds per FR-20.
+- ✅ Methodology, About, Sources pages + first-visit disclaimer interstitial.
+- ✅ PWA manifest + service worker (cache-first shell, network-first data).
+- ✅ GitHub Actions workflows: `ci.yml` (per-PR) and `connectors.yml` (scheduled cron).
+- ✅ GitHub issue templates for non-technical contributors (suggest a site, report an incorrect grade, verify a site, bug report, feature request).
+- ✅ Loading / refresh-error / empty / stale UI states.
+- ✅ React error boundary + Sentry-ready wiring (drop in `NEXT_PUBLIC_SENTRY_DSN`).
+- ✅ Recharts-based 30-day grade history on every detail card.
+- ✅ Per-site Open Graph + Twitter card meta (deep-link previews).
+- ✅ PWA manifest with shortcuts + maskable icon.
+- ✅ Lighthouse CI on every PR (current scores: desktop 93 perf / 96 a11y / 100 best-practices / 100 SEO).
+- ✅ Operational runbook at [`docs/runbook.md`](./docs/runbook.md).
+- ✅ [`GETTING_STARTED.md`](./GETTING_STARTED.md) onboarding guide for non-technical contributors.
+- ✅ 49 unit tests + sites validator + type-check all green.
+
+What's queued for actual launch:
+
+- Real Anacostia Riverkeeper data via Swim Guide API (token request pending — outreach plan in [`docs/outreach.md`](./docs/outreach.md) § 3.1).
+- Real DC DOEE sonde data via the EQuIS portal (next spike: interactive DevTools inspection on dcdoeepub.equisonline.com).
+- Site catalog expansion 34 → ~50 (community-sourced via issue templates).
+- Production deploy on a real Cloudflare Pages + R2 setup (env vars + secrets — see [`CONTRIBUTING.md`](./CONTRIBUTING.md) § 9).
+- Legal review of the disclaimer copy.
+- Mobile Lighthouse Performance is currently 72 (LCP dominated by MapLibre bundle). Acceptable for civic-tech MVP; track via CI and revisit if it regresses.
+
+---
+
+## Quickstart
+
+```bash
+git clone <this-repo>
+cd dmv-water-watch
+npm install
+npm run pipeline           # fetch + grade + write artifacts (≈3 sec)
+npm run dev                # http://localhost:3000
+```
+
+Open the browser. You should see ~10 colored pins across the inner DMV. Tap one to see its grade, reasoning, and 30-day history.
+
+No API keys or accounts are required for local dev. The default map style is OpenStreetMap raster, served token-free.
+
+For deeper testing and contribution guidance, see [`CONTRIBUTING.md`](./CONTRIBUTING.md) and [`TESTING.md`](./TESTING.md).
 
 ## The wedge in five bullets
 
@@ -26,10 +74,11 @@ This repository currently contains the full implementation roadmap, requirements
 
 ## The orienting docs
 
-Read in this order to onboard:
-
 | Doc | What it answers |
 |---|---|
+| [`GETTING_STARTED.md`](./GETTING_STARTED.md) | Friendly intro for non-technical contributors — site curators, paddlers, neighbors. **Start here if you don't write code.** |
+| [`CONTRIBUTING.md`](./CONTRIBUTING.md) | How to install, run, test, and extend the app. Start here if you do. |
+| [`TESTING.md`](./TESTING.md) | Smoke tests, layered verification, troubleshooting. |
 | [`REQUIREMENTS.md`](./REQUIREMENTS.md) | Personas, user stories, functional + non-functional requirements, success metrics |
 | [`ROADMAP.md`](./ROADMAP.md) | Phased delivery plan with acceptance criteria per phase |
 | [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Tech stack, data flow, deployment topology |
@@ -40,21 +89,25 @@ Read in this order to onboard:
 | [`docs/sites-curation.md`](./docs/sites-curation.md) | How the ~50 hand-curated recreation sites get selected and maintained |
 | [`docs/outreach.md`](./docs/outreach.md) | Cold-outreach plan for Riverkeeper / DOEE partnerships post-prototype |
 
-## Quickstart
+## Daily-driver commands
 
 ```bash
-# Phase 0 scaffolding — coming in week 1
-git clone <this repo>
-cd dmv-water-watch
-npm install
-npm run dev
+npm run dev              # start the dev server
+npm run pipeline         # regenerate public/data/ from all connectors
+npm test                 # run unit tests (49 tests)
+npm run grading:test     # only the grading-rubric tests (17 tests)
+npm run validate:sites   # lint data/sites.json
+npm run typecheck        # tsc --noEmit
+npm run build            # pipeline + production static export to out/
+
+npm run connector:run -- usgs-nwis     # run a single connector to stdout
 ```
 
-Until Phase 0 lands, this repo is documentation-only. The data schema (`data/schema/normalized-record.schema.json`) and connector interface (`connectors/shared/types.ts`) are the only code artifacts.
+Full command reference: [`CONTRIBUTING.md`](./CONTRIBUTING.md) § 4.
 
 ## How to contribute
 
-Read [`connectors/README.md`](./connectors/README.md) for the connector contract. New data sources are isolated TypeScript modules that emit normalized records — drop one in, register it in the workflow, and it appears on the map after the next scheduled build.
+Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the full guide. The connector contract is in [`connectors/README.md`](./connectors/README.md). New data sources are isolated TypeScript modules that emit normalized records — drop one in, register it in `pipeline/connectors.ts`, and it appears on the map after the next pipeline run.
 
 For non-code contributions, the highest-leverage work is:
 
