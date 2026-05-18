@@ -39,6 +39,21 @@ export const GRADE_SWIM_LABELS: Record<Grade, string> = {
 };
 
 /**
+ * Long-form descriptions used on the methodology page. Keep these short and
+ * specific to what drove the grade — not a definition of the threshold.
+ */
+export const GRADE_DESCRIPTIONS: Record<Grade, string> = {
+  green:
+    "Bacteria are within the activity threshold, there's no recent rain, and (when sondes are present) real-time sensors look normal.",
+  yellow:
+    "One signal is elevated above the safety band but hasn't crossed the fail threshold. Read the reason on the detail card.",
+  red:
+    'Bacteria exceed safe levels for this activity, or heavy rainfall makes recent values unreliable, or dissolved oxygen has collapsed.',
+  unknown:
+    'No fresh data is available for this site right now. Check directly with the operator or come back later.',
+};
+
+/**
  * SVG path for the pin shape per grade. Used by the map markers AND the legend.
  * Each shape is anchored at the bottom center of a 32×32 viewbox.
  */

@@ -1,11 +1,24 @@
 import type { Metadata, Viewport } from 'next';
+import {
+  Background,
+  Column,
+  IconProvider,
+  LayoutProvider,
+  ThemeProvider,
+  ToastProvider,
+} from '@once-ui-system/core';
+import '@once-ui-system/core/css/styles.css';
+import '@once-ui-system/core/css/tokens.css';
 import './globals.css';
 import ServiceWorkerRegistration from './components/ServiceWorkerRegistration';
 
 export const metadata: Metadata = {
-  title: 'DMV Water Watch — Is it safe to get in the water today?',
+  title: {
+    default: 'DMV Water Watch — Is the river safe today?',
+    template: '%s — DMV Water Watch',
+  },
   description:
-    'Mobile-first water-quality report card for paddlers, rowers, and swimmers across DC, Arlington, Alexandria, PG, and Montgomery.',
+    'Five-second water-quality verdicts for every paddle, row, and swim launch across DC, Arlington, Alexandria, PG, and Montgomery.',
   manifest: '/manifest.webmanifest',
   applicationName: 'DMV Water Watch',
   appleWebApp: {
@@ -21,15 +34,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'DMV Water Watch',
     description:
-      "Real-time water-quality grades for the region's recreation sites. Bacteria, rainfall, sondes — unified.",
+      'Real-time water-quality grades for the region\'s recreation sites. Bacteria, rainfall, sondes — unified.',
     type: 'website',
     siteName: 'DMV Water Watch',
   },
   twitter: {
     card: 'summary',
     title: 'DMV Water Watch',
-    description:
-      "Real-time water-quality grades for the region's recreation sites.",
+    description: 'Real-time water-quality grades for the region\'s recreation sites.',
   },
 };
 
@@ -40,16 +52,35 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col">
-        {children}
-        <ServiceWorkerRegistration />
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider
+          theme="system"
+          neutral="slate"
+          brand="cyan"
+          accent="emerald"
+          solid="contrast"
+          solidStyle="flat"
+          border="rounded"
+          surface="translucent"
+          transition="all"
+          scaling="100"
+        >
+          <IconProvider>
+            <LayoutProvider>
+              <ToastProvider>
+                <Background fillWidth style={{ minHeight: '100dvh' }}>
+                  <Column fillWidth style={{ minHeight: '100dvh' }}>
+                    {children}
+                  </Column>
+                </Background>
+                <ServiceWorkerRegistration />
+              </ToastProvider>
+            </LayoutProvider>
+          </IconProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

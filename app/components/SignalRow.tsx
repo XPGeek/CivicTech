@@ -1,3 +1,4 @@
+import { Row, Text } from '@once-ui-system/core';
 import { formatFreshness, formatValue } from '@lib/format';
 import type { SignalState } from '@lib/types';
 
@@ -11,22 +12,43 @@ interface Props {
 export default function SignalRow({ label, signal, computedAt }: Props) {
   if (!signal || signal.status === 'missing') {
     return (
-      <li className="flex items-center justify-between py-1 text-sm text-slate-500">
-        <span>{label}</span>
-        <span>no fresh data</span>
-      </li>
+      <Row
+        horizontal="between"
+        vertical="center"
+        paddingY="8"
+        style={{ borderBottom: '1px solid var(--neutral-alpha-weak, rgba(15,23,42,0.06))' }}
+      >
+        <Text variant="body-default-s" onBackground="neutral-medium">
+          {label}
+        </Text>
+        <Text variant="body-default-s" onBackground="neutral-weak">
+          no fresh data
+        </Text>
+      </Row>
     );
   }
   const stale = signal.status === 'stale';
   return (
-    <li className="flex items-center justify-between py-1 text-sm">
-      <span className="text-slate-700">{label}</span>
-      <span className={stale ? 'text-slate-500' : 'text-slate-900'}>
-        {formatValue(signal.value, signal.units)}
-        <span className="ml-2 text-slate-500">
-          ({formatFreshness(signal.observed_at ?? computedAt, new Date(computedAt))})
-        </span>
-      </span>
-    </li>
+    <Row
+      horizontal="between"
+      vertical="center"
+      paddingY="8"
+      style={{ borderBottom: '1px solid var(--neutral-alpha-weak, rgba(15,23,42,0.06))' }}
+    >
+      <Text variant="body-default-s" onBackground="neutral-medium">
+        {label}
+      </Text>
+      <Row gap="8" vertical="center">
+        <Text
+          variant="body-default-s"
+          onBackground={stale ? 'neutral-weak' : 'neutral-strong'}
+        >
+          {formatValue(signal.value, signal.units)}
+        </Text>
+        <Text variant="body-default-xs" onBackground="neutral-weak">
+          {formatFreshness(signal.observed_at ?? computedAt, new Date(computedAt))}
+        </Text>
+      </Row>
+    </Row>
   );
 }

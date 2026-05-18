@@ -1,11 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Use static export only for production builds. In dev, leave it off so
-  // dynamic routes (/site/[id]) render via the live dev server.
+  // Static export only for production builds. In dev, leave it off so the
+  // dynamic /site/[id] route renders via the live dev server.
   output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
   images: { unoptimized: true },
   trailingSlash: false,
+  // Some once-ui modules ship as ESM source; let Next compile them.
+  transpilePackages: ['@once-ui-system/core'],
   env: {
     NEXT_PUBLIC_DATA_SOURCE: process.env.NEXT_PUBLIC_DATA_SOURCE ?? 'local',
     NEXT_PUBLIC_R2_BASE_URL: process.env.NEXT_PUBLIC_R2_BASE_URL ?? '',

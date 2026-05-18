@@ -1,76 +1,93 @@
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import 'maplibre-gl/dist/maplibre-gl.css';
-
-:root {
-  --grade-green: #10b981;
-  --grade-yellow: #f59e0b;
-  --grade-red: #dc2626;
-  --grade-unknown: #9ca3af;
-}
+/* once-ui owns typography + reset; we only own the map canvas and a few
+   MapLibre overrides. */
 
 html,
 body {
-  height: 100%;
   margin: 0;
-  background: #f8fafc;
-  color: #0f172a;
+  padding: 0;
+  height: 100%;
   -webkit-font-smoothing: antialiased;
 }
 
-a {
-  color: #2563eb;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
+.map-canvas {
+  position: absolute;
+  inset: 0;
+  background: var(--neutral-alpha-weak, rgba(15, 23, 42, 0.06));
 }
 
-a:hover {
-  text-decoration-thickness: 2px;
+/* Pin marker reset — MapLibre wraps our buttons with default styles. */
+.pin {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+  transition: transform 150ms ease-out;
+}
+.pin:hover,
+.pin:focus-visible {
+  transform: scale(1.1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pin {
+    transition: none;
+  }
 }
 
-button:focus-visible,
-a:focus-visible,
-[role='button']:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* MapLibre attribution control adjustments */
+/* WCAG 1.4.1: OSM attribution link needs a non-color signal. */
 .maplibregl-ctrl-attrib {
   font-size: 10px;
+  background: rgba(255, 255, 255, 0.85) !important;
 }
-
-/* The OSM/Mapbox attribution link must have a non-color signal to meet
-   WCAG 1.4.1; MapLibre's default styling drops the underline. */
 .maplibregl-ctrl-attrib a {
   color: #0f172a;
   text-decoration: underline;
 }
 
-/* Bottom sheet animation */
-.bottom-sheet-enter {
-  transform: translateY(100%);
-}
-.bottom-sheet-enter-active {
-  transform: translateY(0%);
-  transition: transform 200ms ease-out;
-}
-@media (prefers-reduced-motion: reduce) {
-  .bottom-sheet-enter-active {
-    transition: none;
-  }
+.maplibregl-ctrl-group {
+  background: var(--surface-background, white) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
 }
 
-/* Pin shape utilities (svg overlays on map markers) */
-.pin {
-  width: 32px;
-  height: 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+.header-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Map + side panel: stacked on mobile, side-by-side on tablet+. */
+.map-and-panel {
+  flex-direction: column;
+}
+.detail-panel {
+  background: var(--surface-background, white);
+  border-top: 1px solid var(--neutral-alpha-weak, rgba(15, 23, 42, 0.08));
+  max-width: 100%;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+@media (min-width: 768px) {
+  .map-and-panel {
+    flex-direction: row;
+  }
+  .detail-panel {
+    width: 420px;
+    max-width: 420px;
+    border-left: 1px solid var(--neutral-alpha-weak, rgba(15, 23, 42, 0.08));
+    border-top: none;
+    max-height: none;
+  }
+  .map-area {
+    min-height: 0 !important;
+  }
 }
