@@ -12,6 +12,18 @@ export const GRADE_COLORS: Record<Grade, string> = {
   unknown: '#9ca3af',
 };
 
+/**
+ * Numeric ordering of grades for charts. Unknown ranks above red because
+ * gray pins read as "no info" rather than "bad" — drawing them at the
+ * bottom of a chart would imply they're worse than red, which they aren't.
+ */
+export const GRADE_ORDINAL: Record<Grade, number> = {
+  green: 4,
+  yellow: 3,
+  unknown: 2,
+  red: 1,
+};
+
 export const GRADE_LABELS: Record<Grade, string> = {
   green: 'Paddle-safe',
   yellow: 'Caution',

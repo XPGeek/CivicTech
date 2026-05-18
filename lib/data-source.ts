@@ -28,16 +28,25 @@ function readJsonOrNull<T>(path: string): T | null {
   }
 }
 
+// generateStaticParams + generateMetadata + SitePage each call this once per
+// site at build time. Memoize so we parse the JSON corpus once per build
+// instead of 4 × N × {pages, metadata} times.
+let initialDataCache: Promise<InitialData> | null = null;
+
 export async function loadInitialData(): Promise<InitialData> {
-  const sites =
-    readJsonOrNull<SitesGeoJson>(join(PUBLIC_DATA, 'sites.geojson')) ?? {
-      type: 'FeatureCollection',
-      features: [],
-    };
-  const grades = readJsonOrNull<GradesMap>(join(PUBLIC_DATA, 'grades.json')) ?? {};
-  const manifest = readJsonOrNull<Manifest>(join(PUBLIC_DATA, 'manifest.json'));
-  const sources = readJsonOrNull<SourceSummary[]>(join(PUBLIC_DATA, 'sources.json')) ?? [];
-  return { sites, grades, manifest, sources };
+  if (initialDataCache) return initialDataCache;
+  initialDataCache = Promise.resolve().then(() => {
+    const sites =
+      readJsonOrNull<SitesGeoJson>(join(PUBLIC_DATA, 'sites.geojson')) ?? {
+        type: 'FeatureCollection',
+        features: [],
+      };
+    const grades = readJsonOrNull<GradesMap>(join(PUBLIC_DATA, 'grades.json')) ?? {};
+    const manifest = readJsonOrNull<Manifest>(join(PUBLIC_DATA, 'manifest.json'));
+    const sources = readJsonOrNull<SourceSummary[]>(join(PUBLIC_DATA, 'sources.json')) ?? [];
+    return { sites, grades, manifest, sources };
+  });
+  return initialDataCache;
 }
 
 export function loadHistory(siteId: string): HistoryPoint[] {

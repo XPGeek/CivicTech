@@ -42,6 +42,5 @@ jobs:
         run: npm run build:next
 
       - name: Lighthouse CI
-        run: |
-          npx --yes @lhci/cli@0.14 autorun --config=./lighthouserc.json || echo "Lighthouse assertions warned; non-blocking"
+        run: npx lhci autorun --config=./lighthouserc.json || echo "Lighthouse assertions warned; non-blocking"
         continue-on-error: true

@@ -2,20 +2,13 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
-import { GRADE_COLORS, GRADE_LABELS } from '@lib/grade-style';
+import { GRADE_COLORS, GRADE_LABELS, GRADE_ORDINAL } from '@lib/grade-style';
 import { fetchHistory } from '@lib/client-data';
 import type { Grade, HistoryPoint } from '@lib/types';
 
 interface Props {
   siteId: string;
 }
-
-const GRADE_VALUE: Record<Grade, number> = {
-  green: 4,
-  yellow: 3,
-  unknown: 2,
-  red: 1,
-};
 
 interface ChartDatum {
   ts: number;
@@ -46,7 +39,7 @@ export default function Sparkline({ siteId }: Props) {
         ts,
         label: new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
         grade: p.grade,
-        value: GRADE_VALUE[p.grade],
+        value: GRADE_ORDINAL[p.grade],
         reason: p.reason,
       };
     });
@@ -62,7 +55,8 @@ export default function Sparkline({ siteId }: Props) {
   }
   if (points.length === 1) {
     // Single point looks weird in a bar chart; show a static pill instead.
-    const only = points[0]!;
+    const [only] = points;
+    if (!only) return null;
     return (
       <div className="text-xs text-slate-700 flex items-center gap-2">
         <span
