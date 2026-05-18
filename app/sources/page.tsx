@@ -1,5 +1,6 @@
-import { Column, Heading, Row, Text, Card, Tag } from '@once-ui-system/core';
+import { Column, Row, Text, Card, Tag } from '@once-ui-system/core';
 import Header from '../components/Header';
+import PageHero from '../components/PageHero';
 import { loadInitialData } from '@lib/data-source';
 import { formatFreshness } from '@lib/format';
 
@@ -18,21 +19,16 @@ export default async function SourcesPage() {
     <Column as="main" fillWidth horizontal="center">
       <Header />
       <Column maxWidth={36} paddingX="24" paddingY="48" gap="32" fillWidth as="article">
-        <Column gap="12">
-          <Text variant="label-default-s" onBackground="brand-medium">
-            SOURCES
-          </Text>
-          <Heading variant="display-strong-l" as="h1">
-            Where the data comes from.
-          </Heading>
-          <Text variant="body-default-l" onBackground="neutral-medium">
-            Every grade is built from public data. Below: each source, when it last published,
-            and how often it refreshes.
-          </Text>
-          <Text variant="body-default-s" onBackground="neutral-weak">
-            Last build: {builtAt.toLocaleString()} ({formatFreshness(builtAt.toISOString(), new Date())}).
-          </Text>
-        </Column>
+        <PageHero
+          eyebrow="SOURCES"
+          title="Where the data comes from."
+          lede="Every grade is built from public data. Below: each source, when it last published, and how often it refreshes."
+          meta={
+            <Text variant="body-default-s" onBackground="neutral-weak">
+              Last build: {builtAt.toLocaleString()} ({formatFreshness(builtAt.toISOString(), new Date())}).
+            </Text>
+          }
+        />
 
         <Column gap="12">
           {sources.map((s) => (

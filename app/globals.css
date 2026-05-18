@@ -55,6 +55,17 @@ body {
   background: var(--neutral-background-medium);
 }
 
+/* Floating glass surfaces — used by the header, the tally chip, and the
+   activity-toggle pill so the look stays consistent. */
+.surface-blur {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.surface-blur-strong {
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+}
+
 /* Detail panel: full-width below the map on mobile, fixed sidebar on
    desktop. */
 .detail-panel {

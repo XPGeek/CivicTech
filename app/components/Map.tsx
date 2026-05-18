@@ -11,6 +11,8 @@ interface MapProps {
   selectedSiteId: string | null;
   onSelect: (id: string) => void;
   onUserLocate?: (coords: [number, number]) => void;
+  /** Receives a function that triggers the geolocate control. */
+  triggerGeolocateRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 interface MarkerEntry {
@@ -71,6 +73,7 @@ export default function SiteMap({
   selectedSiteId,
   onSelect,
   onUserLocate,
+  triggerGeolocateRef,
 }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -106,6 +109,10 @@ export default function SiteMap({
       showAccuracyCircle: false,
     });
     map.addControl(geo, 'top-right');
+
+    if (triggerGeolocateRef) {
+      triggerGeolocateRef.current = () => geo.trigger();
+    }
 
     // The geolocate event payload follows the standard GeolocationPosition shape.
     geo.on('geolocate', (e) => {

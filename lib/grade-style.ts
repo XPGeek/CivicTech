@@ -39,6 +39,27 @@ export const GRADE_SWIM_LABELS: Record<Grade, string> = {
 };
 
 /**
+ * Plain-English description per grade. Used on the methodology page and in
+ * places that need more than a one-word label.
+ */
+export const GRADE_DESCRIPTIONS: Record<Grade, string> = {
+  green: 'Bacteria are within the safety threshold, no recent heavy rain, and live sensors look normal.',
+  yellow: 'One signal is elevated above the safe band but below the fail threshold. Read the reason on the card.',
+  red: 'Bacteria exceed safe levels for this activity, rainfall makes recent data unreliable, or dissolved oxygen has collapsed.',
+  unknown: 'No fresh data right now. Check directly with the site operator, or come back later.',
+};
+
+/**
+ * Short tally label per grade. Used on the homepage tally chip.
+ */
+export const GRADE_TALLY_LABELS: Record<Grade, string> = {
+  green: 'clean',
+  yellow: 'caution',
+  red: 'avoid',
+  unknown: 'no data',
+};
+
+/**
  * SVG path for the pin shape per grade. Used by the map markers AND the legend.
  * Each shape is anchored at the bottom center of a 32×32 viewbox.
  */

@@ -10,12 +10,11 @@ export default function Header() {
       paddingY="12"
       vertical="center"
       horizontal="between"
+      className="surface-blur-strong"
       style={{
         position: 'sticky',
         top: 0,
         zIndex: 30,
-        backdropFilter: 'saturate(180%) blur(14px)',
-        WebkitBackdropFilter: 'saturate(180%) blur(14px)',
         background: 'var(--surface-background)',
         borderBottom: '1px solid var(--neutral-border-medium)',
       }}

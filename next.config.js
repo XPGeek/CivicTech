@@ -6,6 +6,11 @@ const nextConfig = {
   output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
   images: { unoptimized: true },
   trailingSlash: false,
+  // Once UI ships a barrel index; let Next rewrite barrel imports to direct
+  // module paths at build time so unused components don't pull into the bundle.
+  experimental: {
+    optimizePackageImports: ['@once-ui-system/core'],
+  },
   env: {
     NEXT_PUBLIC_DATA_SOURCE: process.env.NEXT_PUBLIC_DATA_SOURCE ?? 'local',
     NEXT_PUBLIC_R2_BASE_URL: process.env.NEXT_PUBLIC_R2_BASE_URL ?? '',

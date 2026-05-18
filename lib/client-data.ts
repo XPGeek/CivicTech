@@ -48,6 +48,16 @@ export async function fetchSources(): Promise<SourceSummary[] | null> {
   return getJson<SourceSummary[]>('/sources.json');
 }
 
-export async function fetchHistory(siteId: string): Promise<HistoryPoint[] | null> {
-  return getJson<HistoryPoint[]>(`/history/${siteId}.json`);
+// History files are per-site and immutable within a build, so an in-flight
+// dedup cache means re-opening the same detail card or rapidly toggling
+// activity doesn't trigger duplicate network calls in the same session.
+const historyCache = new Map<string, Promise<HistoryPoint[] | null>>();
+
+export function fetchHistory(siteId: string): Promise<HistoryPoint[] | null> {
+  let p = historyCache.get(siteId);
+  if (!p) {
+    p = getJson<HistoryPoint[]>(`/history/${siteId}.json`);
+    historyCache.set(siteId, p);
+  }
+  return p;
 }

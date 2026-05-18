@@ -1,19 +1,13 @@
 import { Column, Heading, Row, Text, Card } from '@once-ui-system/core';
 import Header from '../components/Header';
-import { GRADE_LABELS, GRADE_PIN_SVG } from '@lib/grade-style';
+import PageHero from '../components/PageHero';
+import { GRADE_DESCRIPTIONS, GRADE_LABELS, GRADE_PIN_SVG } from '@lib/grade-style';
 import type { Grade } from '@lib/types';
 
 export const metadata = {
   title: 'How we grade the water',
   description:
     "Bacteria, rainfall, sondes, and impairment — the four signals behind every DMV Water Watch grade.",
-};
-
-const GRADE_DESCRIPTIONS: Record<Grade, string> = {
-  green: 'Bacteria are within the safety threshold, no recent heavy rain, and live sensors look normal.',
-  yellow: 'One signal is elevated above the safe band but below the fail threshold. Read the reason on the card.',
-  red: 'Bacteria exceed safe levels for this activity, rainfall makes recent data unreliable, or dissolved oxygen has collapsed.',
-  unknown: 'No fresh data right now. Check directly with the site operator, or come back later.',
 };
 
 export default function MethodologyPage() {
@@ -28,19 +22,11 @@ export default function MethodologyPage() {
         fillWidth
         as="article"
       >
-        <Column gap="12">
-          <Text variant="label-default-s" onBackground="brand-medium">
-            METHODOLOGY
-          </Text>
-          <Heading variant="display-strong-l" as="h1">
-            How we grade the water.
-          </Heading>
-          <Text variant="body-default-l" onBackground="neutral-medium">
-            Every site gets one of four grades. No machine learning, no proprietary scoring.
-            The rubric is in <code>grading/v1.ts</code> in our public repo — read it, fork it,
-            argue with it.
-          </Text>
-        </Column>
+        <PageHero
+          eyebrow="METHODOLOGY"
+          title="How we grade the water."
+          lede="Every site gets one of four grades. No machine learning, no proprietary scoring. The rubric is open source — read it, fork it, argue with it."
+        />
 
         <Column gap="24">
           <Heading variant="heading-strong-l" as="h2">

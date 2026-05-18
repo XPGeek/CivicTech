@@ -1,6 +1,8 @@
-import { Column, Heading, Row, Text, SmartLink, Card } from '@once-ui-system/core';
+import { Column, Heading, Row, Text } from '@once-ui-system/core';
 import Header from '../components/Header';
 import Disclaimer from '../components/Disclaimer';
+import PageHero from '../components/PageHero';
+import LinkCard from '../components/LinkCard';
 
 export const metadata = {
   title: 'About',
@@ -12,19 +14,11 @@ export default function AboutPage() {
     <Column as="main" fillWidth horizontal="center">
       <Header />
       <Column maxWidth={36} paddingX="24" paddingY="48" gap="32" fillWidth as="article">
-        <Column gap="12">
-          <Text variant="label-default-s" onBackground="brand-medium">
-            ABOUT
-          </Text>
-          <Heading variant="display-strong-l" as="h1">
-            Built so paddlers don&rsquo;t guess.
-          </Heading>
-          <Text variant="body-default-l" onBackground="neutral-medium">
-            DMV Water Watch is an open-source map for paddlers, rowers, and (where legal)
-            swimmers across the inner DC Metro Area. One question, answered in five seconds:
-            is it safe to get in the water today?
-          </Text>
-        </Column>
+        <PageHero
+          eyebrow="ABOUT"
+          title="Built so paddlers don&rsquo;t guess."
+          lede="DMV Water Watch is an open-source map for paddlers, rowers, and (where legal) swimmers across the inner DC Metro Area. One question, answered in five seconds: is it safe to get in the water today?"
+        />
 
         <Column gap="16">
           <Heading variant="heading-strong-l" as="h2">
@@ -76,22 +70,5 @@ export default function AboutPage() {
         <Disclaimer />
       </Column>
     </Column>
-  );
-}
-
-function LinkCard({ href, title, body }: { href: string; title: string; body: string }) {
-  return (
-    <SmartLink href={href} unstyled style={{ flex: '1 1 220px', minWidth: 220 }}>
-      <Card padding="16" radius="m" cursor="interactive" transition="micro-medium">
-        <Column gap="8">
-          <Text variant="label-default-m" onBackground="neutral-strong">
-            {title} →
-          </Text>
-          <Text variant="body-default-s" onBackground="neutral-medium">
-            {body}
-          </Text>
-        </Column>
-      </Card>
-    </SmartLink>
   );
 }
