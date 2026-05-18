@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   type ConnectorContext,
@@ -7,6 +7,7 @@ import {
   type Parameter,
   type QCFlag,
 } from '../shared/types';
+import { groupStationsBySite } from '../shared/sites';
 
 export const meta: ConnectorMeta = {
   id: 'anacostia-riverkeeper',
@@ -17,21 +18,8 @@ export const meta: ConnectorMeta = {
   freshness_threshold_hours: 24 * 8,
 };
 
-/**
- * Anacostia Riverkeeper connector — Phase 2 spike pending.
- *
- * In production this connector should consume one of:
- *   - The Swim Guide open-data feed (https://github.com/swimdrinkfish/opendata)
- *   - The Friday weekly water-quality PDF (anacostiariverkeeper.org)
- *
- * For now it reads from a committed JSON fixture in `fixtures/sample-readings.json`
- * so the build pipeline and grading rubric can exercise the bacterial-signal path
- * end-to-end without depending on an unstable upstream. The fixture mirrors the
- * shape of the published weekly PDF.
- *
- * Replacing this with a real fetch is a one-file change: implement the `fetchRaw`
- * function below to return the same `RawReading[]` shape from a real source.
- */
+// TODO(phase-2): replace `fetchRaw` with a live Swim Guide / CMC integration.
+// Current fixture-backed path documented in README.md.
 
 interface RawReading {
   station_id: string;
@@ -54,31 +42,23 @@ const RAW_PARAM_MAP: Array<{
 ];
 
 async function fetchRaw(context: ConnectorContext): Promise<RawReading[]> {
-  // Fixture-only implementation. See module docstring; replace this body when
-  // upgrading to a live Swim Guide / PDF integration.
   const fixturePath = join(__dirname, 'fixtures', 'sample-readings.json');
-  if (!existsSync(fixturePath)) {
-    context.log.warn('Fixture file missing; emitting no records', {
-      source_id: meta.id,
-      fixturePath,
-    });
-    return [];
+  try {
+    return JSON.parse(readFileSync(fixturePath, 'utf8')) as RawReading[];
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+      context.log.warn('Fixture missing; emitting no records', {
+        source_id: meta.id,
+        fixturePath,
+      });
+      return [];
+    }
+    throw err;
   }
-  const text = readFileSync(fixturePath, 'utf8');
-  return JSON.parse(text) as RawReading[];
 }
 
 export async function fetch(context: ConnectorContext): Promise<NormalizedRecord[]> {
-  const stationToSites = new Map<string, string[]>();
-  for (const site of context.sites) {
-    for (const station of site.stations) {
-      if (station.source_id !== meta.id) continue;
-      const list = stationToSites.get(station.station_id) ?? [];
-      list.push(site.id);
-      stationToSites.set(station.station_id, list);
-    }
-  }
-
+  const stationToSites = groupStationsBySite(context.sites, meta.id);
   if (stationToSites.size === 0) {
     context.log.info('No Anacostia Riverkeeper stations declared in sites.json; skipping', {
       source_id: meta.id,

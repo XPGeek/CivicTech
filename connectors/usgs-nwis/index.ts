@@ -7,6 +7,7 @@ import {
   type QCFlag,
 } from '../shared/types';
 import { httpJson } from '../shared/http';
+import { groupStationsBySite } from '../shared/sites';
 
 export const meta: ConnectorMeta = {
   id: 'usgs-nwis',
@@ -59,18 +60,7 @@ interface USGSResponse {
 }
 
 export async function fetch(context: ConnectorContext): Promise<NormalizedRecord[]> {
-  // Collect every station ID this connector should query, grouped so we can
-  // emit one record per (station × parameter × latest observation).
-  const stationToSites = new Map<string, string[]>();
-  for (const site of context.sites) {
-    for (const station of site.stations) {
-      if (station.source_id !== meta.id) continue;
-      const list = stationToSites.get(station.station_id) ?? [];
-      list.push(site.id);
-      stationToSites.set(station.station_id, list);
-    }
-  }
-
+  const stationToSites = groupStationsBySite(context.sites, meta.id);
   if (stationToSites.size === 0) {
     context.log.info('No USGS stations referenced in sites.json; skipping', { source_id: meta.id });
     return [];

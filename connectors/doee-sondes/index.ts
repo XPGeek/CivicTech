@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   type ConnectorContext,
@@ -6,6 +6,7 @@ import {
   type NormalizedRecord,
   type Parameter,
 } from '../shared/types';
+import { groupStationsBySite } from '../shared/sites';
 
 export const meta: ConnectorMeta = {
   id: 'doee-sondes',
@@ -16,18 +17,8 @@ export const meta: ConnectorMeta = {
   freshness_threshold_hours: 4,
 };
 
-/**
- * DOEE sondes connector — Phase 2 spike pending.
- *
- * DC DOEE operates a network of real-time YSI sondes on the Anacostia and
- * Potomac inside DC. The data is surfaced on a public dashboard at
- * doee.dc.gov/service/environmental-data-maps; the underlying export URL is
- * not yet documented in code. The first Phase 2 task is a spike: confirm the
- * data export pattern and replace `fetchRaw()` below with a real HTTP call.
- *
- * Until then this connector reads a fixture so the grading rubric's sonde
- * sanity-check path is exercised end-to-end.
- */
+// TODO(phase-2): replace `fetchRaw` with a live DOEE EQuIS export.
+// Current fixture-backed path documented in README.md.
 
 interface RawSondeReading {
   station_id: string;
@@ -53,36 +44,31 @@ const RAW_PARAM_MAP: Array<{
 
 async function fetchRaw(context: ConnectorContext): Promise<RawSondeReading[]> {
   const fixturePath = join(__dirname, 'fixtures', 'sample-readings.json');
-  if (!existsSync(fixturePath)) {
-    context.log.warn('Fixture missing; emitting no records', {
-      source_id: meta.id,
-      fixturePath,
-    });
-    return [];
+  let raw: RawSondeReading[];
+  try {
+    raw = JSON.parse(readFileSync(fixturePath, 'utf8')) as RawSondeReading[];
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+      context.log.warn('Fixture missing; emitting no records', {
+        source_id: meta.id,
+        fixturePath,
+      });
+      return [];
+    }
+    throw err;
   }
-  // Replace the fixture timestamps so the readings always appear fresh relative
-  // to context.now(). This keeps demo grading deterministic across runs.
-  const text = readFileSync(fixturePath, 'utf8');
-  const raw = JSON.parse(text) as RawSondeReading[];
+  // Rewrite timestamps relative to context.now() so the readings are always
+  // fresh in the demo. Real DOEE data carries its own timestamps and would
+  // skip this step.
   const now = new Date(context.now()).getTime();
   return raw.map((r, i) => ({
     ...r,
-    // Stagger readings between 5 and 20 minutes ago.
     observed_at: new Date(now - (5 + i * 3) * 60_000).toISOString(),
   }));
 }
 
 export async function fetch(context: ConnectorContext): Promise<NormalizedRecord[]> {
-  const stationToSites = new Map<string, string[]>();
-  for (const site of context.sites) {
-    for (const station of site.stations) {
-      if (station.source_id !== meta.id) continue;
-      const list = stationToSites.get(station.station_id) ?? [];
-      list.push(site.id);
-      stationToSites.set(station.station_id, list);
-    }
-  }
-
+  const stationToSites = groupStationsBySite(context.sites, meta.id);
   if (stationToSites.size === 0) {
     context.log.info('No DOEE sonde stations declared in sites.json; skipping', {
       source_id: meta.id,

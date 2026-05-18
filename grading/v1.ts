@@ -52,30 +52,23 @@ const RAINFALL_THRESHOLDS = {
   fail: 1.0,
 } as const;
 
+const CHRONIC_TO_STATUS: Record<number, SignalStatus> = {
+  0: 'pass',
+  1: 'caution',
+  2: 'fail',
+};
+
 export function gradeSite(input: GradingInput): GradeOutput {
   const { records, now, activity } = input;
-  const computed_at = now.toISOString();
-
-  // ───────────────────────── Step 1: bacteria
   const bacteria = pickFreshest(records, ['e_coli', 'enterococcus']);
-  const bacteriaState = computeBacteriaState(bacteria, activity, now);
-
-  // ───────────────────────── Step 2 & 3: rainfall override
   const rainfall = pickFreshest(records, ['precipitation_48h']);
-  const rainfallState = computeRainfallState(rainfall, bacteria, now);
+  const chronic = pickFreshest(records, ['impairment_status']);
 
-  // ───────────────────────── Step 4: sonde sanity
+  const bacteriaState = computeBacteriaState(bacteria, activity, now);
+  const rainfallState = computeRainfallState(rainfall, bacteria, now);
   const sonde = collectSonde(records, now);
 
-  // ───────────────────────── Step 5+6: combine
-  const { verdict, dominant, outOfSeason } = combine(
-    bacteriaState,
-    rainfallState,
-    sonde,
-    activity,
-  );
-
-  // ───────────────────────── Step 7: reason
+  const { verdict, dominant, outOfSeason } = combine(bacteriaState, rainfallState, sonde);
   const reason = composeReason(dominant, {
     bacteriaState,
     rainfallState,
@@ -88,11 +81,9 @@ export function gradeSite(input: GradingInput): GradeOutput {
   if (bacteriaState.state) signals.bacteria = bacteriaState.state;
   if (rainfallState.state) signals.rainfall = rainfallState.state;
   if (sonde.state) signals.sonde = sonde.state;
-
-  const chronic = pickFreshest(records, ['impairment_status']);
   if (chronic) {
     signals.chronic = {
-      status: chronic.value === 0 ? 'pass' : chronic.value === 2 ? 'fail' : 'caution',
+      status: CHRONIC_TO_STATUS[chronic.value] ?? 'caution',
       observed_at: chronic.observed_at,
       value: chronic.value,
       units: chronic.units,
@@ -103,7 +94,7 @@ export function gradeSite(input: GradingInput): GradeOutput {
   return {
     site_id: input.site_id,
     grade: verdict,
-    computed_at,
+    computed_at: now.toISOString(),
     reason,
     signals,
     activity,
@@ -150,7 +141,10 @@ function computeBacteriaState(
     };
   }
 
-  const threshold = BACTERIAL_THRESHOLDS[activity][bacteria.parameter as 'e_coli' | 'enterococcus'];
+  // `pickFreshest` filtered to ['e_coli', 'enterococcus'], so the parameter is
+  // guaranteed to be one of the bacterial keys.
+  const param = bacteria.parameter as 'e_coli' | 'enterococcus';
+  const threshold = BACTERIAL_THRESHOLDS[activity][param];
   const status: SignalStatus =
     bacteria.value <= threshold ? 'pass' : bacteria.value <= 2 * threshold ? 'caution' : 'fail';
 
@@ -325,7 +319,6 @@ function combine(
   bacteria: BacteriaState,
   rainfall: RainfallState,
   sonde: SondeState,
-  _activity: Activity,
 ): { verdict: Grade; dominant: Dominant; outOfSeason: boolean } {
   // Out-of-season: bacteria stale/missing but sonde fresh AND healthy.
   const outOfSeason =

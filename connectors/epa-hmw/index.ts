@@ -5,6 +5,7 @@ import {
   type NormalizedRecord,
 } from '../shared/types';
 import { httpJson } from '../shared/http';
+import { groupStationsBySite } from '../shared/sites';
 
 export const meta: ConnectorMeta = {
   id: 'epa-hmw',
@@ -58,18 +59,8 @@ const PRIMARY_CONTACT_USE_PATTERNS = [
 ];
 
 export async function fetch(context: ConnectorContext): Promise<NormalizedRecord[]> {
-  // Each site can declare an epa-hmw "station" whose `station_id` is the
-  // Assessment Unit identifier. Build the unique set.
-  const auToSites = new Map<string, string[]>();
-  for (const site of context.sites) {
-    for (const station of site.stations) {
-      if (station.source_id !== meta.id) continue;
-      const list = auToSites.get(station.station_id) ?? [];
-      list.push(site.id);
-      auToSites.set(station.station_id, list);
-    }
-  }
-
+  // For epa-hmw, each "station" is an EPA Assessment Unit identifier.
+  const auToSites = groupStationsBySite(context.sites, meta.id);
   if (auToSites.size === 0) {
     context.log.info(
       'No EPA Assessment Units declared in sites.json; chronic impairment badge will be omitted',
@@ -78,47 +69,46 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
     return [];
   }
 
+  // ATTAINS exposes assessments per-AU via the same endpoint. Fan out so the
+  // weekly run finishes in seconds instead of minutes.
+  const settled = await Promise.allSettled(
+    Array.from(auToSites, async ([auId, siteIds]) => {
+      const url = `https://attains.epa.gov/attains-public/api/assessments?assessmentUnitIdentifier=${encodeURIComponent(auId)}`;
+      context.log.info('Fetching EPA ATTAINS assessment', { source_id: meta.id, au: auId });
+      const body = await httpJson<AssessmentsResponse>(url, { source_id: meta.id });
+      return { auId, siteIds, body };
+    }),
+  );
+
   const records: NormalizedRecord[] = [];
-
-  // ATTAINS exposes assessments per-AU via the same endpoint. We make one
-  // request per AU to keep the response payload small.
-  for (const [auId, siteIds] of auToSites) {
-    const url = `https://attains.epa.gov/attains-public/api/assessments?assessmentUnitIdentifier=${encodeURIComponent(auId)}`;
-    context.log.info('Fetching EPA ATTAINS assessment', { source_id: meta.id, au: auId });
-
-    let body: AssessmentsResponse;
-    try {
-      body = await httpJson<AssessmentsResponse>(url, { source_id: meta.id });
-    } catch (err) {
+  for (const result of settled) {
+    if (result.status === 'rejected') {
+      const err = result.reason;
       if (err instanceof ConnectorError && err.recoverable) {
         context.log.warn('ATTAINS unavailable for AU; skipping', {
           source_id: meta.id,
-          au: auId,
           code: err.code,
         });
         continue;
       }
       throw err;
     }
-
+    const { auId, siteIds, body } = result.value;
     const au = body.items?.[0]?.assessmentUnits?.[0];
     if (!au) {
       context.log.warn('No assessment data returned for AU', { source_id: meta.id, au: auId });
       continue;
     }
-
     const recreationUse = au.useAttainments?.find((u) =>
       PRIMARY_CONTACT_USE_PATTERNS.some((rx) => rx.test(u.useName ?? '')),
     );
-    const value = classifyAttainment(recreationUse?.useAttainmentCode);
-
     records.push({
       source_id: meta.id,
       station_id: auId,
       site_ids: siteIds,
       observed_at: context.now(),
       parameter: 'impairment_status',
-      value,
+      value: classifyAttainment(recreationUse?.useAttainmentCode),
       units: 'unitless',
       qc_flag: 'final',
       raw_url: `https://mywaterway.epa.gov/waterbody-report/${encodeURIComponent(body.items?.[0]?.organizationIdentifier ?? '')}/${encodeURIComponent(auId)}`,

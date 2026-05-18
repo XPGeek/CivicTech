@@ -49,27 +49,21 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
   const contributingSourceIds = sourcesFromSignals(grade);
   const contributingSources = sources.filter((s) => contributingSourceIds.has(s.id));
 
+  const HeadingTag = standalone ? 'h1' : 'h2';
+  const headingClass = standalone
+    ? 'text-2xl font-bold text-slate-900'
+    : 'text-lg font-semibold text-slate-900 leading-tight';
+  const subnameClass = standalone ? 'text-sm text-slate-500' : 'text-xs text-slate-500';
+
   return (
     <article className="px-4 pb-6" aria-labelledby={`site-${site.id}-name`}>
-      {standalone && (
-        <header className="pt-4">
-          <h1 id={`site-${site.id}-name`} className="text-2xl font-bold text-slate-900">
-            {site.name}
-          </h1>
-          {site.subname && <p className="text-sm text-slate-500">{site.subname}</p>}
-        </header>
-      )}
-      {!standalone && (
-        <header className="pt-3">
-          <h2
-            id={`site-${site.id}-name`}
-            className="text-lg font-semibold text-slate-900 leading-tight"
-          >
-            {site.name}
-          </h2>
-          {site.subname && <p className="text-xs text-slate-500">{site.subname}</p>}
-        </header>
-      )}
+      <header className={standalone ? 'pt-4' : 'pt-3'}>
+        <HeadingTag id={`site-${site.id}-name`} className={headingClass}>
+          {site.name}
+        </HeadingTag>
+        {site.subname && <p className={subnameClass}>{site.subname}</p>}
+      </header>
+
 
       <GradeHero grade={grade.grade} activity={activity} reason={grade.reason} />
 

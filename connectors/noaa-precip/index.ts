@@ -6,6 +6,7 @@ import {
 } from '../shared/types';
 import { httpJson } from '../shared/http';
 import { mm_to_inches } from '../shared/units';
+import { groupStationsBySite } from '../shared/sites';
 
 export const meta: ConnectorMeta = {
   id: 'noaa-precip',
@@ -32,17 +33,7 @@ interface NWSResponse {
 const WINDOW_HOURS = 48;
 
 export async function fetch(context: ConnectorContext): Promise<NormalizedRecord[]> {
-  // Group sites by NOAA station so we make one request per unique station.
-  const stationToSites = new Map<string, string[]>();
-  for (const site of context.sites) {
-    for (const station of site.stations) {
-      if (station.source_id !== meta.id) continue;
-      const list = stationToSites.get(station.station_id) ?? [];
-      list.push(site.id);
-      stationToSites.set(station.station_id, list);
-    }
-  }
-
+  const stationToSites = groupStationsBySite(context.sites, meta.id);
   if (stationToSites.size === 0) {
     context.log.info('No NOAA stations referenced in sites.json; skipping', { source_id: meta.id });
     return [];
@@ -53,35 +44,34 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
   const windowStart = new Date(now.getTime() - WINDOW_HOURS * 3600_000);
   const startParam = windowStart.toISOString();
 
-  const records: NormalizedRecord[] = [];
-
-  // api.weather.gov is a per-station endpoint; we run sequentially with built-in
-  // retry rather than fanning out, to stay polite on a free public API.
-  for (const [stationId, siteIds] of stationToSites) {
-    const url = `https://api.weather.gov/stations/${encodeURIComponent(stationId)}/observations?start=${startParam}`;
-    context.log.info('Fetching NOAA observations', { source_id: meta.id, station: stationId });
-
-    let body: NWSResponse;
-    try {
-      body = await httpJson<NWSResponse>(url, {
+  // Fan out one request per station. The handful of NOAA stations we hit
+  // (typically 4) stays well under api.weather.gov's "reasonable use" expectation.
+  const settled = await Promise.allSettled(
+    Array.from(stationToSites, async ([stationId, siteIds]) => {
+      const url = `https://api.weather.gov/stations/${encodeURIComponent(stationId)}/observations?start=${startParam}`;
+      context.log.info('Fetching NOAA observations', { source_id: meta.id, station: stationId });
+      const body = await httpJson<NWSResponse>(url, {
         source_id: meta.id,
-        headers: {
-          'User-Agent': userAgent,
-          Accept: 'application/geo+json',
-        },
+        headers: { 'User-Agent': userAgent, Accept: 'application/geo+json' },
       });
-    } catch (err) {
+      return { stationId, siteIds, body };
+    }),
+  );
+
+  const records: NormalizedRecord[] = [];
+  for (const result of settled) {
+    if (result.status === 'rejected') {
+      const err = result.reason;
       if (err instanceof ConnectorError && err.recoverable) {
         context.log.warn('NOAA station unavailable; skipping', {
           source_id: meta.id,
-          station: stationId,
           code: err.code,
         });
         continue;
       }
       throw err;
     }
-
+    const { stationId, siteIds, body } = result.value;
     const total = sumPrecipitationMm(body.features ?? [], windowStart, now);
     if (total.observationCount === 0) {
       context.log.warn('No precipitation observations in window', {
@@ -90,7 +80,6 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
       });
       continue;
     }
-
     records.push({
       source_id: meta.id,
       station_id: stationId,

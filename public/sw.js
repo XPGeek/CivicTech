@@ -2,11 +2,10 @@
  * DMV Water Watch service worker.
  *
  * Strategy:
- *   - App shell: cache-first. Updates pick up on the next deploy.
- *   - /data/* JSON artifacts: network-first with cache fallback. Showing slightly
- *     stale grades for a minute while the network resolves is acceptable per
- *     ARCHITECTURE.md § 5.3.
- *   - Everything else: pass-through.
+ *   - App shell: cache-first with background revalidate.
+ *   - /data/* JSON artifacts: stale-while-revalidate so navigations don't pay
+ *     a round-trip when a recent build is already cached (build cadence is
+ *     hourly; ARCHITECTURE.md § 5.3 tolerates a minute of staleness).
  */
 
 const SHELL_CACHE = 'dmv-water-watch-shell-v1';
@@ -37,43 +36,23 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (event.request.method !== 'GET') return;
-
-  // Data artifacts: network-first, fall back to cache.
   if (url.pathname.startsWith('/data/')) {
-    event.respondWith(networkFirst(event.request, DATA_CACHE));
+    event.respondWith(staleWhileRevalidate(event.request, DATA_CACHE));
     return;
   }
-
-  // App shell: cache-first.
   if (url.origin === self.location.origin) {
-    event.respondWith(cacheFirst(event.request, SHELL_CACHE));
+    event.respondWith(staleWhileRevalidate(event.request, SHELL_CACHE));
   }
 });
 
-async function networkFirst(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  try {
-    const network = await fetch(request);
-    if (network.ok) cache.put(request, network.clone());
-    return network;
-  } catch (err) {
-    const cached = await cache.match(request);
-    if (cached) return cached;
-    throw err;
-  }
-}
-
-async function cacheFirst(request, cacheName) {
+async function staleWhileRevalidate(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
-  if (cached) {
-    // Revalidate in background.
-    fetch(request)
-      .then((res) => {
-        if (res.ok) cache.put(request, res.clone());
-      })
-      .catch(() => undefined);
-    return cached;
-  }
-  return fetch(request);
+  const network = fetch(request)
+    .then((res) => {
+      if (res.ok) cache.put(request, res.clone());
+      return res;
+    })
+    .catch(() => undefined);
+  return cached ?? (await network) ?? new Response('Offline', { status: 503 });
 }
