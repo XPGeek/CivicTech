@@ -57,14 +57,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body>
         <ThemeProvider
-          theme="system"
+          theme="light"
           neutral="slate"
           brand="cyan"
           accent="emerald"
           solid="contrast"
           solidStyle="flat"
           border="rounded"
-          surface="translucent"
+          surface="filled"
           transition="all"
           scaling="100"
         >

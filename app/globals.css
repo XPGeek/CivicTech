@@ -15,6 +15,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Once UI ships tokens but doesn't paint the body for us. Apply page bg here
+   so translucent surfaces have a deliberate canvas to layer over, and so the
+   far-right of any flex layout doesn't reveal a default slate void. */
+body {
+  background-color: var(--page-background, #f8fafc);
+  color: var(--neutral-on-background-strong, #0f172a);
+}
+
 .map-canvas {
   position: absolute;
   inset: 0;
@@ -70,8 +78,8 @@ body {
   flex-direction: column;
 }
 .detail-panel {
-  background: var(--surface-background, white);
-  border-top: 1px solid var(--neutral-alpha-weak, rgba(15, 23, 42, 0.08));
+  background: #ffffff;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
   max-width: 100%;
   overflow-y: auto;
   max-height: 60vh;
@@ -83,11 +91,17 @@ body {
   .detail-panel {
     width: 420px;
     max-width: 420px;
-    border-left: 1px solid var(--neutral-alpha-weak, rgba(15, 23, 42, 0.08));
+    border-left: 1px solid rgba(15, 23, 42, 0.08);
     border-top: none;
     max-height: none;
   }
   .map-area {
     min-height: 0 !important;
   }
+}
+
+/* Header bg fallback in case Once UI tokens aren't loaded. */
+header[role='banner'] {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
