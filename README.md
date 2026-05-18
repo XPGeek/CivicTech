@@ -12,7 +12,7 @@ We unify bacterial sampling from Riverkeeper networks, real-time DOEE sondes, US
 
 ## Status
 
-**Phase 2 landed (real-source spikes complete, site catalog expanded, contributor onboarding shipped).**
+**Phase 3 polish landed (everything that doesn't need an API key).** Drop in a Swim Guide token + Cloudflare account to publish.
 
 What works today:
 
@@ -20,7 +20,7 @@ What works today:
 - ✅ Five connectors wired up: USGS NWIS, NOAA precip, EPA ATTAINS (all real APIs); Anacostia Riverkeeper and DOEE sondes (fixture-backed, real integration paths confirmed by Phase 2 spike).
 - ✅ Deterministic grading rubric per [`GRADING.md`](./GRADING.md) — 17 tests covering all 5 worked examples + 12 edge cases.
 - ✅ Build pipeline: connectors → normalize → grade → emit `sites.geojson`, `grades.json`, `history/<id>.json`, `manifest.json`, `sources.json`.
-- ✅ **24 inner-DMV sites** in `data/sites.json`, validated against the bounding box + DC swim prohibition.
+- ✅ **34 inner-DMV sites** in `data/sites.json`, validated against the bounding box + DC swim prohibition.
 - ✅ Site detail cards with grade hero, reason sentence, freshness-stamped signal breakdown, 30-day sparkline, source attribution, share button, deep-linkable `/site/<id>` pages.
 - ✅ Activity toggle (paddle ↔ swim) re-grades thresholds per FR-20.
 - ✅ Methodology, About, Sources pages + first-visit disclaimer interstitial.
@@ -28,16 +28,23 @@ What works today:
 - ✅ GitHub Actions workflows: `ci.yml` (per-PR) and `connectors.yml` (scheduled cron).
 - ✅ GitHub issue templates for non-technical contributors (suggest a site, report an incorrect grade, verify a site, bug report, feature request).
 - ✅ Loading / refresh-error / empty / stale UI states.
+- ✅ React error boundary + Sentry-ready wiring (drop in `NEXT_PUBLIC_SENTRY_DSN`).
+- ✅ Recharts-based 30-day grade history on every detail card.
+- ✅ Per-site Open Graph + Twitter card meta (deep-link previews).
+- ✅ PWA manifest with shortcuts + maskable icon.
+- ✅ Lighthouse CI on every PR (current scores: desktop 93 perf / 96 a11y / 100 best-practices / 100 SEO).
+- ✅ Operational runbook at [`docs/runbook.md`](./docs/runbook.md).
 - ✅ [`GETTING_STARTED.md`](./GETTING_STARTED.md) onboarding guide for non-technical contributors.
 - ✅ 49 unit tests + sites validator + type-check all green.
 
-What's queued for Phase 3 polish:
+What's queued for actual launch:
 
 - Real Anacostia Riverkeeper data via Swim Guide API (token request pending — outreach plan in [`docs/outreach.md`](./docs/outreach.md) § 3.1).
-- Real DC DOEE sonde data via the EQuIS portal (next spike: interactive DevTools inspection).
-- Site catalog expansion 24 → ~50 (community-sourced via issue templates).
+- Real DC DOEE sonde data via the EQuIS portal (next spike: interactive DevTools inspection on dcdoeepub.equisonline.com).
+- Site catalog expansion 34 → ~50 (community-sourced via issue templates).
 - Production deploy on a real Cloudflare Pages + R2 setup (env vars + secrets — see [`CONTRIBUTING.md`](./CONTRIBUTING.md) § 9).
 - Legal review of the disclaimer copy.
+- Mobile Lighthouse Performance is currently 72 (LCP dominated by MapLibre bundle). Acceptable for civic-tech MVP; track via CI and revisit if it regresses.
 
 ---
 

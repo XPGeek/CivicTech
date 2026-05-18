@@ -44,6 +44,13 @@ a:focus-visible,
   font-size: 10px;
 }
 
+/* The OSM/Mapbox attribution link must have a non-color signal to meet
+   WCAG 1.4.1; MapLibre's default styling drops the underline. */
+.maplibregl-ctrl-attrib a {
+  color: #0f172a;
+  text-decoration: underline;
+}
+
 /* Bottom sheet animation */
 .bottom-sheet-enter {
   transform: translateY(100%);

@@ -486,6 +486,199 @@
       ],
       "notes": "C&O Canal lock with Potomac put-in; popular kayak rental seasonally.",
       "verified_at": null
+    },
+    {
+      "id": "the-wharf-dc",
+      "name": "The Wharf",
+      "subname": "Potomac / Washington Channel, DC",
+      "lat": 38.8780,
+      "lon": -77.0265,
+      "jurisdiction": "DC",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dock",
+      "parking": "available",
+      "fee": true,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" },
+        { "source_id": "epa-hmw", "station_id": "DCPMS00E_00" }
+      ],
+      "notes": "Southwest DC waterfront mixed-use development; multiple paddle ops operate seasonally from the docks.",
+      "verified_at": null
+    },
+    {
+      "id": "georgetown-waterfront",
+      "name": "Georgetown Waterfront Park",
+      "subname": "Potomac River, DC",
+      "lat": 38.9025,
+      "lon": -77.0628,
+      "jurisdiction": "DC",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dirt-putin",
+      "parking": "limited",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "doee-sondes", "station_id": "POT-UPPER-1" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" },
+        { "source_id": "epa-hmw", "station_id": "DCPMS00E_00" }
+      ],
+      "notes": "Public waterfront park between Key Bridge and Thompson Boat Center; informal put-in from the trail.",
+      "verified_at": null
+    },
+    {
+      "id": "gravelly-point",
+      "name": "Gravelly Point",
+      "subname": "Potomac River, VA (Arlington)",
+      "lat": 38.8617,
+      "lon": -77.0436,
+      "jurisdiction": "VA",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dirt-putin",
+      "parking": "available",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "Park immediately north of Reagan National runway; informal SUP / kayak launch off the Mt. Vernon Trail.",
+      "verified_at": null
+    },
+    {
+      "id": "lady-bird-johnson-park",
+      "name": "Lady Bird Johnson Park",
+      "subname": "Potomac River, VA (Arlington)",
+      "lat": 38.8780,
+      "lon": -77.0510,
+      "jurisdiction": "VA",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dirt-putin",
+      "parking": "limited",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "NPS park on Columbia Island; trail-side launches with views of the Boundary Channel.",
+      "verified_at": null
+    },
+    {
+      "id": "carderock-recreation",
+      "name": "Carderock Recreation Area",
+      "subname": "Potomac River, MD (Montgomery County)",
+      "lat": 38.9783,
+      "lon": -77.2073,
+      "jurisdiction": "MD-MC",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dirt-putin",
+      "parking": "available",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KGAI" }
+      ],
+      "notes": "NPS C&O Canal recreation area popular with whitewater paddlers and climbers. Above the fall line.",
+      "verified_at": null
+    },
+    {
+      "id": "old-anglers-inn",
+      "name": "Old Anglers Inn launch",
+      "subname": "C&O Canal / Potomac, MD (Montgomery County)",
+      "lat": 38.9774,
+      "lon": -77.2435,
+      "jurisdiction": "MD-MC",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "gravel-ramp",
+      "parking": "available",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KGAI" }
+      ],
+      "notes": "Trailhead with C&O Canal access; closest formal launch to Great Falls.",
+      "verified_at": null
+    },
+    {
+      "id": "glen-echo-park",
+      "name": "Glen Echo Park access",
+      "subname": "Potomac River, MD (Montgomery County)",
+      "lat": 38.9686,
+      "lon": -77.1389,
+      "jurisdiction": "MD-MC",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dirt-putin",
+      "parking": "available",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KGAI" }
+      ],
+      "notes": "Glen Echo cultural park with trail access to the Potomac.",
+      "verified_at": null
+    },
+    {
+      "id": "lock-7-cabin-john",
+      "name": "Lock 7 / Cabin John",
+      "subname": "C&O Canal / Potomac, MD (Montgomery County)",
+      "lat": 38.9624,
+      "lon": -77.1632,
+      "jurisdiction": "MD-MC",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "gravel-ramp",
+      "parking": "limited",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KGAI" }
+      ],
+      "notes": "C&O Canal lock with Potomac access.",
+      "verified_at": null
+    },
+    {
+      "id": "piscataway-park",
+      "name": "Piscataway Park",
+      "subname": "Potomac River, MD (PG County)",
+      "lat": 38.7042,
+      "lon": -77.0497,
+      "jurisdiction": "MD-PG",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dirt-putin",
+      "parking": "available",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "NPS park across the Potomac from Mt. Vernon; informal launches along the riverfront trail.",
+      "verified_at": null
+    },
+    {
+      "id": "fort-washington-park",
+      "name": "Fort Washington Park",
+      "subname": "Potomac River, MD (PG County)",
+      "lat": 38.7060,
+      "lon": -77.0299,
+      "jurisdiction": "MD-PG",
+      "river": "Potomac",
+      "activity_types": ["paddle"],
+      "launch_type": "dirt-putin",
+      "parking": "available",
+      "fee": false,
+      "stations": [
+        { "source_id": "usgs-nwis", "station_id": "01646500" },
+        { "source_id": "noaa-precip", "station_id": "KDCA" }
+      ],
+      "notes": "NPS historic fort with riverside trails; informal kayak put-in from the riverwalk.",
+      "verified_at": null
     }
   ]
 }

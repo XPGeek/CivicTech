@@ -13,11 +13,23 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'DMV Water Watch',
   },
+  icons: {
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    other: [{ rel: 'mask-icon', url: '/icon.svg', color: '#0f172a' }],
+  },
   openGraph: {
     title: 'DMV Water Watch',
     description:
       "Real-time water-quality grades for the region's recreation sites. Bacteria, rainfall, sondes — unified.",
     type: 'website',
+    siteName: 'DMV Water Watch',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'DMV Water Watch',
+    description:
+      "Real-time water-quality grades for the region's recreation sites.",
   },
 };
 

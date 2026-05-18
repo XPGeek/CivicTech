@@ -1,0 +1,32 @@
+{
+  "ci": {
+    "collect": {
+      "url": ["http://localhost:5500/"],
+      "numberOfRuns": 1,
+      "settings": {
+        "preset": "desktop",
+        "chromeFlags": "--no-sandbox --headless"
+      },
+      "startServerCommand": "python3 -m http.server 5500 --directory out",
+      "startServerReadyPattern": "Serving HTTP"
+    },
+    "assert": {
+      "preset": "lighthouse:no-pwa",
+      "assertions": {
+        "categories:performance": ["warn", { "minScore": 0.85 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
+        "categories:best-practices": ["warn", { "minScore": 0.95 }],
+        "categories:seo": ["warn", { "minScore": 0.95 }],
+        "valid-source-maps": "off",
+        "target-size": "warn",
+        "unused-css-rules": "off",
+        "unused-javascript": "off",
+        "uses-text-compression": "warn",
+        "uses-long-cache-ttl": "off"
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}

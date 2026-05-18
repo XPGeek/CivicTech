@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useCallback, useState } from 'react';
 import type {
   Activity,
@@ -10,7 +11,13 @@ import type {
 } from '@lib/types';
 import GradeHero from './GradeHero';
 import SignalRow from './SignalRow';
-import Sparkline from './Sparkline';
+
+// Recharts is heavy (~70 KB gzipped); keep it out of the initial bundle. The
+// sparkline only renders inside an opened detail card.
+const Sparkline = dynamic(() => import('./Sparkline'), {
+  ssr: false,
+  loading: () => <div className="h-16 bg-slate-100 rounded animate-pulse" aria-label="Loading history…" />,
+});
 
 interface Props {
   site: SitePinProperties;

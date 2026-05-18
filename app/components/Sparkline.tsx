@@ -1,12 +1,28 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { GRADE_COLORS } from '@lib/grade-style';
+import { useEffect, useMemo, useState } from 'react';
+import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
+import { GRADE_COLORS, GRADE_LABELS } from '@lib/grade-style';
 import { fetchHistory } from '@lib/client-data';
-import type { HistoryPoint } from '@lib/types';
+import type { Grade, HistoryPoint } from '@lib/types';
 
 interface Props {
   siteId: string;
+}
+
+const GRADE_VALUE: Record<Grade, number> = {
+  green: 4,
+  yellow: 3,
+  unknown: 2,
+  red: 1,
+};
+
+interface ChartDatum {
+  ts: number;
+  label: string;
+  grade: Grade;
+  value: number;
+  reason: string;
 }
 
 export default function Sparkline({ siteId }: Props) {
@@ -22,29 +38,71 @@ export default function Sparkline({ siteId }: Props) {
     };
   }, [siteId]);
 
+  const chartData = useMemo<ChartDatum[]>(() => {
+    if (!points) return [];
+    return points.map((p) => {
+      const ts = Date.parse(p.computed_at);
+      return {
+        ts,
+        label: new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+        grade: p.grade,
+        value: GRADE_VALUE[p.grade],
+        reason: p.reason,
+      };
+    });
+  }, [points]);
+
   if (!points) {
     return (
-      <div className="h-12 bg-slate-100 rounded animate-pulse" aria-label="Loading history…" />
+      <div className="h-16 bg-slate-100 rounded animate-pulse" aria-label="Loading history…" />
     );
   }
   if (points.length === 0) {
-    return <p className="text-xs text-slate-500">No history yet — the first build was just now.</p>;
+    return <p className="text-xs text-slate-500">No history yet — first build was just now.</p>;
+  }
+  if (points.length === 1) {
+    // Single point looks weird in a bar chart; show a static pill instead.
+    const only = points[0]!;
+    return (
+      <div className="text-xs text-slate-700 flex items-center gap-2">
+        <span
+          aria-hidden
+          className="inline-block w-3 h-3 rounded-sm"
+          style={{ backgroundColor: GRADE_COLORS[only.grade] }}
+        />
+        <span>{GRADE_LABELS[only.grade]} as of {new Date(only.computed_at).toLocaleString()}</span>
+      </div>
+    );
   }
 
-  // Render a row of small colored bars, oldest left → newest right.
   return (
-    <div className="flex items-end gap-0.5 h-10" aria-label="30-day grade history">
-      {points.map((p, i) => (
-        <span
-          key={`${p.computed_at}-${i}`}
-          title={`${new Date(p.computed_at).toLocaleDateString()} — ${p.reason}`}
-          className="flex-1 min-w-[3px] rounded-sm"
-          style={{
-            backgroundColor: GRADE_COLORS[p.grade],
-            height: '100%',
-          }}
-        />
-      ))}
+    <div className="h-16 w-full" aria-label="30-day grade history">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={chartData} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+          <XAxis dataKey="label" hide />
+          <Tooltip
+            cursor={{ fill: 'rgba(15, 23, 42, 0.05)' }}
+            contentStyle={{
+              borderRadius: 6,
+              border: '1px solid #e2e8f0',
+              fontSize: 12,
+              padding: '6px 8px',
+            }}
+            formatter={(_value, _name, item) => {
+              const datum = item?.payload as ChartDatum | undefined;
+              if (!datum) return ['', ''];
+              return [datum.reason, `${GRADE_LABELS[datum.grade]} · ${datum.label}`];
+            }}
+            labelFormatter={() => ''}
+            isAnimationActive={false}
+          />
+          <Bar dataKey="value" isAnimationActive={false}>
+            {chartData.map((d) => (
+              <Cell key={d.ts} fill={GRADE_COLORS[d.grade]} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 }
