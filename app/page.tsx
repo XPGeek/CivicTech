@@ -1,4 +1,4 @@
-import { Column } from '@once-ui-system/core';
+import { Column } from '@once-ui-system/core/components';
 import { Suspense } from 'react';
 import MapShell from './components/MapShell';
 import { loadInitialData } from '@lib/data-source';

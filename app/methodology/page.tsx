@@ -1,7 +1,8 @@
-import { Card, Column, Heading, Row, Text } from '@once-ui-system/core';
+import { Card, Column, Heading, Row, Text } from '@once-ui-system/core/components';
 import Header from '../components/Header';
 import PageHero from '../components/PageHero';
-import { GRADE_DESCRIPTIONS, GRADE_LABELS, GRADE_PIN_SVG } from '@lib/grade-style';
+import GradePin from '../components/GradePin';
+import { GRADE_DESCRIPTIONS, GRADE_LABELS } from '@lib/grade-style';
 import type { Grade } from '@lib/types';
 
 export const metadata = {
@@ -115,11 +116,7 @@ export default function MethodologyPage() {
             {(Object.keys(GRADE_DESCRIPTIONS) as Grade[]).map((g) => (
               <Card key={g} padding="16" radius="m">
                 <Row gap="16" vertical="center">
-                  <div
-                    aria-hidden
-                    style={{ width: 36, height: 36, flexShrink: 0 }}
-                    dangerouslySetInnerHTML={{ __html: GRADE_PIN_SVG[g] }}
-                  />
+                  <GradePin grade={g} size={36} />
                   <Column gap="4" fillWidth>
                     <Text variant="label-default-m" onBackground="neutral-strong">
                       {GRADE_LABELS[g]}

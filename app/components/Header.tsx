@@ -1,4 +1,4 @@
-import { Row, Text } from '@once-ui-system/core';
+import { Row, Text } from '@once-ui-system/core/components';
 import Link from 'next/link';
 
 const NAV_LINKS: Array<{ href: string; label: string }> = [
@@ -14,6 +14,7 @@ export default function Header() {
       fillWidth
       horizontal="center"
       role="banner"
+      borderBottom="neutral-alpha-weak"
       style={{
         position: 'sticky',
         top: 0,
@@ -21,7 +22,6 @@ export default function Header() {
         backdropFilter: 'saturate(180%) blur(10px)',
         WebkitBackdropFilter: 'saturate(180%) blur(10px)',
         background: 'var(--surface-background-alpha-strong, rgba(255,255,255,0.85))',
-        borderBottom: '1px solid var(--neutral-alpha-weak, rgba(15,23,42,0.08))',
       }}
     >
       <Row

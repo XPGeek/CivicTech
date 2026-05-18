@@ -1,4 +1,4 @@
-import { Row, Text } from '@once-ui-system/core';
+import { Row, Text } from '@once-ui-system/core/components';
 import { formatFreshness, formatValue } from '@lib/format';
 import type { SignalState } from '@lib/types';
 
@@ -16,7 +16,7 @@ export default function SignalRow({ label, signal, computedAt }: Props) {
         horizontal="between"
         vertical="center"
         paddingY="8"
-        style={{ borderBottom: '1px solid var(--neutral-alpha-weak, rgba(15,23,42,0.06))' }}
+        borderBottom="neutral-alpha-weak"
       >
         <Text variant="body-default-s" onBackground="neutral-medium">
           {label}
@@ -33,7 +33,7 @@ export default function SignalRow({ label, signal, computedAt }: Props) {
       horizontal="between"
       vertical="center"
       paddingY="8"
-      style={{ borderBottom: '1px solid var(--neutral-alpha-weak, rgba(15,23,42,0.06))' }}
+      borderBottom="neutral-alpha-weak"
     >
       <Text variant="body-default-s" onBackground="neutral-medium">
         {label}

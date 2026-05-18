@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
-import { Button, Card, Column, Heading, Row, Tag, Text } from '@once-ui-system/core';
+import { Button, Card, Column, Heading, Row, Tag, Text } from '@once-ui-system/core/components';
 import type {
   Activity,
   GradeOutput,
@@ -155,10 +155,10 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
               <Text key={s.id} variant="body-default-xs" onBackground="neutral-medium">
                 <strong>{s.name}</strong>
                 {s.last_updated && (
-                  <span style={{ color: 'var(--neutral-weak, #94a3b8)' }}>
+                  <Text as="span" variant="body-default-xs" onBackground="neutral-weak">
                     {' '}
                     · updated {new Date(s.last_updated).toLocaleString()}
-                  </span>
+                  </Text>
                 )}
               </Text>
             ))}
@@ -166,13 +166,7 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
         )}
       </Column>
 
-      <Row
-        gap="12"
-        vertical="center"
-        wrap
-        paddingTop="12"
-        style={{ borderTop: '1px solid var(--neutral-alpha-weak, rgba(15,23,42,0.06))' }}
-      >
+      <Row gap="12" vertical="center" wrap paddingTop="12" borderTop="neutral-alpha-weak">
         <Button variant="primary" onClick={onShare} prefixIcon="copy">
           {copied ? 'Link copied' : 'Share'}
         </Button>

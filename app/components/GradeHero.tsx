@@ -1,6 +1,7 @@
-import { Column, Row, Text } from '@once-ui-system/core';
-import { GRADE_LABELS, GRADE_SWIM_LABELS, GRADE_PIN_SVG } from '@lib/grade-style';
+import { Column, Row, Text } from '@once-ui-system/core/components';
+import { GRADE_LABELS, GRADE_SWIM_LABELS } from '@lib/grade-style';
 import type { Activity, Grade } from '@lib/types';
+import GradePin from './GradePin';
 
 interface Props {
   grade: Grade;
@@ -17,13 +18,9 @@ export default function GradeHero({ grade, activity, reason }: Props) {
       gap="16"
       vertical="center"
       paddingY="16"
-      style={{ borderBottom: '1px solid var(--neutral-alpha-weak, rgba(15,23,42,0.08))' }}
+      borderBottom="neutral-alpha-weak"
     >
-      <div
-        aria-hidden
-        style={{ width: 44, height: 44, flexShrink: 0 }}
-        dangerouslySetInnerHTML={{ __html: GRADE_PIN_SVG[grade] }}
-      />
+      <GradePin grade={grade} size={44} />
       <Column gap="4" fillWidth>
         <Text variant="heading-strong-m" onBackground="neutral-strong">
           {label}

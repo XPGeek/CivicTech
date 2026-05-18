@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Button, Column, Heading, Row, Text } from '@once-ui-system/core';
+import { Button, Card, Column, Heading, Row, Text } from '@once-ui-system/core/components';
 import { captureError } from '@lib/sentry';
 
 export default function ErrorBoundary({
@@ -17,15 +17,7 @@ export default function ErrorBoundary({
 
   return (
     <Column as="main" fillWidth fillHeight horizontal="center" vertical="center" padding="24">
-      <Column
-        maxWidth={28}
-        padding="32"
-        gap="16"
-        background="surface"
-        radius="l"
-        shadow="m"
-        border="neutral-alpha-weak"
-      >
+      <Card padding="32" radius="l" gap="16" direction="column" style={{ maxWidth: 28 * 16 }}>
         <Column gap="8">
           <Text
             variant="label-default-s"
@@ -52,7 +44,7 @@ export default function ErrorBoundary({
             Error ref: <code>{error.digest}</code>
           </Text>
         )}
-      </Column>
+      </Card>
     </Column>
   );
 }

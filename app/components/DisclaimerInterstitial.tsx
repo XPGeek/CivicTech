@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Column, Dialog, Text } from '@once-ui-system/core';
+import { Button, Column, Dialog, Text } from '@once-ui-system/core/components';
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'dmv-water-watch.disclaimer-acked';

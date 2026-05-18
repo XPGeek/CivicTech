@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Column, Row, Text } from '@once-ui-system/core';
+import { Column, Row, Text } from '@once-ui-system/core/components';
 import { loadInitialData, listSiteIds } from '@lib/data-source';
 import { GRADE_LABELS } from '@lib/grade-style';
 import DetailCard from '../../components/DetailCard';
@@ -13,16 +14,13 @@ export const dynamicParams = false;
 interface Params {
   id: string;
 }
+type PageProps = { params: Promise<Params> };
 
 export async function generateStaticParams(): Promise<Params[]> {
   return listSiteIds().map((id) => ({ id }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<Params>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const data = await loadInitialData();
   const feature = data.sites.features.find((f) => f.properties.id === id);
@@ -43,11 +41,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function SitePage({
-  params,
-}: {
-  params: Promise<Params>;
-}) {
+export default async function SitePage({ params }: PageProps) {
   const { id } = await params;
   const data = await loadInitialData();
   const feature = data.sites.features.find((f) => f.properties.id === id);
@@ -61,11 +55,11 @@ export default async function SitePage({
       <Header />
       <Column maxWidth={36} paddingX="24" paddingY="32" gap="24" fillWidth>
         <Row gap="8" vertical="center">
-          <Text variant="body-default-s" onBackground="neutral-medium">
-            <a href="/" style={{ color: 'inherit', textDecoration: 'none' }}>
+          <Link href="/" className="back-link">
+            <Text variant="body-default-s" onBackground="neutral-medium">
               ← Back to map
-            </a>
-          </Text>
+            </Text>
+          </Link>
         </Row>
         <DetailCard
           site={feature.properties}

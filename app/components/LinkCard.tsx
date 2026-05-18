@@ -1,4 +1,4 @@
-import { Card, Column, Text } from '@once-ui-system/core';
+import { Card, Column, Text } from '@once-ui-system/core/components';
 
 interface Props {
   href: string;

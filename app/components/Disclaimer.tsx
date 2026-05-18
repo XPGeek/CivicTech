@@ -1,4 +1,4 @@
-import { Accordion, Column, Text } from '@once-ui-system/core';
+import { Accordion, Column, Text } from '@once-ui-system/core/components';
 
 /**
  * Full disclaimer (UX.md § 11). Collapsed by default but discoverable.

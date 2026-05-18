@@ -1,4 +1,4 @@
-import { Card, Column, Row, Tag, Text } from '@once-ui-system/core';
+import { Card, Column, Row, Tag, Text } from '@once-ui-system/core/components';
 import Header from '../components/Header';
 import PageHero from '../components/PageHero';
 import { loadInitialData } from '@lib/data-source';

@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Banner, Button, Column, Row, Text } from '@once-ui-system/core';
+import { Banner, Button, Column, Row, Text } from '@once-ui-system/core/components';
 import type { Activity, InitialData, SitePinProperties } from '@lib/types';
 import { useActivity } from '@lib/activity';
 import { fetchGrades, fetchManifest, fetchSites, fetchSources } from '@lib/client-data';

@@ -1,6 +1,6 @@
 'use client';
 
-import { Banner, Button, Row, Text } from '@once-ui-system/core';
+import { Banner, Button, Row, Text } from '@once-ui-system/core/components';
 import { useEffect, useState } from 'react';
 import { formatFreshness } from '@lib/format';
 import type { Manifest } from '@lib/types';

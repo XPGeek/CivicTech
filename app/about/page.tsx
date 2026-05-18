@@ -1,4 +1,4 @@
-import { Column, Heading, Row, Text } from '@once-ui-system/core';
+import { Column, Heading, Row, Text } from '@once-ui-system/core/components';
 import Header from '../components/Header';
 import Disclaimer from '../components/Disclaimer';
 import PageHero from '../components/PageHero';

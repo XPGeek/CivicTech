@@ -73,6 +73,15 @@ body {
   text-underline-offset: 3px;
 }
 
+.back-link {
+  text-decoration: none;
+  color: inherit;
+}
+.back-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* Map + side panel: stacked on mobile, side-by-side on tablet+. */
 .map-and-panel {
   flex-direction: column;

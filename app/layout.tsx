@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from 'next';
+import { Background, Column } from '@once-ui-system/core/components';
 import {
-  Background,
-  Column,
   IconProvider,
   LayoutProvider,
   ThemeProvider,
   ToastProvider,
-} from '@once-ui-system/core';
+} from '@once-ui-system/core/contexts';
 import '@once-ui-system/core/css/styles.css';
 import '@once-ui-system/core/css/tokens.css';
 import './globals.css';
@@ -56,6 +55,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        {/* Forced light theme: the prior `theme="system"` + `surface="translucent"`
+            combination dropped panels into a muddy 30% white over dark slate when
+            the OS preferred dark mode (see commit 35ed4f7). The OSM raster tiles
+            are light-only anyway. Dark mode requires proper tile switching first. */}
         <ThemeProvider
           theme="light"
           neutral="slate"

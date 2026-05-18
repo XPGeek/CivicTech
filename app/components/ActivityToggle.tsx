@@ -1,6 +1,6 @@
 'use client';
 
-import { SegmentedControl } from '@once-ui-system/core';
+import { SegmentedControl } from '@once-ui-system/core/components';
 import type { Activity } from '@lib/types';
 
 interface Props {
