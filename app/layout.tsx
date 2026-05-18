@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Background, Column } from '@once-ui-system/core/components';
+import { Column } from '@once-ui-system/core/components';
 import {
   IconProvider,
   LayoutProvider,
@@ -74,11 +74,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <IconProvider>
             <LayoutProvider>
               <ToastProvider>
-                <Background fillWidth style={{ minHeight: '100dvh' }}>
-                  <Column fillWidth style={{ minHeight: '100dvh' }}>
-                    {children}
-                  </Column>
-                </Background>
+                {/* Plain Column wrapper — once-ui's <Background> sets
+                    overflow: hidden on its root, which clips long pages
+                    (methodology / sources / about) to the viewport. */}
+                <Column fillWidth style={{ minHeight: '100dvh' }}>
+                  {children}
+                </Column>
                 <ServiceWorkerRegistration />
               </ToastProvider>
             </LayoutProvider>
