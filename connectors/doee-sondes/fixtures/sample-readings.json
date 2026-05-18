@@ -1,6 +1,6 @@
 [
   {
-    "station_id": "TODO-DOEE-ANA-LOWER",
+    "station_id": "ANA-LOWER-1",
     "observed_at": "2026-05-18T13:55:00Z",
     "turbidity_ntu": 12.0,
     "dissolved_oxygen_mgL": 7.8,
@@ -9,7 +9,7 @@
     "chlorophyll_ugL": 3.5
   },
   {
-    "station_id": "TODO-DOEE-ANA-MID",
+    "station_id": "ANA-MID-1",
     "observed_at": "2026-05-18T13:52:00Z",
     "turbidity_ntu": 28.0,
     "dissolved_oxygen_mgL": 6.4,
@@ -18,7 +18,7 @@
     "chlorophyll_ugL": 7.1
   },
   {
-    "station_id": "TODO-DOEE-POT-UPPER",
+    "station_id": "POT-UPPER-1",
     "observed_at": "2026-05-18T13:48:00Z",
     "turbidity_ntu": 4.0,
     "dissolved_oxygen_mgL": 8.6,

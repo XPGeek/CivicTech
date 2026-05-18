@@ -17,13 +17,13 @@ function makeContext(stationIds: string[]): ConnectorContext {
 
 describe('doee-sondes connector (fixture-backed)', () => {
   it('emits all five sonde parameters for declared stations', async () => {
-    const records = await doeeFetch(makeContext(['TODO-DOEE-ANA-LOWER']));
+    const records = await doeeFetch(makeContext(['ANA-LOWER-1']));
     const params = records.map((r) => r.parameter).sort();
     expect(params).toEqual(['chlorophyll', 'dissolved_oxygen', 'pH', 'turbidity', 'water_temp']);
   });
 
   it('respects canonical units', async () => {
-    const records = await doeeFetch(makeContext(['TODO-DOEE-POT-UPPER']));
+    const records = await doeeFetch(makeContext(['POT-UPPER-1']));
     const do_ = records.find((r) => r.parameter === 'dissolved_oxygen');
     const turb = records.find((r) => r.parameter === 'turbidity');
     expect(do_?.units).toBe('mg/L');
@@ -31,7 +31,7 @@ describe('doee-sondes connector (fixture-backed)', () => {
   });
 
   it('marks every reading as fresh relative to context.now()', async () => {
-    const records = await doeeFetch(makeContext(['TODO-DOEE-ANA-MID']));
+    const records = await doeeFetch(makeContext(['ANA-MID-1']));
     const ageMs = records.map(
       (r) => new Date('2026-05-18T14:00:00Z').getTime() - Date.parse(r.observed_at),
     );
@@ -43,7 +43,7 @@ describe('doee-sondes connector (fixture-backed)', () => {
   });
 
   it('emits provisional QC flag', async () => {
-    const records = await doeeFetch(makeContext(['TODO-DOEE-ANA-LOWER']));
+    const records = await doeeFetch(makeContext(['ANA-LOWER-1']));
     for (const r of records) {
       expect(r.qc_flag).toBe('provisional');
     }

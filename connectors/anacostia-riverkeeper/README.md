@@ -9,25 +9,59 @@
 | License | CC BY (Swim Guide), TBD for PDFs |
 | Active? | Yes upstream; **fixture-backed in this MVP** |
 
-> ⚠️ **Phase 2 spike pending.** This connector currently reads from a committed JSON fixture (`fixtures/sample-readings.json`) so the end-to-end pipeline and grading rubric can be exercised without depending on an unstable upstream. The shape of the connector — `meta`, `fetch(context)`, normalized `RawReading` intermediate — is identical to what a real implementation needs. Replacing the body of `fetchRaw()` with a real HTTP call is the entire upgrade path.
+> ⚠️ **Fixture-backed pending API key from Swim Drink Fish.** Phase 2 spike (2026-05-18) confirmed Anacostia Riverkeeper publishes weekly DC + biweekly MD bacterial results via the Swim Guide platform. The connector currently reads from a committed JSON fixture (`fixtures/sample-readings.json`) so the end-to-end pipeline exercises the bacterial-signal path. Replacing the body of `fetchRaw()` with a real HTTP call is the entire upgrade path once an API token is in hand.
 
 ## Replacement paths (in priority order)
 
-### Option A — Swim Guide open data (preferred)
+### Option A — Swim Guide v1 API (preferred)
 
-Anacostia Riverkeeper is a Swim Guide affiliate. Swim Drink Fish maintains an open-data convention at https://github.com/swimdrinkfish/opendata. The feed has historically been quiet on GitHub but the Swim Guide UI does surface current data per site. The Phase 2 spike should:
+Anacostia Riverkeeper is a Swim Guide affiliate. Spike findings (2026-05-18):
 
-1. Identify whether the open-data feed is current.
-2. If yes, fetch it and parse.
-3. If no, fall back to Option B and reach out to Swim Drink Fish about a feed.
+- Swim Guide exposes `https://www.theswimguide.org/api/v1/beach` — confirmed via WebFetch returning HTTP 401 Unauthorized (the endpoint exists but is auth-gated).
+- Their open-data **standards** repo (`github.com/swimdrinkfish/opendata`) is a spec, not a feed. Real data lives behind the API.
+- 8 Anacostia Riverkeeper Swim Guide stations are public:
 
-### Option B — PDF scrape (fallback)
+  | Station name | Jurisdiction |
+  |---|---|
+  | Anacostia Park | DC |
+  | Bladensburg Waterfront Park | MD-PG |
+  | Buzzard Point | DC |
+  | Hickey Run | DC |
+  | Kingman Lake | DC |
+  | Lower Beaverdam Creek | MD-PG |
+  | National Arboretum | DC |
+  | Northeast Branch at Campus Drive | MD-PG |
 
-Anacostia RK publishes a Friday water-quality PDF at https://www.anacostiariverkeeper.org/programs/water-quality-monitoring/. The fallback parser must:
+**Implementation outline:**
 
-- Match site names in the PDF against `data/sites.json` station IDs.
-- Extract E. coli (MPN/100mL), sample date, and any QC notes.
-- Emit a structured warning (not silently produce bad data) if the table layout changes year-to-year.
+```typescript
+async function fetchRaw(context: ConnectorContext): Promise<RawReading[]> {
+  const token = context.env.SWIM_GUIDE_API_TOKEN;
+  if (!token) {
+    context.log.warn('SWIM_GUIDE_API_TOKEN missing; falling back to fixture');
+    return readFixture();
+  }
+  // Per /api/v1/beach docs (to be obtained from Swim Drink Fish):
+  //   GET /api/v1/affiliates/anacostia-riverkeeper/beaches
+  //   Authorization: Token <token>
+  // Returns { beaches: [{ id, name, current_sample: { e_coli, taken_at, ... } }] }
+  // Map name → station_id in data/sites.json.
+}
+```
+
+**To obtain a token:** Email Gabrielle Parent-Doliner at gabrielle@swimdrinkfish.ca (per their public contact). The outreach template is in [`docs/outreach.md`](../../docs/outreach.md) § 3.1. They allocate keys for non-commercial civic projects.
+
+### Option B — Chesapeake Monitoring Cooperative (alternative)
+
+Anacostia RK's data is also accessible via CMC at `https://cmc.vims.edu/data-explorer`. Their UI does support filtered exports; an API path may exist but wasn't confirmed during the spike. Spike continuation: open browser DevTools on the CMC explorer and inspect the network tab while filtering by an ARK group ID.
+
+### Option C — PDF scrape (fallback)
+
+Anacostia RK publishes annual PDF reports (e.g., "2025 DC Water Quality Report") at https://www.anacostiariverkeeper.org/programs/water-quality-monitoring/. The page does **not** appear to publish weekly results as standalone PDFs — those go directly to Swim Guide. PDF scraping would only yield annual rollups, which are too stale for daily grading.
+
+### Option D — Direct request
+
+Their water-quality page links a "Request Data" form that grants access to their full dataset. This is the slowest path but the cleanest one for a long-term partnership; document the outreach in `docs/outreach-log.md` (gitignored).
 
 ## Cold outreach
 

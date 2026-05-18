@@ -1,0 +1,77 @@
+name: 🛟 Report an incorrect grade
+description: You went paddling and what you saw didn't match what our map said. Tell us.
+title: "[grade] "
+labels: ["grade-feedback", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Real-world ground-truth is the best calibration we have. Thank you for taking the time.
+
+  - type: input
+    id: site
+    attributes:
+      label: Which site?
+      description: The site name as it appears on our map, or a Google Maps link to the launch.
+      placeholder: "Buzzard Point Marina"
+    validations:
+      required: true
+
+  - type: input
+    id: when
+    attributes:
+      label: When were you there?
+      description: Date and approximate time. The closer to "right now" the more useful.
+      placeholder: "May 18, 2026, around 9:30 AM"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: app_said
+    attributes:
+      label: What did our app say at the time?
+      options:
+        - 🟢 Green — paddle-safe / swim-safe
+        - 🟡 Yellow — caution
+        - 🔴 Red — avoid
+        - ⬜ Gray — no data
+        - I don't remember
+    validations:
+      required: true
+
+  - type: dropdown
+    id: actual
+    attributes:
+      label: What did the water actually look like?
+      options:
+        - Clear, no visible issues — felt fine
+        - Murky / brown — but no obvious problem
+        - Strong smell — sewage or chemical
+        - Algal bloom (green / red / brown sheen)
+        - Trash, debris, dead fish
+        - I didn't get in but observed from shore
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: What did you see / smell / experience?
+      description: Be as specific as you can. Photos welcome (drag into the box).
+      placeholder: "The water near the ramp was the color of coffee, with a strong sewage smell. Lots of debris from yesterday's storm. I decided not to paddle."
+    validations:
+      required: true
+
+  - type: textarea
+    id: weather
+    attributes:
+      label: Recent weather (if you remember)
+      description: Heavy rain in the last 24-48 hours? Hot weather all week? Anything notable?
+      placeholder: "It rained hard Friday night, about 1.5 inches per my home gauge."
+
+  - type: input
+    id: app_version
+    attributes:
+      label: When you opened the app, what was the "last updated" timestamp on the card?
+      description: Helps us figure out whether the data was stale or just incorrect.
+      placeholder: "3 days ago, per the bacteria signal row"

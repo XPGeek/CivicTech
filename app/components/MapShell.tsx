@@ -28,13 +28,19 @@ export default function MapShell({ initialData }: Props) {
   const [data, setData] = useState<InitialData>(initialData);
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
 
+  const [refreshError, setRefreshError] = useState(false);
+
   // Refresh from the network on mount so a returning user gets the latest
   // grades without waiting for the next Cloudflare Pages deploy.
   useEffect(() => {
     let cancelled = false;
     Promise.all([fetchSites(), fetchGrades(), fetchManifest(), fetchSources()])
       .then(([sites, grades, manifest, sources]) => {
-        if (cancelled || !sites || !grades) return;
+        if (cancelled) return;
+        if (!sites || !grades) {
+          setRefreshError(true);
+          return;
+        }
         setData((prev) => ({
           sites,
           grades,
@@ -43,7 +49,7 @@ export default function MapShell({ initialData }: Props) {
         }));
       })
       .catch(() => {
-        // ignore — initialData already populated from the build
+        if (!cancelled) setRefreshError(true);
       });
     return () => {
       cancelled = true;
@@ -88,6 +94,14 @@ export default function MapShell({ initialData }: Props) {
     <div className="flex-1 flex flex-col">
       <Header />
       <StaleBanner manifest={data.manifest} />
+      {refreshError && (
+        <div
+          role="status"
+          className="bg-slate-100 border-b border-slate-300 text-slate-700 text-xs px-4 py-1"
+        >
+          Couldn&rsquo;t refresh data — showing the most recent build.
+        </div>
+      )}
       <div className="relative flex-1 flex flex-col md:flex-row">
         {/* Map */}
         <div className="relative flex-1 min-h-[60vh]">
@@ -119,6 +133,20 @@ export default function MapShell({ initialData }: Props) {
               activity={swimAllowed ? activity : 'paddle'}
               sources={data.sources}
             />
+          ) : data.sites.features.length === 0 ? (
+            <div className="p-4 text-sm text-slate-600 space-y-3">
+              <p className="font-medium text-slate-900">No sites loaded.</p>
+              <p>
+                If you&rsquo;re running this locally, the build pipeline hasn&rsquo;t run yet.
+                Try <code className="bg-slate-100 px-1 rounded">npm run pipeline</code> and
+                reload. See{' '}
+                <a href="/about" className="underline">
+                  the About page
+                </a>{' '}
+                if you&rsquo;re visiting the live site and seeing this — something is wrong with
+                our deploy.
+              </p>
+            </div>
           ) : (
             <div className="p-4 text-sm text-slate-600 space-y-3">
               <p>
@@ -126,7 +154,8 @@ export default function MapShell({ initialData }: Props) {
                 nearest site.
               </p>
               <p>
-                {data.sites.features.length} sites loaded
+                {data.sites.features.length} site
+                {data.sites.features.length === 1 ? '' : 's'} loaded
                 {data.manifest && (
                   <>
                     {' '}

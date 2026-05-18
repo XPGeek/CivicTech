@@ -1,0 +1,112 @@
+name: 🗺️ Suggest a launch site
+description: Tell us about a kayak / canoe / SUP / boat launch in the inner DMV that's missing from our map.
+title: "[site] "
+labels: ["site-suggestion", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping curate the catalog! No technical knowledge needed — just answer what you know.
+        We add sites that are **publicly accessible**, where **people actually launch**, within **DC + Arlington + Alexandria + Prince George's + Montgomery** counties.
+
+  - type: input
+    id: name
+    attributes:
+      label: Site name
+      description: What is this launch called locally? (e.g., "Anacostia Park boat ramp", "Hains Point", "Algonkian put-in")
+      placeholder: "Anacostia Park boat ramp"
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: A Google Maps link is perfect, or an approximate street address.
+      placeholder: "https://maps.google.com/?q=38.8895,-76.9711"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: river
+    attributes:
+      label: Which waterway is this on?
+      options:
+        - Anacostia River
+        - Potomac River
+        - Rock Creek
+        - Four Mile Run
+        - C&O Canal
+        - Lake / pond
+        - Other (please describe in notes)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: activities
+    attributes:
+      label: What activities is this site used for?
+      options:
+        - label: Kayak / canoe paddling
+        - label: Stand-up paddleboarding (SUP)
+        - label: Rowing
+        - label: Swimming (only in MD/VA — DC waters prohibit it)
+        - label: Fishing (note: we don't grade for fish consumption)
+
+  - type: dropdown
+    id: launch_type
+    attributes:
+      label: What kind of launch is it?
+      options:
+        - Paved ramp
+        - Gravel / packed-dirt ramp
+        - Dirt put-in (carry boats over a grassy / muddy bank)
+        - Dock
+        - Beach
+        - Seawall / ladder
+        - No infrastructure (people just get in)
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: parking
+    attributes:
+      label: Is there parking?
+      options:
+        - Yes, plenty
+        - Limited (a few spots)
+        - None — street parking only
+        - Not sure
+
+  - type: dropdown
+    id: fee
+    attributes:
+      label: Is there a launch fee or marina fee?
+      options:
+        - No, free public access
+        - Yes
+        - Not sure
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional notes
+      description: Anything else useful — accessibility, hours, signage, your most recent visit, hazards, etc.
+      placeholder: "I launched here on May 15, 2026 — the ramp was clean and parking was full by 9 AM."
+
+  - type: input
+    id: visited
+    attributes:
+      label: Have you personally launched from here? When?
+      placeholder: "Yes, May 15, 2026"
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Quick confirmation
+      options:
+        - label: This launch is publicly accessible (not a private dock or members-only marina).
+          required: true
+        - label: I've read the [Getting Started](https://github.com/sgiacinto/CivicTech/blob/main/GETTING_STARTED.md) intro.
+          required: false

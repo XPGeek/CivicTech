@@ -160,7 +160,13 @@ export default function Map({
     });
   }, [selectedSiteId, sites]);
 
-  return <div ref={containerRef} className="absolute inset-0" aria-label="Map of recreation sites" />;
+  return (
+    <div
+      ref={containerRef}
+      className="absolute inset-0 bg-slate-100"
+      aria-label="Map of recreation sites"
+    />
+  );
 }
 
 function labelFor(grade: 'green' | 'yellow' | 'red' | 'unknown'): string {

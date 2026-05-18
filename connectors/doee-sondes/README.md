@@ -9,13 +9,24 @@
 | License | Public (DC government open data) |
 | Active? | Yes upstream; **fixture-backed in this MVP** |
 
-> ⚠️ **Phase 2 spike pending.** DOEE's real-time sonde dashboard lives at https://doee.dc.gov/service/environmental-data-maps but the machine-readable export URL has not been confirmed in code yet. This is the source we are most uncertain about format-wise. The first Phase 2 task per [`ROADMAP.md`](../../ROADMAP.md) is a half-day spike to confirm the export pattern; until then this connector reads from a fixture so the grading rubric's sonde sanity-check path is exercised.
+> ⚠️ **Fixture-backed pending DOEE EQuIS query confirmation.** Phase 2 spike (2026-05-18) found that DC DOEE's real water-quality data flows through an **EQuIS Public Access portal** at https://dcdoeepub.equisonline.com/PUBLIC.html. The portal claims to contain "all of DOEE's water quality data dating from 2000" but its query/export pattern isn't documented externally; the next spike task is interactive (open DevTools, inspect network tab during a search, capture the underlying request URL). Until then this connector reads a fixture so the grading rubric's sonde-sanity path is exercised.
 
 ## Replacing the stub
 
 The data shape we need is one row per (station × timestamp) with turbidity, dissolved oxygen, water temperature, pH, and chlorophyll. Replace the body of `fetchRaw()` in `index.ts` with whatever HTTP fetch + parse logic DOEE's actual export requires.
 
 The downstream code is already shape-stable — once `fetchRaw` returns `RawSondeReading[]`, the rest works.
+
+### Spike continuation steps (for the next contributor)
+
+1. Open https://dcdoeepub.equisonline.com/PUBLIC.html in a browser with DevTools → Network tab.
+2. Run a query for a recent date range on the Anacostia River; capture the request URL.
+3. EQuIS portals are EarthSoft software; they often expose REST endpoints with query-string filters. Look for `/eqWebApi/` or `/EDP/` paths in the captured traffic.
+4. If the export is XLSX or CSV only, evaluate whether a scheduled download + parse pipeline is acceptable.
+
+### Alternative path
+
+If the EQuIS portal proves too complex, write a polite email to `doee.communications@dc.gov` per [`docs/outreach.md`](../../docs/outreach.md) § 3.2 asking which export pattern DOEE recommends for a non-commercial paddler-safety project. DOEE has historically been open to data partnerships for civic tech.
 
 ## What we pull
 

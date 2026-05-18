@@ -1,0 +1,48 @@
+name: ✅ Verify a site
+description: You physically visited a launch we list. Tell us what you saw so we can mark it verified.
+title: "[verify] "
+labels: ["site-verification", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every site on our map is marked unverified until someone (anyone!) physically confirms it. Your visit upgrades a site's trustworthiness.
+
+  - type: input
+    id: site
+    attributes:
+      label: Which site did you visit?
+      placeholder: "Bladensburg Waterfront Park"
+    validations:
+      required: true
+
+  - type: input
+    id: when
+    attributes:
+      label: When were you there?
+      placeholder: "May 15, 2026"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirm what's accurate about our listing
+      description: Tick what's still correct on our site detail page.
+      options:
+        - label: The launch exists and is publicly accessible.
+        - label: The launch type (ramp / dock / put-in / etc.) matches what I saw.
+        - label: Parking availability matches what we say.
+        - label: The launch fee (or lack thereof) matches what we say.
+
+  - type: textarea
+    id: corrections
+    attributes:
+      label: Anything that needs correcting?
+      placeholder: "Parking was limited, not 'available' — only 5 spots. The ramp was rebuilt last fall and is now paved (not gravel)."
+
+  - type: textarea
+    id: hazards
+    attributes:
+      label: Hazards or warnings worth noting?
+      placeholder: "The ramp gets very muddy after rain. There's a sewage outfall about 50 m upstream."

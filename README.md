@@ -12,29 +12,32 @@ We unify bacterial sampling from Riverkeeper networks, real-time DOEE sondes, US
 
 ## Status
 
-**MVP scaffolding landed (Phase 0–2 implemented, Phase 3 polish pending).**
+**Phase 2 landed (real-source spikes complete, site catalog expanded, contributor onboarding shipped).**
 
 What works today:
 
 - ✅ Next.js 14 App Router static export, MapLibre map with OSM raster tiles (token-free).
-- ✅ Five connectors wired up: USGS NWIS, NOAA precip, EPA ATTAINS (all real APIs); Anacostia Riverkeeper and DOEE sondes (fixture-backed, replacement path documented).
+- ✅ Five connectors wired up: USGS NWIS, NOAA precip, EPA ATTAINS (all real APIs); Anacostia Riverkeeper and DOEE sondes (fixture-backed, real integration paths confirmed by Phase 2 spike).
 - ✅ Deterministic grading rubric per [`GRADING.md`](./GRADING.md) — 17 tests covering all 5 worked examples + 12 edge cases.
 - ✅ Build pipeline: connectors → normalize → grade → emit `sites.geojson`, `grades.json`, `history/<id>.json`, `manifest.json`, `sources.json`.
-- ✅ 10 starter sites in `data/sites.json`, validated against the bounding box + DC swim prohibition.
+- ✅ **24 inner-DMV sites** in `data/sites.json`, validated against the bounding box + DC swim prohibition.
 - ✅ Site detail cards with grade hero, reason sentence, freshness-stamped signal breakdown, 30-day sparkline, source attribution, share button, deep-linkable `/site/<id>` pages.
 - ✅ Activity toggle (paddle ↔ swim) re-grades thresholds per FR-20.
 - ✅ Methodology, About, Sources pages + first-visit disclaimer interstitial.
 - ✅ PWA manifest + service worker (cache-first shell, network-first data).
 - ✅ GitHub Actions workflows: `ci.yml` (per-PR) and `connectors.yml` (scheduled cron).
+- ✅ GitHub issue templates for non-technical contributors (suggest a site, report an incorrect grade, verify a site, bug report, feature request).
+- ✅ Loading / refresh-error / empty / stale UI states.
+- ✅ [`GETTING_STARTED.md`](./GETTING_STARTED.md) onboarding guide for non-technical contributors.
 - ✅ 49 unit tests + sites validator + type-check all green.
 
 What's queued for Phase 3 polish:
 
+- Real Anacostia Riverkeeper data via Swim Guide API (token request pending — outreach plan in [`docs/outreach.md`](./docs/outreach.md) § 3.1).
+- Real DC DOEE sonde data via the EQuIS portal (next spike: interactive DevTools inspection).
+- Site catalog expansion 24 → ~50 (community-sourced via issue templates).
 - Production deploy on a real Cloudflare Pages + R2 setup (env vars + secrets — see [`CONTRIBUTING.md`](./CONTRIBUTING.md) § 9).
 - Legal review of the disclaimer copy.
-- Phase 2 spike on Anacostia Riverkeeper Swim Guide / PDF integration (fixture replaces this for now).
-- Phase 2 spike on DOEE sonde live export endpoint.
-- Add EPA Assessment Unit IDs to `data/sites.json` to light up the chronic-impairment badge.
 
 ---
 
@@ -66,7 +69,8 @@ For deeper testing and contribution guidance, see [`CONTRIBUTING.md`](./CONTRIBU
 
 | Doc | What it answers |
 |---|---|
-| [`CONTRIBUTING.md`](./CONTRIBUTING.md) | How to install, run, test, and extend the app. Start here. |
+| [`GETTING_STARTED.md`](./GETTING_STARTED.md) | Friendly intro for non-technical contributors — site curators, paddlers, neighbors. **Start here if you don't write code.** |
+| [`CONTRIBUTING.md`](./CONTRIBUTING.md) | How to install, run, test, and extend the app. Start here if you do. |
 | [`TESTING.md`](./TESTING.md) | Smoke tests, layered verification, troubleshooting. |
 | [`REQUIREMENTS.md`](./REQUIREMENTS.md) | Personas, user stories, functional + non-functional requirements, success metrics |
 | [`ROADMAP.md`](./ROADMAP.md) | Phased delivery plan with acceptance criteria per phase |

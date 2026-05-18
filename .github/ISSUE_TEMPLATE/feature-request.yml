@@ -1,0 +1,40 @@
+name: 💡 Feature request
+description: Suggest a new feature or improvement.
+title: "[feature] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing, please check [`ROADMAP.md`](https://github.com/sgiacinto/CivicTech/blob/main/ROADMAP.md) — your idea may already be planned. Items intentionally not in MVP scope are listed under "What we are explicitly NOT doing for MVP."
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Lead with the user need, not the implementation. ("Paddlers don't know whether…" beats "Add a button that…")
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: What's your suggested solution?
+      description: How would it work from a user's perspective?
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: Are there other ways to solve this problem? What's the simplest thing that could possibly work?
+
+  - type: dropdown
+    id: persona
+    attributes:
+      label: Which user persona does this serve?
+      description: See GETTING_STARTED.md § 2. Features that don't clearly serve a persona usually get deferred.
+      options:
+        - Maya — Saturday Morning Paddler (primary)
+        - Jay — New Paddler (secondary)
+        - Renee — Curious Citizen / Advocate (tertiary)
+        - Other / not sure

@@ -17,13 +17,13 @@ function makeContext(stationIds: string[]): ConnectorContext {
 
 describe('anacostia-riverkeeper connector (fixture-backed)', () => {
   it('emits four parameters per declared station', async () => {
-    const records = await arkFetch(makeContext(['TODO-ARK-BUZZARD']));
+    const records = await arkFetch(makeContext(['buzzard-point']));
     const params = records.map((r) => r.parameter).sort();
     expect(params).toEqual(['e_coli', 'pH', 'turbidity', 'water_temp']);
   });
 
   it('picks the most recent reading per station', async () => {
-    const records = await arkFetch(makeContext(['TODO-ARK-BUZZARD']));
+    const records = await arkFetch(makeContext(['buzzard-point']));
     const ecoli = records.find((r) => r.parameter === 'e_coli');
     // Latest fixture row has e_coli_mpn=95 dated 2026-05-15
     expect(ecoli?.value).toBe(95);
@@ -31,7 +31,7 @@ describe('anacostia-riverkeeper connector (fixture-backed)', () => {
   });
 
   it('emits canonical MPN/100mL units for E. coli', async () => {
-    const records = await arkFetch(makeContext(['TODO-ARK-BUZZARD']));
+    const records = await arkFetch(makeContext(['buzzard-point']));
     const ecoli = records.find((r) => r.parameter === 'e_coli');
     expect(ecoli?.units).toBe('MPN/100mL');
   });
@@ -42,11 +42,11 @@ describe('anacostia-riverkeeper connector (fixture-backed)', () => {
       sites: [
         {
           id: 'site-a',
-          stations: [{ source_id: 'anacostia-riverkeeper', station_id: 'TODO-ARK-BUZZARD' }],
+          stations: [{ source_id: 'anacostia-riverkeeper', station_id: 'buzzard-point' }],
         },
         {
           id: 'site-b',
-          stations: [{ source_id: 'anacostia-riverkeeper', station_id: 'TODO-ARK-BUZZARD' }],
+          stations: [{ source_id: 'anacostia-riverkeeper', station_id: 'buzzard-point' }],
         },
       ],
     };
@@ -56,7 +56,7 @@ describe('anacostia-riverkeeper connector (fixture-backed)', () => {
   });
 
   it('skips stations not present in the fixture', async () => {
-    const records = await arkFetch(makeContext(['TODO-ARK-NONEXISTENT']));
+    const records = await arkFetch(makeContext(['does-not-exist-in-fixture']));
     expect(records).toEqual([]);
   });
 

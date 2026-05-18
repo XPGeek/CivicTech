@@ -2,6 +2,8 @@
 
 This guide is for anyone — human or agent — who wants to run, test, debug, or extend the app. If anything below is wrong, file an issue or a PR; the docs are part of the product.
 
+> **Not a coder?** Read [`GETTING_STARTED.md`](./GETTING_STARTED.md) instead. It explains how to suggest sites, report incorrect grades, and help with outreach — no command line required.
+
 > **One-line summary.** Clone, `npm install`, `npm run pipeline`, `npm run dev`. The map should render on http://localhost:3000.
 
 ---
