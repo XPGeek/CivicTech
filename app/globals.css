@@ -82,30 +82,41 @@ body {
   text-underline-offset: 3px;
 }
 
-/* Map + side panel: stacked on mobile, side-by-side on tablet+. */
+/* Map + side panel: stacked on mobile (bottom sheet), side-by-side
+   on tablet+. The parent <main> has height: 100dvh, so percentage and
+   flex sizing here are anchored to the viewport. */
 .map-and-panel {
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.map-area {
+  flex: 1;
+  min-height: 320px;
 }
 .detail-panel {
   background: #ffffff;
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   max-width: 100%;
   overflow-y: auto;
-  max-height: 60vh;
+  max-height: 45vh;
 }
 @media (min-width: 768px) {
   .map-and-panel {
     flex-direction: row;
   }
+  .map-area {
+    flex: 1;
+    min-height: 0;
+  }
   .detail-panel {
     width: 420px;
+    flex-shrink: 0;
     max-width: 420px;
     border-left: 1px solid rgba(15, 23, 42, 0.08);
     border-top: none;
     max-height: none;
-  }
-  .map-area {
-    min-height: 0 !important;
+    height: 100%;
   }
 }
 

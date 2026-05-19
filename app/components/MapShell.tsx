@@ -109,7 +109,7 @@ export default function MapShell({ initialData }: Props) {
       >
         <Column
           className="map-area"
-          style={{ flex: 1, position: 'relative', minHeight: '60vh' }}
+          style={{ position: 'relative' }}
           aria-label="Interactive map"
         >
           <SiteMap
