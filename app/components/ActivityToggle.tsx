@@ -21,9 +21,14 @@ export default function ActivityToggle({ activity, onChange, swimAllowed }: Prop
     <Column
       gap="4"
       padding="8"
-      radius="full"
       horizontal="center"
       style={{
+        // Concentric corners: outer = inner-button arc (15px = 30/2) + padding (8).
+        // Once-ui's `radius="full"` resolves to 14985px which makes the outer card
+        // a stadium shape based on its taller height, so its visible arc was ~34px
+        // — visibly mismatched against the inner 15px arc. 23px keeps the corners
+        // architecturally aligned.
+        borderRadius: 23,
         background: '#ffffff',
         border: '1px solid rgba(15, 23, 42, 0.12)',
         boxShadow: '0 12px 32px -10px rgba(15, 23, 42, 0.35)',
