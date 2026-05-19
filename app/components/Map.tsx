@@ -37,13 +37,23 @@ function buildStyle(): maplibregl.StyleSpecification {
   const useMapbox =
     process.env.NEXT_PUBLIC_MAP_STYLE === 'mapbox' && !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
   if (useMapbox) {
+    // Raster tiles at 512px @2x for sharp text on retina. MapLibre can't
+    // consume Mapbox's vector style URL directly because the v8 spec
+    // includes a top-level `name` property MapLibre rejects.
     return {
       version: 8,
       sources: {
         mapbox: {
           type: 'raster',
+          // mapbox/outdoors-v12 has the right palette for a paddler app:
+          // bluer water, greener parks, hiking + boat-launch icons surfaced.
+          // streets-v12 is the safe default but renders too light for our DMV
+          // viewport which is mostly residential. Override via the
+          // NEXT_PUBLIC_MAPBOX_STYLE env var if needed.
           tiles: [
-            `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`,
+            `https://api.mapbox.com/styles/v1/mapbox/${
+              process.env.NEXT_PUBLIC_MAPBOX_STYLE || 'outdoors-v12'
+            }/tiles/512/{z}/{x}/{y}@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`,
           ],
           tileSize: 512,
           attribution: '© Mapbox © OpenStreetMap contributors',
@@ -91,15 +101,37 @@ export default function SiteMap({
   }, [onUserLocate]);
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return;
+    const container = containerRef.current;
+    if (!container || mapRef.current) return;
     const map = new maplibregl.Map({
-      container: containerRef.current,
+      container,
       style: buildStyle(),
       ...DEFAULT_VIEW,
       attributionControl: { compact: true },
+      // Default is `window.devicePixelRatio` but some embeddings (Next.js
+      // dev previews, headless screenshots) report 1 at construction. Force
+      // the real DPR so retina screens get the full-res @2x tiles painted
+      // sharp instead of downsampled.
+      pixelRatio:
+        typeof window !== 'undefined' && window.devicePixelRatio
+          ? window.devicePixelRatio
+          : 1,
     });
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     mapRef.current = map;
+
+    // MapLibre measures the container once at construction and never
+    // remeasures unless the *window* resizes (per its trackResize default).
+    // Layout reflow inside our flex grid doesn't trigger it. The fix is a
+    // stack of resize hooks:
+    //   1. ResizeObserver for runtime reflow (sidebar opens, viewport rotate).
+    //   2. `load` event resize so the canvas snaps to size as soon as the
+    //      style finishes loading.
+    //   3. A short setTimeout backstop for environments where (2) misses.
+    const ro = new ResizeObserver(() => map.resize());
+    ro.observe(container);
+    map.on('load', () => map.resize());
+    const resizeTimer = window.setTimeout(() => map.resize(), 400);
 
     const geo = new maplibregl.GeolocateControl({
       positionOptions: { enableHighAccuracy: false, timeout: 6000 },
@@ -120,6 +152,8 @@ export default function SiteMap({
     });
 
     return () => {
+      ro.disconnect();
+      clearTimeout(resizeTimer);
       markersRef.current.forEach(({ marker }) => marker.remove());
       markersRef.current.clear();
       map.remove();
