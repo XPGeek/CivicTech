@@ -19,12 +19,8 @@ export default function ErrorBoundary({
     <Column as="main" fillWidth fillHeight horizontal="center" vertical="center" padding="24">
       <Card padding="32" radius="l" gap="16" direction="column" style={{ maxWidth: 28 * 16 }}>
         <Column gap="8">
-          <Text
-            variant="label-default-s"
-            onBackground="danger-medium"
-            style={{ letterSpacing: '0.12em' }}
-          >
-            SOMETHING BROKE
+          <Text variant="label-default-s" onBackground="danger-medium" className="eyebrow">
+            Something broke
           </Text>
           <Heading variant="heading-strong-l">Hmm, that wasn&rsquo;t supposed to happen.</Heading>
           <Text variant="body-default-m" onBackground="neutral-medium">

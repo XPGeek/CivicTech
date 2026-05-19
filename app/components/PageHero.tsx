@@ -16,11 +16,7 @@ interface Props {
 export default function PageHero({ eyebrow, title, lede, meta }: Props) {
   return (
     <Column gap="16" paddingBottom="16">
-      <Text
-        variant="label-default-s"
-        onBackground="brand-medium"
-        style={{ letterSpacing: '0.12em' }}
-      >
+      <Text variant="label-default-s" onBackground="brand-medium" className="eyebrow">
         {eyebrow}
       </Text>
       <Heading variant="display-strong-l" wrap="balance">

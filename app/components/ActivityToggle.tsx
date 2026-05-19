@@ -31,14 +31,14 @@ export default function ActivityToggle({ activity, onChange, swimAllowed }: Prop
         borderRadius: 23,
         background: '#ffffff',
         border: '1px solid rgba(15, 23, 42, 0.12)',
-        boxShadow: '0 12px 32px -10px rgba(15, 23, 42, 0.35)',
+        boxShadow: 'var(--shadow-lg)',
       }}
     >
       <Text
         variant="label-default-xs"
         onBackground="neutral-weak"
         paddingTop="4"
-        style={{ letterSpacing: '0.1em', textTransform: 'uppercase' }}
+        className="eyebrow"
       >
         Activity
       </Text>
@@ -82,12 +82,12 @@ function PillButton({ active, disabled, onClick, children }: PillButtonProps) {
         border: 'none',
         cursor: disabled ? 'not-allowed' : 'pointer',
         background: active ? '#0f172a' : 'transparent',
-        color: active ? '#ffffff' : disabled ? 'rgba(15,23,42,0.35)' : '#0f172a',
+        color: active ? '#ffffff' : disabled ? 'rgba(15, 23, 42, 0.35)' : '#0f172a',
         fontWeight: active ? 600 : 500,
         fontSize: '14px',
         lineHeight: 1,
         padding: '8px 18px',
-        borderRadius: 999,
+        borderRadius: 'var(--r-pill)',
         transition: 'background 120ms ease-out, color 120ms ease-out',
       }}
     >

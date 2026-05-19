@@ -156,8 +156,8 @@ export default function MapShell({ initialData }: Props) {
           ) : (
             <Column padding="20" gap="16">
               <Column gap="8">
-                <Text variant="label-default-s" onBackground="brand-medium">
-                  PICK A LAUNCH
+                <Text variant="label-default-s" onBackground="brand-medium" className="eyebrow">
+                  Pick a launch
                 </Text>
                 <Text variant="heading-strong-m" onBackground="neutral-strong">
                   Tap a pin to see today&rsquo;s grade.

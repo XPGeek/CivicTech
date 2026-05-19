@@ -92,8 +92,12 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
         Conditions can change between samples. Use your own judgment.
       </Text>
 
-      <Column gap="4">
-        <Text variant="label-default-s" onBackground="neutral-strong">
+      <Column gap="8">
+        <Text
+          variant="label-default-xs"
+          onBackground="neutral-weak"
+          className="eyebrow"
+        >
           Signals
         </Text>
         <Column>
@@ -111,14 +115,22 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
       </Column>
 
       <Column gap="8">
-        <Text variant="label-default-s" onBackground="neutral-strong">
+        <Text
+          variant="label-default-xs"
+          onBackground="neutral-weak"
+          className="eyebrow"
+        >
           30-day history
         </Text>
         <Sparkline siteId={site.id} />
       </Column>
 
-      <Card padding="16" radius="m" gap="8" direction="column">
-        <Text variant="label-default-s" onBackground="neutral-strong">
+      <Card padding="16" radius="m" gap="12" direction="column">
+        <Text
+          variant="label-default-xs"
+          onBackground="neutral-weak"
+          className="eyebrow"
+        >
           Site details
         </Text>
         <Row gap="8" wrap>
@@ -146,8 +158,12 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
         )}
       </Card>
 
-      <Column gap="4">
-        <Text variant="label-default-s" onBackground="neutral-strong">
+      <Column gap="8">
+        <Text
+          variant="label-default-xs"
+          onBackground="neutral-weak"
+          className="eyebrow"
+        >
           Sources
         </Text>
         {contributingSources.length === 0 ? (
@@ -155,17 +171,18 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
             No sources contributed fresh data to this grade.
           </Text>
         ) : (
-          <Column gap="2">
+          <Column gap="8">
             {contributingSources.map((s) => (
-              <Text key={s.id} variant="body-default-xs" onBackground="neutral-medium">
-                <strong>{s.name}</strong>
+              <Column key={s.id} gap="2">
+                <Text variant="body-default-s" onBackground="neutral-strong">
+                  {s.name}
+                </Text>
                 {s.last_updated && (
-                  <Text as="span" variant="body-default-xs" onBackground="neutral-weak">
-                    {' '}
-                    · updated {new Date(s.last_updated).toLocaleString()}
+                  <Text variant="body-default-xs" onBackground="neutral-weak">
+                    Updated {new Date(s.last_updated).toLocaleString()}
                   </Text>
                 )}
-              </Text>
+              </Column>
             ))}
           </Column>
         )}
