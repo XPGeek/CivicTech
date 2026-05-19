@@ -8,6 +8,48 @@ This document catalogs every data source we use or plan to use, with the enginee
 
 ## MVP flagship sources
 
+### 🟢 USGS Water Quality Portal (WQP)
+
+| Field | Value |
+|---|---|
+| Connector | `connectors/usgs-wqp/` |
+| Phase | 4 |
+| Cadence | Weekly |
+| Auth | None |
+| Format | CSV |
+| License | Public domain (federal aggregator of state agency lab data) |
+| Endpoint | `https://www.waterqualitydata.us/data/Result/search` |
+
+**What we pull:** lab-measured **E. coli** and **enterococcus** samples for every USGS station declared by a site. WQP is the federal aggregator of every public water-quality sample taken in the US — for our stations it republishes MD DNR, VA DEQ, DC DOEE, and USGS NWIS sampling.
+
+**Reuses NWIS station declarations.** Anywhere a site has `{ source_id: "usgs-nwis", station_id: "..." }`, this connector queries the same station against the WQP corpus — no extra declarations needed in `data/sites.json`.
+
+**Known lag.** State agencies upload to WQP with a 1–6 month lag. We pull a 3-year lookback and keep only the freshest sample per (station × parameter). When fresher samples land in WQP, they're picked up on the next weekly build.
+
+**Strengths:** federally authoritative, no key, free, covers the entire US.
+
+**Risks:** the freshest WQP sample may be months old, in which case the rubric marks the bacteria signal as stale. Use alongside (eventually) Swim Guide for fresh weekly readings.
+
+### 🟢 NOAA Tides & Currents (CO-OPS)
+
+| Field | Value |
+|---|---|
+| Connector | `connectors/noaa-tides/` |
+| Phase | 4 |
+| Cadence | Hourly |
+| Auth | None |
+| Format | JSON |
+| License | Public domain (federal) |
+| Endpoint | `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter` |
+
+**What we pull:** real-time **water level** readings at the NOAA CO-OPS Washington station (`8594900`) and any other CO-OPS station declared by a site. Emitted as `gauge_height` in feet (NAVD datum).
+
+**Stations of interest:**
+- `8594900` — Washington, DC (Potomac at SW Waterfront). Covers every tidal site inside the DMV.
+- `8635150` — Solomons, MD. Useful for southern Potomac sites.
+
+**Use.** Tide data is contextual on the detail card; it doesn't drive the grading verdict today. Future iterations can use it to compute "next high tide" for paddle-planning copy.
+
 ### 🟢 USGS National Water Information System (NWIS)
 
 | Field | Value |

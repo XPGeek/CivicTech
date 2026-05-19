@@ -1,19 +1,32 @@
-import Link from 'next/link';
+import { Button, Column, Heading, Text } from '@once-ui-system/core/components';
 import Header from '../../components/Header';
 
 export default function NotFound() {
   return (
-    <main className="flex-1">
+    <Column as="main" fillWidth horizontal="center">
       <Header />
-      <div className="max-w-md mx-auto p-6 text-center">
-        <h1 className="text-2xl font-bold text-slate-900">Site not found</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          That site isn't in our catalog. It may have been removed, or the link could be a typo.
-        </p>
-        <Link href="/" className="inline-block mt-4 px-4 py-2 rounded bg-slate-900 text-white no-underline">
+      <Column
+        maxWidth={28}
+        paddingX="24"
+        paddingY="64"
+        gap="16"
+        horizontal="center"
+        align="center"
+      >
+        <Text variant="label-default-s" onBackground="neutral-weak">
+          404
+        </Text>
+        <Heading variant="display-strong-m" align="center">
+          That launch isn&rsquo;t on our map.
+        </Heading>
+        <Text variant="body-default-m" onBackground="neutral-medium" align="center">
+          It may have been removed, or the link is a typo. Head back to the map to find the
+          launches we cover.
+        </Text>
+        <Button variant="primary" href="/" arrowIcon>
           Back to map
-        </Link>
-      </div>
-    </main>
+        </Button>
+      </Column>
+    </Column>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { Button, Column, Dialog, Text } from '@once-ui-system/core/components';
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'dmv-water-watch.disclaimer-acked';
@@ -11,11 +12,9 @@ export default function DisclaimerInterstitial() {
     try {
       if (!window.localStorage.getItem(STORAGE_KEY)) setOpen(true);
     } catch {
-      // ignore
+      // Safari private mode and friends — fall back to assuming acked.
     }
   }, []);
-
-  if (!open) return null;
 
   const close = () => {
     try {
@@ -27,30 +26,27 @@ export default function DisclaimerInterstitial() {
   };
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="disclaimer-heading"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-3"
+    <Dialog
+      isOpen={open}
+      onClose={close}
+      title="Before you head out"
+      description="Five-second context before you trust the grade."
+      footer={
+        <Button variant="primary" onClick={close} fillWidth>
+          Got it — show me the map
+        </Button>
+      }
     >
-      <div className="bg-white rounded-t-xl sm:rounded-xl max-w-md w-full p-5 shadow-xl">
-        <h2 id="disclaimer-heading" className="text-lg font-semibold text-slate-900">
-          Before you use this app
-        </h2>
-        <p className="mt-2 text-sm text-slate-700 leading-relaxed">
+      <Column gap="12">
+        <Text variant="body-default-m" onBackground="neutral-medium">
           DMV Water Watch shows water-quality grades aggregated from federal and local sources.
           These grades are <strong>informational, not a safety guarantee</strong>. Conditions can
-          change between samples — observe posted signage and use your own judgment. Swimming is
-          prohibited in DC waters.
-        </p>
-        <button
-          type="button"
-          onClick={close}
-          className="mt-4 w-full min-h-[44px] rounded bg-slate-900 text-white font-medium"
-        >
-          I understand
-        </button>
-      </div>
-    </div>
+          change between samples — observe posted signage and use your own judgment.
+        </Text>
+        <Text variant="body-default-s" onBackground="neutral-weak">
+          Swimming is prohibited in DC waters except during permitted events.
+        </Text>
+      </Column>
+    </Dialog>
   );
 }

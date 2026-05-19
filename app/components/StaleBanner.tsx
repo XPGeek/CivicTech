@@ -1,5 +1,6 @@
 'use client';
 
+import { Banner, Button, Row, Text } from '@once-ui-system/core/components';
 import { useEffect, useState } from 'react';
 import { formatFreshness } from '@lib/format';
 import type { Manifest } from '@lib/types';
@@ -14,7 +15,6 @@ export default function StaleBanner({ manifest }: Props) {
   const [dismissed, setDismissed] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
 
-  // Avoid hydration mismatch: only compute "now" after mount.
   useEffect(() => {
     setNow(new Date());
   }, []);
@@ -24,20 +24,25 @@ export default function StaleBanner({ manifest }: Props) {
   if (ageHours < STALE_AFTER_HOURS) return null;
 
   return (
-    <div
+    <Banner
       role="status"
-      className="bg-amber-50 border-b border-amber-300 text-amber-900 text-sm px-4 py-2 flex items-center gap-2"
+      paddingX="16"
+      paddingY="12"
+      gap="12"
+      vertical="center"
+      horizontal="between"
+      background="warning-alpha-weak"
+      borderTop="warning-alpha-medium"
+      borderBottom="warning-alpha-medium"
     >
-      <span className="flex-1">
-        Data may be delayed — last successful refresh: {formatFreshness(manifest.built_at, now)}.
-      </span>
-      <button
-        type="button"
-        onClick={() => setDismissed(true)}
-        className="text-amber-900 underline"
-      >
+      <Row gap="8" vertical="center" fillWidth>
+        <Text variant="body-default-s" onBackground="warning-strong">
+          Data may be delayed — last successful refresh {formatFreshness(manifest.built_at, now)}.
+        </Text>
+      </Row>
+      <Button variant="tertiary" size="s" onClick={() => setDismissed(true)}>
         Dismiss
-      </button>
-    </div>
+      </Button>
+    </Banner>
   );
 }

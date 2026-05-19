@@ -1,166 +1,182 @@
+import { Card, Column, Heading, Row, Text } from '@once-ui-system/core/components';
 import Header from '../components/Header';
-import { GRADE_PIN_SVG } from '@lib/grade-style';
+import PageHero from '../components/PageHero';
+import GradePin from '../components/GradePin';
+import { GRADE_DESCRIPTIONS, GRADE_LABELS } from '@lib/grade-style';
+import type { Grade } from '@lib/types';
 
 export const metadata = {
-  title: 'Methodology — DMV Water Watch',
+  title: 'How we grade the water',
   description:
-    'How we compute each site\'s grade: bacterial samples, 48-hour rainfall, DOEE sondes, EPA impairment status.',
+    'Bacteria, rainfall, sondes, and impairment — the four signals behind every DMV Water Watch grade.',
 };
 
 export default function MethodologyPage() {
   return (
-    <main className="flex-1">
+    <Column as="main" fillWidth horizontal="center">
       <Header />
-      <article className="max-w-2xl mx-auto p-4 prose prose-slate prose-sm sm:prose-base">
-        <h1>How grades are calculated</h1>
-        <p>
-          Every site receives one of four grades: <strong>green</strong>, <strong>yellow</strong>,{' '}
-          <strong>red</strong>, or <strong>unknown</strong>. Each grade is computed by a
-          deterministic rubric that takes four kinds of signals and combines them in a fixed
-          order. There is no machine learning, no proprietary scoring; you can audit the algorithm
-          in <code>grading/v1.ts</code> of our repository.
-        </p>
+      <Column maxWidth={36} paddingX="24" paddingY="48" gap="40" fillWidth as="article">
+        <PageHero
+          eyebrow="METHODOLOGY"
+          title="How we grade the water."
+          lede="Every site gets one of four grades. No machine learning, no proprietary scoring. The rubric is open source — read it, fork it, argue with it."
+        />
 
-        <h2>The four signals</h2>
-        <ul>
-          <li>
-            <strong>Bacteria</strong> — single-sample E. coli or enterococcus from Anacostia
-            Riverkeeper or DOEE labs, within the past 7 days. The primary signal.
-          </li>
-          <li>
-            <strong>Rainfall</strong> — 48-hour precipitation total from the nearest NOAA station.
-          </li>
-          <li>
-            <strong>Real-time sonde</strong> — DOEE YSI sondes report turbidity, dissolved
-            oxygen, and water temperature every 15 minutes.
-          </li>
-          <li>
-            <strong>Chronic impairment</strong> — EPA's How's My Waterway assessment shown as a
-            badge but not used in the daily verdict.
-          </li>
-        </ul>
-
-        <h2>Activity thresholds</h2>
-        <p>
-          We use EPA's 2012 Recreational Water Quality Criteria thresholds, applied per activity:
-        </p>
-        <table>
-          <thead>
-            <tr>
-              <th>Activity</th>
-              <th>E. coli pass (MPN/100mL)</th>
-              <th>Enterococcus pass (MPN/100mL)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Paddle / row / SUP (secondary contact)</td>
-              <td>≤ 575</td>
-              <td>≤ 130</td>
-            </tr>
-            <tr>
-              <td>Swim (primary contact)</td>
-              <td>≤ 235</td>
-              <td>≤ 70</td>
-            </tr>
-          </tbody>
-        </table>
-        <p>
-          A reading up to <strong>2× the pass threshold</strong> shows as <em>caution</em>.
-          Higher shows as <em>fail</em>.
-        </p>
-
-        <h2>Rainfall override</h2>
-        <p>
-          Heavy rain stirs up bacteria and triggers combined-sewer overflows (CSOs). We override
-          the bacteria signal as follows, but only if the rainfall fell <em>after</em> the most
-          recent bacterial sample:
-        </p>
-        <ul>
-          <li>≥ 0.5 inches in 48 hours → at least caution</li>
-          <li>≥ 1.0 inch in 48 hours → red regardless of bacteria</li>
-        </ul>
-
-        <h2>Sonde sanity check</h2>
-        <p>
-          DOEE's real-time sensors can downgrade a passing site to caution if something looks
-          off — turbidity above 50 NTU, dissolved oxygen below 5 mg/L, or water temperature
-          above 32 °C. They <em>cannot</em> push a passing site to red except when dissolved
-          oxygen collapses below 3 mg/L (a real health and wildlife indicator).
-        </p>
-
-        <h2>What the grades mean</h2>
-        <ul className="not-prose space-y-3 mt-3">
-          <li className="flex gap-3 items-start">
-            <span
-              className="flex-shrink-0"
-              aria-hidden
-              dangerouslySetInnerHTML={{ __html: GRADE_PIN_SVG.green }}
+        <Column gap="24">
+          <Heading variant="heading-strong-l" as="h2">
+            The four signals
+          </Heading>
+          <Row gap="12" wrap>
+            <SignalCard
+              title="Bacteria"
+              body="Single-sample E. coli or enterococcus from Anacostia Riverkeeper or DOEE labs, within the past 7 days. This is the primary signal."
             />
-            <span>
-              <strong>Green / Paddle-safe</strong> — bacteria are within the activity threshold,
-              there's no recent rain, and (when sondes are present) real-time sensors look normal.
-            </span>
-          </li>
-          <li className="flex gap-3 items-start">
-            <span
-              className="flex-shrink-0"
-              aria-hidden
-              dangerouslySetInnerHTML={{ __html: GRADE_PIN_SVG.yellow }}
+            <SignalCard
+              title="Rainfall"
+              body="48-hour precipitation from the nearest NOAA station. Heavy rain stirs up bacteria and triggers CSOs."
             />
-            <span>
-              <strong>Yellow / Caution</strong> — one signal is elevated above the safety band but
-              hasn't crossed the fail threshold. Read the reason sentence on the detail card.
-            </span>
-          </li>
-          <li className="flex gap-3 items-start">
-            <span
-              className="flex-shrink-0"
-              aria-hidden
-              dangerouslySetInnerHTML={{ __html: GRADE_PIN_SVG.red }}
+            <SignalCard
+              title="Real-time sondes"
+              body="DOEE's YSI sondes report turbidity, dissolved oxygen, and water temp every 15 minutes."
             />
-            <span>
-              <strong>Red / Avoid</strong> — bacteria exceed safe levels for this activity, or
-              heavy rainfall makes recent values unreliable, or dissolved oxygen has collapsed.
-            </span>
-          </li>
-          <li className="flex gap-3 items-start">
-            <span
-              className="flex-shrink-0"
-              aria-hidden
-              dangerouslySetInnerHTML={{ __html: GRADE_PIN_SVG.unknown }}
+            <SignalCard
+              title="Chronic impairment"
+              body="EPA's How's My Waterway listing — context, not verdict. Surfaces as a badge on the card."
             />
-            <span>
-              <strong>Unknown</strong> — no fresh data is available for this site right now. Try
-              again later or check directly with the site operator.
-            </span>
-          </li>
-        </ul>
+          </Row>
+        </Column>
 
-        <h2>What this rubric is not</h2>
-        <ul>
-          <li>
-            Not a regulatory threshold. EPA and state regulators use 30-day geometric means for
-            assessment. Our single-sample approach is appropriate for daily decisions, not for
-            legal compliance reporting.
-          </li>
-          <li>
-            Not a guarantee. Lab samples are point-in-time. We cannot detect a sewer overflow
-            that happened 20 minutes ago.
-          </li>
-          <li>
-            Not a substitute for posted advisories. If the site has a posted "No Swimming" sign,
-            the sign wins.
-          </li>
-          <li>Not predictive. We do not forecast tomorrow's grade.</li>
-        </ul>
+        <Column gap="16">
+          <Heading variant="heading-strong-l" as="h2">
+            Activity thresholds
+          </Heading>
+          <Text variant="body-default-m" onBackground="neutral-medium">
+            EPA 2012 Recreational Water Quality Criteria, applied per activity:
+          </Text>
+          <Card padding="16" radius="m">
+            <Column gap="12">
+              <Row horizontal="between">
+                <Text variant="label-default-s" onBackground="neutral-strong">
+                  Paddle / row / SUP
+                </Text>
+                <Text variant="body-default-s" onBackground="neutral-medium">
+                  ≤ 575 MPN/100mL E. coli
+                </Text>
+              </Row>
+              <Row horizontal="between">
+                <Text variant="label-default-s" onBackground="neutral-strong">
+                  Swim
+                </Text>
+                <Text variant="body-default-s" onBackground="neutral-medium">
+                  ≤ 235 MPN/100mL E. coli
+                </Text>
+              </Row>
+            </Column>
+          </Card>
+          <Text variant="body-default-s" onBackground="neutral-weak">
+            Up to 2× the pass threshold shows as caution. Higher shows as fail.
+          </Text>
+        </Column>
 
-        <h2>Versioning</h2>
-        <p>
-          The current rubric is <strong>v1</strong>. Any change to thresholds or logic requires a
-          new ADR in our public repository.
-        </p>
-      </article>
-    </main>
+        <Column gap="16">
+          <Heading variant="heading-strong-l" as="h2">
+            Rainfall override
+          </Heading>
+          <Text variant="body-default-m" onBackground="neutral-medium">
+            Heavy rain dominates everything else — only if it fell <em>after</em> the most recent
+            bacterial sample:
+          </Text>
+          <Column gap="8">
+            <Text variant="body-default-s">
+              <strong>≥ 0.5&Prime; in 48 hours</strong> → at least caution.
+            </Text>
+            <Text variant="body-default-s">
+              <strong>≥ 1.0&Prime; in 48 hours</strong> → red regardless of bacteria.
+            </Text>
+          </Column>
+        </Column>
+
+        <Column gap="16">
+          <Heading variant="heading-strong-l" as="h2">
+            Sonde sanity check
+          </Heading>
+          <Text variant="body-default-m" onBackground="neutral-medium">
+            Real-time sensors can <em>downgrade</em> a passing site to caution if turbidity is
+            above 50 NTU, dissolved oxygen below 5 mg/L, or water temp above 32 °C. They never
+            push a passing site to red — except on dissolved-oxygen collapse below 3 mg/L, which
+            is a real wildlife and health indicator.
+          </Text>
+        </Column>
+
+        <Column gap="16">
+          <Heading variant="heading-strong-l" as="h2">
+            What the grades mean
+          </Heading>
+          <Column gap="12">
+            {(Object.keys(GRADE_DESCRIPTIONS) as Grade[]).map((g) => (
+              <Card key={g} padding="16" radius="m">
+                <Row gap="16" vertical="center">
+                  <GradePin grade={g} size={36} />
+                  <Column gap="4" fillWidth>
+                    <Text variant="label-default-m" onBackground="neutral-strong">
+                      {GRADE_LABELS[g]}
+                    </Text>
+                    <Text variant="body-default-s" onBackground="neutral-medium">
+                      {GRADE_DESCRIPTIONS[g]}
+                    </Text>
+                  </Column>
+                </Row>
+              </Card>
+            ))}
+          </Column>
+        </Column>
+
+        <Column gap="12">
+          <Heading variant="heading-strong-l" as="h2">
+            What this rubric is not
+          </Heading>
+          <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+            <li>
+              <Text variant="body-default-m" onBackground="neutral-medium">
+                Not regulatory. EPA uses 30-day geometric means for assessment. We use single
+                samples because you&rsquo;re deciding about <em>today</em>.
+              </Text>
+            </li>
+            <li>
+              <Text variant="body-default-m" onBackground="neutral-medium">
+                Not a guarantee. We can&rsquo;t detect a sewer overflow that happened 20 minutes
+                ago.
+              </Text>
+            </li>
+            <li>
+              <Text variant="body-default-m" onBackground="neutral-medium">
+                Not a substitute for posted signs. If the launch has a &ldquo;no swimming&rdquo;
+                sign, the sign wins.
+              </Text>
+            </li>
+            <li>
+              <Text variant="body-default-m" onBackground="neutral-medium">
+                Not predictive. We do not forecast tomorrow.
+              </Text>
+            </li>
+          </ul>
+        </Column>
+      </Column>
+    </Column>
+  );
+}
+
+function SignalCard({ title, body }: { title: string; body: string }) {
+  return (
+    <Card padding="16" radius="m" style={{ flex: '1 1 240px', minWidth: 240 }}>
+      <Column gap="8">
+        <Text variant="label-default-m" onBackground="brand-medium">
+          {title}
+        </Text>
+        <Text variant="body-default-s" onBackground="neutral-medium">
+          {body}
+        </Text>
+      </Column>
+    </Card>
   );
 }

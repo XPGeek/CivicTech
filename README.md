@@ -12,11 +12,12 @@ We unify bacterial sampling from Riverkeeper networks, real-time DOEE sondes, US
 
 ## Status
 
-**Phase 3 polish landed (everything that doesn't need an API key).** Drop in a Swim Guide token + Cloudflare account to publish.
+**Phase 4 landed — design + stack refresh.** Once UI System for the UI language, Next.js 16 + React 19 under the hood. Drop in a Swim Guide token + Cloudflare account to publish.
 
 What works today:
 
-- ✅ Next.js 14 App Router static export, MapLibre map with OSM raster tiles (token-free).
+- ✅ Next.js 16 App Router on React 19, MapLibre 5 map with OSM raster tiles (token-free).
+- ✅ Once UI System (`@once-ui-system/core`) as the design language — typography, layout primitives, surfaces, dialog, banner, segmented control.
 - ✅ Five connectors wired up: USGS NWIS, NOAA precip, EPA ATTAINS (all real APIs); Anacostia Riverkeeper and DOEE sondes (fixture-backed, real integration paths confirmed by Phase 2 spike).
 - ✅ Deterministic grading rubric per [`GRADING.md`](./GRADING.md) — 17 tests covering all 5 worked examples + 12 edge cases.
 - ✅ Build pipeline: connectors → normalize → grade → emit `sites.geojson`, `grades.json`, `history/<id>.json`, `manifest.json`, `sources.json`.

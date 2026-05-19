@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import type { RefObject } from 'react';
 import maplibregl, { Map as MapLibreMap, Marker } from 'maplibre-gl';
 import type { Activity, Grade, SitesGeoJson } from '@lib/types';
 import { GRADE_PIN_SVG } from '@lib/grade-style';
@@ -11,6 +12,8 @@ interface MapProps {
   selectedSiteId: string | null;
   onSelect: (id: string) => void;
   onUserLocate?: (coords: [number, number]) => void;
+  /** Receives a `trigger()` so the parent can fire geolocate from a CTA. */
+  triggerGeolocateRef?: RefObject<(() => void) | null>;
 }
 
 interface MarkerEntry {
@@ -34,13 +37,23 @@ function buildStyle(): maplibregl.StyleSpecification {
   const useMapbox =
     process.env.NEXT_PUBLIC_MAP_STYLE === 'mapbox' && !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
   if (useMapbox) {
+    // Raster tiles at 512px @2x for sharp text on retina. MapLibre can't
+    // consume Mapbox's vector style URL directly because the v8 spec
+    // includes a top-level `name` property MapLibre rejects.
     return {
       version: 8,
       sources: {
         mapbox: {
           type: 'raster',
+          // mapbox/outdoors-v12 has the right palette for a paddler app:
+          // bluer water, greener parks, hiking + boat-launch icons surfaced.
+          // streets-v12 is the safe default but renders too light for our DMV
+          // viewport which is mostly residential. Override via the
+          // NEXT_PUBLIC_MAPBOX_STYLE env var if needed.
           tiles: [
-            `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`,
+            `https://api.mapbox.com/styles/v1/mapbox/${
+              process.env.NEXT_PUBLIC_MAPBOX_STYLE || 'outdoors-v12'
+            }/tiles/512/{z}/{x}/{y}@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`,
           ],
           tileSize: 512,
           attribution: '© Mapbox © OpenStreetMap contributors',
@@ -71,14 +84,13 @@ export default function SiteMap({
   selectedSiteId,
   onSelect,
   onUserLocate,
+  triggerGeolocateRef,
 }: MapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const markersRef = useRef<Map<string, MarkerEntry>>(new Map());
   const previousSelectedRef = useRef<string | null>(null);
 
-  // Latest callbacks stashed in refs so the marker effect doesn't re-run when
-  // a parent re-renders and passes a new closure.
   const onSelectRef = useRef(onSelect);
   const onUserLocateRef = useRef(onUserLocate);
   useEffect(() => {
@@ -88,17 +100,38 @@ export default function SiteMap({
     onUserLocateRef.current = onUserLocate;
   }, [onUserLocate]);
 
-  // Boot the map once.
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) return;
+    const container = containerRef.current;
+    if (!container || mapRef.current) return;
     const map = new maplibregl.Map({
-      container: containerRef.current,
+      container,
       style: buildStyle(),
       ...DEFAULT_VIEW,
       attributionControl: { compact: true },
+      // Default is `window.devicePixelRatio` but some embeddings (Next.js
+      // dev previews, headless screenshots) report 1 at construction. Force
+      // the real DPR so retina screens get the full-res @2x tiles painted
+      // sharp instead of downsampled.
+      pixelRatio:
+        typeof window !== 'undefined' && window.devicePixelRatio
+          ? window.devicePixelRatio
+          : 1,
     });
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     mapRef.current = map;
+
+    // MapLibre measures the container once at construction and never
+    // remeasures unless the *window* resizes (per its trackResize default).
+    // Layout reflow inside our flex grid doesn't trigger it. The fix is a
+    // stack of resize hooks:
+    //   1. ResizeObserver for runtime reflow (sidebar opens, viewport rotate).
+    //   2. `load` event resize so the canvas snaps to size as soon as the
+    //      style finishes loading.
+    //   3. A short setTimeout backstop for environments where (2) misses.
+    const ro = new ResizeObserver(() => map.resize());
+    ro.observe(container);
+    map.on('load', () => map.resize());
+    const resizeTimer = window.setTimeout(() => map.resize(), 400);
 
     const geo = new maplibregl.GeolocateControl({
       positionOptions: { enableHighAccuracy: false, timeout: 6000 },
@@ -107,7 +140,10 @@ export default function SiteMap({
     });
     map.addControl(geo, 'top-right');
 
-    // The geolocate event payload follows the standard GeolocationPosition shape.
+    if (triggerGeolocateRef) {
+      triggerGeolocateRef.current = () => geo.trigger();
+    }
+
     geo.on('geolocate', (e) => {
       const pos = e as unknown as GeolocationPosition;
       if (pos?.coords) {
@@ -116,16 +152,16 @@ export default function SiteMap({
     });
 
     return () => {
+      ro.disconnect();
+      clearTimeout(resizeTimer);
       markersRef.current.forEach(({ marker }) => marker.remove());
       markersRef.current.clear();
       map.remove();
       mapRef.current = null;
+      if (triggerGeolocateRef) triggerGeolocateRef.current = null;
     };
-  }, []);
+  }, [triggerGeolocateRef]);
 
-  // Build or update markers when sites or the active activity change. Selection
-  // styling is applied by a separate effect so selecting a pin doesn't churn
-  // the entire marker layer.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -158,7 +194,6 @@ export default function SiteMap({
       el.className = 'pin';
       el.type = 'button';
       el.style.cursor = 'pointer';
-      el.setAttribute('aria-label', `${props.name}, ${GRADE_LABEL[grade]} for ${activity}`);
       el.innerHTML = GRADE_PIN_SVG[grade];
       el.addEventListener('click', (event) => {
         event.stopPropagation();
@@ -168,11 +203,13 @@ export default function SiteMap({
       const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
         .setLngLat([feature.geometry.coordinates[0], feature.geometry.coordinates[1]])
         .addTo(map);
+      // MapLibre's addTo overrides aria-label with its default "Map marker"
+      // string. Reset ours after so screen readers say the site name.
+      el.setAttribute('aria-label', `${props.name}, ${GRADE_LABEL[grade]} for ${activity}`);
       existing.set(props.id, { marker, el });
     }
   }, [sites, activity]);
 
-  // Selection styling: only touch the two affected elements per change.
   useEffect(() => {
     const prevId = previousSelectedRef.current;
     if (prevId !== selectedSiteId) {
@@ -193,11 +230,5 @@ export default function SiteMap({
     });
   }, [selectedSiteId, sites]);
 
-  return (
-    <div
-      ref={containerRef}
-      className="absolute inset-0 bg-slate-100"
-      aria-label="Map of recreation sites"
-    />
-  );
+  return <div ref={containerRef} className="map-canvas" aria-label="Map of recreation sites" />;
 }
