@@ -19,14 +19,6 @@ interface ChartDatum {
   reason: string;
 }
 
-const SKELETON_STYLE: React.CSSProperties = {
-  height: 64,
-  width: '100%',
-  borderRadius: 'var(--r-sm)',
-  background: 'var(--neutral-alpha-weak, rgba(15, 23, 42, 0.06))',
-  animation: 'pulse 1.4s ease-in-out infinite',
-};
-
 export default function Sparkline({ siteId }: Props) {
   const [points, setPoints] = useState<HistoryPoint[] | null>(null);
 
@@ -55,7 +47,7 @@ export default function Sparkline({ siteId }: Props) {
   }, [points]);
 
   if (!points) {
-    return <div aria-label="Loading history" style={SKELETON_STYLE} />;
+    return <div className="skeleton" aria-label="Loading history" />;
   }
 
   if (points.length === 0) {
@@ -97,7 +89,7 @@ export default function Sparkline({ siteId }: Props) {
           <Tooltip
             cursor={{ fill: 'rgba(15, 23, 42, 0.05)' }}
             contentStyle={{
-              borderRadius: 8,
+              borderRadius: 'var(--r-sm)',
               border: '1px solid rgba(15, 23, 42, 0.08)',
               boxShadow: 'var(--shadow-md)',
               fontSize: 12,

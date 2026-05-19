@@ -1,5 +1,6 @@
 import { Column, Heading, Text } from '@once-ui-system/core/components';
 import type { ReactNode } from 'react';
+import Eyebrow from './Eyebrow';
 
 interface Props {
   eyebrow: string;
@@ -16,9 +17,7 @@ interface Props {
 export default function PageHero({ eyebrow, title, lede, meta }: Props) {
   return (
     <Column gap="16" paddingBottom="16">
-      <Text variant="label-default-s" onBackground="brand-medium" className="eyebrow">
-        {eyebrow}
-      </Text>
+      <Eyebrow tone="brand">{eyebrow}</Eyebrow>
       <Heading variant="display-strong-l" wrap="balance">
         {title}
       </Heading>

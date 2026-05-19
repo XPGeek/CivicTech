@@ -10,22 +10,16 @@ import type {
   SitePinProperties,
   SourceSummary,
 } from '@lib/types';
+import Eyebrow from './Eyebrow';
 import GradeHero from './GradeHero';
 import SignalRow from './SignalRow';
 
 // Recharts is heavy (~70 KB gzipped); keep it out of the initial bundle.
+// The placeholder shares the `.skeleton` class with Sparkline's own loading
+// state so the module-loading and data-loading phases look identical.
 const Sparkline = dynamic(() => import('./Sparkline'), {
   ssr: false,
-  loading: () => (
-    <div
-      aria-label="Loading history"
-      style={{
-        height: 64,
-        background: 'var(--neutral-alpha-weak, rgba(15,23,42,0.06))',
-        borderRadius: 8,
-      }}
-    />
-  ),
+  loading: () => <div className="skeleton" aria-label="Loading history" />,
 });
 
 interface Props {
@@ -93,13 +87,9 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
       </Text>
 
       <Column gap="8">
-        <Text
-          variant="label-default-xs"
-          onBackground="neutral-weak"
-          className="eyebrow"
-        >
+        <Eyebrow>
           Signals
-        </Text>
+        </Eyebrow>
         <Column>
           <SignalRow label="Bacteria" signal={grade.signals.bacteria} computedAt={grade.computed_at} />
           <SignalRow label="Rainfall (48h)" signal={grade.signals.rainfall} computedAt={grade.computed_at} />
@@ -115,24 +105,16 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
       </Column>
 
       <Column gap="8">
-        <Text
-          variant="label-default-xs"
-          onBackground="neutral-weak"
-          className="eyebrow"
-        >
+        <Eyebrow>
           30-day history
-        </Text>
+        </Eyebrow>
         <Sparkline siteId={site.id} />
       </Column>
 
       <Card padding="16" radius="m" gap="12" direction="column">
-        <Text
-          variant="label-default-xs"
-          onBackground="neutral-weak"
-          className="eyebrow"
-        >
+        <Eyebrow>
           Site details
-        </Text>
+        </Eyebrow>
         <Row gap="8" wrap>
           <Tag size="s" variant="neutral">
             {site.launch_type.replace(/-/g, ' ')}
@@ -159,13 +141,9 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
       </Card>
 
       <Column gap="8">
-        <Text
-          variant="label-default-xs"
-          onBackground="neutral-weak"
-          className="eyebrow"
-        >
+        <Eyebrow>
           Sources
-        </Text>
+        </Eyebrow>
         {contributingSources.length === 0 ? (
           <Text variant="body-default-xs" onBackground="neutral-weak">
             No sources contributed fresh data to this grade.

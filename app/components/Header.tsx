@@ -41,9 +41,7 @@ export default function Header() {
                 height: 12,
                 borderRadius: 'var(--r-pill)',
                 background: 'linear-gradient(135deg, #10b981, #06b6d4)',
-                // Soft brand-tinted halo — same idea as --shadow-sm but
-                // recolored to the cyan-emerald gradient so the dot reads
-                // as "lit from within."
+                // Brand-tinted halo (not a drop shadow — it's part of the mark).
                 boxShadow: '0 0 0 3px rgba(16, 185, 129, 0.18)',
               }}
             />
