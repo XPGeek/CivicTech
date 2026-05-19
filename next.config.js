@@ -6,6 +6,9 @@ const nextConfig = {
   output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
   images: { unoptimized: true },
   trailingSlash: false,
+  // Move the Next.js dev floating "N" indicator out of the bottom-left, where
+  // our ActivityToggle lives in dev. Production builds don't show it.
+  devIndicators: { position: 'bottom-right' },
   // Some once-ui modules ship as ESM source; let Next compile them.
   transpilePackages: ['@once-ui-system/core'],
   env: {
