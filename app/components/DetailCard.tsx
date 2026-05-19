@@ -81,7 +81,12 @@ export default function DetailCard({ site, grade, activity, sources, standalone 
         )}
       </Column>
 
-      <GradeHero grade={grade.grade} activity={activity} reason={grade.reason} />
+      <GradeHero
+        grade={grade.grade}
+        activity={activity}
+        reason={grade.reason}
+        stale={grade.stale ?? false}
+      />
 
       <Text variant="body-default-xs" onBackground="neutral-weak">
         Conditions can change between samples. Use your own judgment.

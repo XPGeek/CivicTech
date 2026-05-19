@@ -23,6 +23,10 @@ export interface SitePinProperties {
   fee: boolean;
   grade_paddle: Grade;
   grade_swim: Grade;
+  /** True when the bacteria signal is past the 7-day freshness window. The
+   *  grade is the threshold-based verdict from the last known sample. */
+  stale_paddle: boolean;
+  stale_swim: boolean;
   reason_paddle: string | null;
   reason_swim: string | null;
   notes: string | null;

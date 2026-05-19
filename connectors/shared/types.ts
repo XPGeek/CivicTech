@@ -186,6 +186,14 @@ export interface GradeOutput {
   grade: Grade;
   computed_at: string;
   reason: string;
+  /**
+   * True when the grade was computed from bacteria older than the 7-day
+   * freshness window (still within a 30-day "recent enough to show with a
+   * caveat" window). The grade itself is the threshold-based verdict that
+   * the stale reading implies; consumers should render it muted and surface
+   * the age. Grades older than 30 days fall through to `grade: 'unknown'`.
+   */
+  stale?: boolean;
   signals: {
     bacteria?: SignalState;
     rainfall?: SignalState;

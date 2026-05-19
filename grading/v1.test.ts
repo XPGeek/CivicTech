@@ -219,6 +219,45 @@ describe('signal freshness windows', () => {
     expect(result.signals.bacteria?.status).toBe('stale');
   });
 
+  it('bacteria 8-30 days old still drives a stale grade (not unknown)', () => {
+    // 14-day-old E. coli at 50 MPN — well under paddle threshold (575) and
+    // 30-day grace window. Should emit a green grade flagged stale, not gray.
+    const records: NormalizedRecord[] = [
+      r({ parameter: 'e_coli', value: 50, observed_at: hoursAgo(14 * 24) }),
+    ];
+    const result = gradeSite({ site_id: 's', records, now: NOW, activity: 'paddle' });
+    expect(result.grade).toBe('green');
+    expect(result.stale).toBe(true);
+    expect(result.reason).toMatch(/14 days ago/);
+  });
+
+  it('stale bacteria over the threshold yields a stale red grade', () => {
+    const records: NormalizedRecord[] = [
+      r({ parameter: 'e_coli', value: 2000, observed_at: hoursAgo(20 * 24) }),
+    ];
+    const result = gradeSite({ site_id: 's', records, now: NOW, activity: 'paddle' });
+    expect(result.grade).toBe('red');
+    expect(result.stale).toBe(true);
+  });
+
+  it('bacteria older than 90 days falls back to unknown', () => {
+    const records: NormalizedRecord[] = [
+      r({ parameter: 'e_coli', value: 50, observed_at: hoursAgo(120 * 24) }),
+    ];
+    const result = gradeSite({ site_id: 's', records, now: NOW, activity: 'paddle' });
+    expect(result.grade).toBe('unknown');
+    expect(result.stale).toBeFalsy();
+  });
+
+  it('fresh bacteria still drives a non-stale grade', () => {
+    const records: NormalizedRecord[] = [
+      r({ parameter: 'e_coli', value: 50, observed_at: hoursAgo(48) }),
+    ];
+    const result = gradeSite({ site_id: 's', records, now: NOW, activity: 'paddle' });
+    expect(result.grade).toBe('green');
+    expect(result.stale).toBeFalsy();
+  });
+
   it('sonde older than 4 hours is excluded from sanity check', () => {
     const records: NormalizedRecord[] = [
       r({ parameter: 'e_coli', value: 50, observed_at: hoursAgo(48) }),

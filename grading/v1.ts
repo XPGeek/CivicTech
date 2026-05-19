@@ -34,6 +34,13 @@ const BACTERIAL_THRESHOLDS: Record<Activity, { e_coli: number; enterococcus: num
 
 const HOURS = 3600_000;
 const BACTERIA_MAX_AGE_HOURS = 7 * 24;
+// Bacteria older than the 7-day freshness window but newer than 90 days still
+// drive a "last-known" grade — shown faded on the map with a "sampled N days
+// ago" caveat. The 90-day window covers federal WQP's typical 1-3 month
+// upload lag while still excluding readings old enough to predate a full
+// season's rainfall + temperature pattern. Older than 90 days, the site
+// falls back to unknown.
+const BACTERIA_STALE_GRACE_HOURS = 90 * 24;
 const SONDE_MAX_AGE_HOURS = 4;
 const RAINFALL_MAX_AGE_HOURS = 6;
 
@@ -68,13 +75,14 @@ export function gradeSite(input: GradingInput): GradeOutput {
   const rainfallState = computeRainfallState(rainfall, bacteria, now);
   const sonde = collectSonde(records, now);
 
-  const { verdict, dominant, outOfSeason } = combine(bacteriaState, rainfallState, sonde);
+  const { verdict, dominant, outOfSeason, stale } = combine(bacteriaState, rainfallState, sonde);
   const reason = composeReason(dominant, {
     bacteriaState,
     rainfallState,
     sonde,
     activity,
     outOfSeason,
+    stale,
   });
 
   const signals: GradeOutput['signals'] = {};
@@ -96,6 +104,7 @@ export function gradeSite(input: GradingInput): GradeOutput {
     grade: verdict,
     computed_at: now.toISOString(),
     reason,
+    stale,
     signals,
     activity,
   };
@@ -110,6 +119,12 @@ interface BacteriaState {
   reading?: NormalizedRecord;
   /** True when bacteria signal is missing or stale. */
   stale: boolean;
+  /**
+   * The threshold-based pass/caution/fail that the stale reading implies.
+   * Set only when bacteria is stale but within the 30-day grace window, so
+   * the rubric can emit a faded grade rather than gray "unknown."
+   */
+  staleVerdict?: 'pass' | 'caution' | 'fail';
 }
 
 function computeBacteriaState(
@@ -126,7 +141,19 @@ function computeBacteriaState(
   }
 
   const age = ageHours(bacteria.observed_at, now);
+  // `pickFreshest` filtered to ['e_coli', 'enterococcus'], so the parameter is
+  // guaranteed to be one of the bacterial keys.
+  const param = bacteria.parameter as 'e_coli' | 'enterococcus';
+  const threshold = BACTERIAL_THRESHOLDS[activity][param];
+  const thresholdVerdict =
+    bacteria.value <= threshold ? 'pass' : bacteria.value <= 2 * threshold ? 'caution' : 'fail';
+
   if (age > BACTERIA_MAX_AGE_HOURS) {
+    // Within the 30-day grace window: the reading is past freshness but recent
+    // enough that the threshold-based verdict still carries informational value.
+    // The frontend renders it faded; we surface the implied verdict here so the
+    // pin shows a color rather than gray. Past 30 days, fall back to "stale".
+    const within_grace = age <= BACTERIA_STALE_GRACE_HOURS;
     return {
       state: {
         status: 'stale',
@@ -138,15 +165,11 @@ function computeBacteriaState(
       status: 'stale',
       reading: bacteria,
       stale: true,
+      staleVerdict: within_grace ? thresholdVerdict : undefined,
     };
   }
 
-  // `pickFreshest` filtered to ['e_coli', 'enterococcus'], so the parameter is
-  // guaranteed to be one of the bacterial keys.
-  const param = bacteria.parameter as 'e_coli' | 'enterococcus';
-  const threshold = BACTERIAL_THRESHOLDS[activity][param];
-  const status: SignalStatus =
-    bacteria.value <= threshold ? 'pass' : bacteria.value <= 2 * threshold ? 'caution' : 'fail';
+  const status: SignalStatus = thresholdVerdict;
 
   return {
     state: {
@@ -319,16 +342,33 @@ function combine(
   bacteria: BacteriaState,
   rainfall: RainfallState,
   sonde: SondeState,
-): { verdict: Grade; dominant: Dominant; outOfSeason: boolean } {
+): { verdict: Grade; dominant: Dominant; outOfSeason: boolean; stale: boolean } {
   // Out-of-season: bacteria stale/missing but sonde fresh AND healthy.
   const outOfSeason =
     bacteria.stale &&
     sonde.worstStatus !== 'missing' &&
     sonde.worstStatus !== 'fail';
 
-  // No fresh signal anywhere → unknown.
+  // No fresh signal anywhere — but bacteria within the 30-day grace window can
+  // still imply a (stale) grade. The frontend renders it faded with a "sampled
+  // N days ago" caveat.
   if (bacteria.stale && sonde.worstStatus === 'missing') {
-    return { verdict: 'unknown', dominant: 'unknown', outOfSeason: false };
+    if (bacteria.staleVerdict) {
+      const verdict: Grade =
+        bacteria.staleVerdict === 'pass'
+          ? 'green'
+          : bacteria.staleVerdict === 'caution'
+            ? 'yellow'
+            : 'red';
+      const dominant: Dominant =
+        bacteria.staleVerdict === 'pass'
+          ? 'bacteria_pass'
+          : bacteria.staleVerdict === 'caution'
+            ? 'bacteria_caution'
+            : 'bacteria_fail';
+      return { verdict, dominant, outOfSeason: false, stale: true };
+    }
+    return { verdict: 'unknown', dominant: 'unknown', outOfSeason: false, stale: false };
   }
 
   // Start from the worst of bacteria + rainfall (only counting rainfall when it
@@ -385,7 +425,7 @@ function combine(
     dominant = 'bacteria_pass';
   }
 
-  return { verdict, dominant, outOfSeason };
+  return { verdict, dominant, outOfSeason, stale: false };
 }
 
 function composeReason(
@@ -396,21 +436,32 @@ function composeReason(
     sonde: SondeState;
     activity: Activity;
     outOfSeason: boolean;
+    stale: boolean;
   },
 ): string {
   const activityLabel = ctx.activity === 'paddle' ? 'paddling' : 'swimming';
+  // Stale verdicts get a "last sampled N days ago" prefix so the caveat
+  // is the first thing the user reads.
+  const ageDays = Math.max(
+    0,
+    Math.round((ctx.bacteriaState.state.freshness_age_hours ?? 0) / 24),
+  );
+  const stalePrefix = ctx.stale
+    ? `Last sampled ${ageDays} day${ageDays === 1 ? '' : 's'} ago. `
+    : '';
   switch (dominant) {
     case 'bacteria_pass':
+      if (ctx.stale) return `${stalePrefix}At that time, bacteria were within the safe band.`;
       return ctx.sonde.worstStatus === 'pass'
         ? 'Bacteria low; no recent rain; real-time sensors look normal.'
         : 'Bacteria low; no recent rain affecting this site.';
     case 'bacteria_caution':
+      if (ctx.stale)
+        return `${stalePrefix}At that time, bacteria were above the ${activityLabel} threshold.`;
       return `Bacteria are elevated above the ${activityLabel} threshold but below the fail band.`;
     case 'bacteria_fail': {
-      const ageDays = Math.max(
-        0,
-        Math.round((ctx.bacteriaState.state.freshness_age_hours ?? 0) / 24),
-      );
+      if (ctx.stale)
+        return `${stalePrefix}At that time, bacteria exceeded safe levels for ${activityLabel}.`;
       return `Bacteria exceed safe levels for ${activityLabel} (last sampled ${ageDays} day${ageDays === 1 ? '' : 's'} ago).`;
     }
     case 'rainfall_caution': {
