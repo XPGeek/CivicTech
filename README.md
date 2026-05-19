@@ -12,14 +12,15 @@ We unify bacterial sampling from Riverkeeper networks, real-time DOEE sondes, US
 
 ## Status
 
-**Phase 4 landed — design + stack refresh.** Once UI System for the UI language, Next.js 16 + React 19 under the hood. Drop in a Swim Guide token + Cloudflare account to publish.
+**Phase 5 landed — keyless-data unlock + UI cohesion.** A functional MVP is on the branch. Drop in a Swim Guide token + Cloudflare account to publish.
 
 What works today:
 
-- ✅ Next.js 16 App Router on React 19, MapLibre 5 map with OSM raster tiles (token-free).
-- ✅ Once UI System (`@once-ui-system/core`) as the design language — typography, layout primitives, surfaces, dialog, banner, segmented control.
-- ✅ Five connectors wired up: USGS NWIS, NOAA precip, EPA ATTAINS (all real APIs); Anacostia Riverkeeper and DOEE sondes (fixture-backed, real integration paths confirmed by Phase 2 spike).
-- ✅ Deterministic grading rubric per [`GRADING.md`](./GRADING.md) — 17 tests covering all 5 worked examples + 12 edge cases.
+- ✅ Next.js 16 App Router on React 19, MapLibre 5 with Mapbox `outdoors-v12` raster tiles (falls back to OSM, both token paths supported).
+- ✅ Once UI System (`@once-ui-system/core`) as the design language, with a tokenized radius/shadow/eyebrow scale in `app/globals.css`.
+- ✅ **Seven connectors** wired up — USGS NWIS, USGS Water Quality Portal (regional bbox query, ~250 monitoring stations auto-discovered and snapped to nearest launch via haversine), NOAA precip, NOAA Tides & Currents, EPA How's My Waterway (all real APIs); Anacostia Riverkeeper and DC DOEE sondes (fixture-backed, real integration paths confirmed by Phase 2 spike).
+- ✅ Deterministic grading rubric per [`GRADING.md`](./GRADING.md) — 21 tests covering all 5 worked examples, 12 edge cases, and the 7/30/90-day staleness windows.
+- ✅ Stale-grade pin variant: bacteria past the 7-day freshness window but within 90 days drives a faded "last known" verdict instead of plain gray.
 - ✅ Build pipeline: connectors → normalize → grade → emit `sites.geojson`, `grades.json`, `history/<id>.json`, `manifest.json`, `sources.json`.
 - ✅ **34 inner-DMV sites** in `data/sites.json`, validated against the bounding box + DC swim prohibition.
 - ✅ Site detail cards with grade hero, reason sentence, freshness-stamped signal breakdown, 30-day sparkline, source attribution, share button, deep-linkable `/site/<id>` pages.
@@ -28,7 +29,7 @@ What works today:
 - ✅ PWA manifest + service worker (cache-first shell, network-first data).
 - ✅ GitHub Actions workflows: `ci.yml` (per-PR) and `connectors.yml` (scheduled cron).
 - ✅ GitHub issue templates for non-technical contributors (suggest a site, report an incorrect grade, verify a site, bug report, feature request).
-- ✅ Loading / refresh-error / empty / stale UI states.
+- ✅ Loading / refresh-error / empty / stale UI states; design tokens + `Eyebrow` component documented in `app/components/`.
 - ✅ React error boundary + Sentry-ready wiring (drop in `NEXT_PUBLIC_SENTRY_DSN`).
 - ✅ Recharts-based 30-day grade history on every detail card.
 - ✅ Per-site Open Graph + Twitter card meta (deep-link previews).
@@ -36,12 +37,13 @@ What works today:
 - ✅ Lighthouse CI on every PR (current scores: desktop 93 perf / 96 a11y / 100 best-practices / 100 SEO).
 - ✅ Operational runbook at [`docs/runbook.md`](./docs/runbook.md).
 - ✅ [`GETTING_STARTED.md`](./GETTING_STARTED.md) onboarding guide for non-technical contributors.
-- ✅ 49 unit tests + sites validator + type-check all green.
+- ✅ **70 unit tests** + sites validator + type-check all green.
 
 What's queued for actual launch:
 
 - Real Anacostia Riverkeeper data via Swim Guide API (token request pending — outreach plan in [`docs/outreach.md`](./docs/outreach.md) § 3.1).
 - Real DC DOEE sonde data via the EQuIS portal (next spike: interactive DevTools inspection on dcdoeepub.equisonline.com).
+- EPA HMW assessment-unit IDs verified against ATTAINS (currently HTTP 422 because the AU strings in `data/sites.json` haven't been confirmed).
 - Site catalog expansion 34 → ~50 (community-sourced via issue templates).
 - Production deploy on a real Cloudflare Pages + R2 setup (env vars + secrets — see [`CONTRIBUTING.md`](./CONTRIBUTING.md) § 9).
 - Legal review of the disclaimer copy.
@@ -59,9 +61,9 @@ npm run pipeline           # fetch + grade + write artifacts (≈3 sec)
 npm run dev                # http://localhost:3000
 ```
 
-Open the browser. You should see ~10 colored pins across the inner DMV. Tap one to see its grade, reasoning, and 30-day history.
+Open the browser. You should see 34 pins across the inner DMV — a mix of green/yellow/red where bacterial data is fresh, faded "last-known" pins where it's stale, and dashed gray pins where no signal exists yet. Tap one to see its grade, reasoning, and 30-day history.
 
-No API keys or accounts are required for local dev. The default map style is OpenStreetMap raster, served token-free.
+No API keys or accounts are required for local dev. The default map style is OpenStreetMap raster, served token-free; drop a Mapbox token into `.env.local` (see `.env.example`) for the higher-quality `outdoors-v12` style.
 
 For deeper testing and contribution guidance, see [`CONTRIBUTING.md`](./CONTRIBUTING.md) and [`TESTING.md`](./TESTING.md).
 
@@ -95,8 +97,8 @@ For deeper testing and contribution guidance, see [`CONTRIBUTING.md`](./CONTRIBU
 ```bash
 npm run dev              # start the dev server
 npm run pipeline         # regenerate public/data/ from all connectors
-npm test                 # run unit tests (49 tests)
-npm run grading:test     # only the grading-rubric tests (17 tests)
+npm test                 # run unit tests (70 tests)
+npm run grading:test     # only the grading-rubric tests (21 tests)
 npm run validate:sites   # lint data/sites.json
 npm run typecheck        # tsc --noEmit
 npm run build            # pipeline + production static export to out/

@@ -92,14 +92,17 @@ If you want to look at the *code* (you don't have to install anything to browse 
 
 ## 5. What's the project's status?
 
-We use a four-phase plan:
+A working MVP is on the branch. The full phase history:
 
 - **Phase 0 — Foundations.** Empty Next.js app + a single end-to-end pipeline. ✅ Done.
-- **Phase 1 — One real source.** USGS streamflow data flows for ~10 sites. ✅ Done.
-- **Phase 2 — Four real sources unified.** Bacterial samples, rainfall, sondes, impairment — all flowing. 🚧 In progress (sample data for Anacostia Riverkeeper and DOEE; spike work to confirm real exports is underway).
-- **Phase 3 — Polish for launch.** Legal disclaimer review, ~50 sites, public soft launch. ⏳ Next.
+- **Phase 1 — One real source.** USGS streamflow data flowing. ✅ Done.
+- **Phase 2 — Four real sources unified.** Bacterial samples, rainfall, sondes, impairment — all flowing or stubbed against real integration paths. ✅ Done.
+- **Phase 3 — Polish for launch.** Error boundary, PWA, 30-day sparkline, Lighthouse CI, runbook, 34-site catalog. ✅ Done.
+- **Phase 4 — Design + stack refresh.** Once UI System, Next.js 16 / React 19, Mapbox tiles. ✅ Done.
+- **Phase 5 — Keyless data unlock + UI cohesion.** USGS Water Quality Portal (bbox query, hundreds of monitoring stations), NOAA Tides, stale-grade pin variant for bacteria 7-90 days old, design token system, eyebrow component. ✅ Done.
+- **Phase 6 — Production launch.** Real Anacostia Riverkeeper data (pending Swim Guide API token), real DOEE sonde data, EPA AU IDs verified, legal disclaimer review, Cloudflare Pages + R2 deploy. ⏳ Next.
 
-See [`ROADMAP.md`](./ROADMAP.md) for the full plan with dates.
+See [`ROADMAP.md`](./ROADMAP.md) for the full plan and [`README.md`](./README.md) § Status for the day-to-day state.
 
 ---
 
