@@ -76,5 +76,10 @@ export function loadSites(rootDir: string): Site[] {
 }
 
 export function projectForConnectors(sites: Site[]): SiteForConnector[] {
-  return sites.map((s) => ({ id: s.id, stations: s.stations }));
+  return sites.map((s) => ({
+    id: s.id,
+    lat: s.lat,
+    lon: s.lon,
+    stations: s.stations,
+  }));
 }

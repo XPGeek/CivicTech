@@ -15,14 +15,20 @@ function makeContext(): ConnectorContext {
     sites: [
       {
         id: 'buzzard-point',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'noaa-precip', station_id: 'KDCA' }],
       },
       {
         id: 'fletcher-cove',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'noaa-precip', station_id: 'KDCA' }],
       },
       {
         id: 'unrelated',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'usgs-nwis', station_id: '01646500' }],
       },
     ],

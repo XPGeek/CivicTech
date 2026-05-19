@@ -7,6 +7,8 @@ function makeContext(stationIds: string[]): ConnectorContext {
   return {
     sites: stationIds.map((sid, i) => ({
       id: `site-${i}`,
+      lat: 0,
+      lon: 0,
       stations: [{ source_id: 'doee-sondes', station_id: sid }],
     })),
     env: {},

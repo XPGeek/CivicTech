@@ -14,14 +14,20 @@ function makeContext(): ConnectorContext {
     sites: [
       {
         id: 'hains-point',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'noaa-tides', station_id: '8594900' }],
       },
       {
         id: 'the-wharf-dc',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'noaa-tides', station_id: '8594900' }],
       },
       {
         id: 'unrelated',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'usgs-nwis', station_id: 'X' }],
       },
     ],
@@ -70,7 +76,9 @@ describe('noaa-tides connector', () => {
 
   it('returns empty when no sites declare a tide station', async () => {
     const ctx = makeContext();
-    ctx.sites = [{ id: 'x', stations: [{ source_id: 'usgs-nwis', station_id: '1' }] }];
+    ctx.sites = [
+      { id: 'x', lat: 0, lon: 0, stations: [{ source_id: 'usgs-nwis', station_id: '1' }] },
+    ];
     const records = await tidesFetch(ctx);
     expect(records).toEqual([]);
   });

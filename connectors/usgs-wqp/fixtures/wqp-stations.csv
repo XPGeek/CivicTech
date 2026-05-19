@@ -1,0 +1,3 @@
+OrganizationIdentifier,OrganizationFormalName,MonitoringLocationIdentifier,MonitoringLocationName,MonitoringLocationTypeName,LatitudeMeasure,LongitudeMeasure,HorizontalCoordinateReferenceSystemDatumName,VerticalMeasure/MeasureValue,VerticalMeasure/MeasureUnitCode,ProviderName
+USGS-MD,USGS Maryland Water Science Center,USGS-01649500,NORTHEAST BRANCH ANACOSTIA RIVER AT RIVERDALE MD,Stream,38.9676,-76.9242,NAD83,,,NWIS
+USGS-MD,USGS Maryland Water Science Center,USGS-01651800,ANACOSTIA RIVER AT BLADENSBURG MD,Stream,38.9398,-76.9385,NAD83,,,NWIS

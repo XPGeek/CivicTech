@@ -7,6 +7,8 @@ function makeContext(stationIds: string[]): ConnectorContext {
   return {
     sites: stationIds.map((sid, i) => ({
       id: `site-${i}`,
+      lat: 0,
+      lon: 0,
       stations: [{ source_id: 'anacostia-riverkeeper', station_id: sid }],
     })),
     env: {},
@@ -42,10 +44,14 @@ describe('anacostia-riverkeeper connector (fixture-backed)', () => {
       sites: [
         {
           id: 'site-a',
+          lat: 0,
+          lon: 0,
           stations: [{ source_id: 'anacostia-riverkeeper', station_id: 'buzzard-point' }],
         },
         {
           id: 'site-b',
+          lat: 0,
+          lon: 0,
           stations: [{ source_id: 'anacostia-riverkeeper', station_id: 'buzzard-point' }],
         },
       ],

@@ -118,11 +118,14 @@ export interface ConnectorContext {
 }
 
 /**
- * A site, projected to just the fields a connector needs: the station IDs
- * that the site declares for this connector's source.
+ * A site, projected to just the fields a connector needs:
+ *   - declared stations (for connectors that match by station ID)
+ *   - geographic position (for connectors that match by proximity, e.g. WQP)
  */
 export interface SiteForConnector {
   id: string;
+  lat: number;
+  lon: number;
   stations: { source_id: string; station_id: string }[];
 }
 
