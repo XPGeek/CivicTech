@@ -13,16 +13,38 @@
       "lon": -77.0218,
       "jurisdiction": "DC",
       "river": "Anacostia",
-      "activity_types": ["paddle", "row"],
+      "activity_types": [
+        "paddle",
+        "row"
+      ],
       "launch_type": "paved-ramp",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "anacostia-riverkeeper", "station_id": "buzzard-point" },
-        { "source_id": "usgs-nwis", "station_id": "01651800" },
-        { "source_id": "doee-sondes", "station_id": "ANA-LOWER-1" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCANA00E_00" }
+        {
+          "source_id": "anacostia-riverkeeper",
+          "station_id": "buzzard-point"
+        },
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01651800"
+        },
+        {
+          "source_id": "doee-sondes",
+          "station_id": "ANA-LOWER-1"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCANA00E_00"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Public marina with paved launch ramp on the lower Anacostia.",
       "verified_at": null
@@ -35,16 +57,37 @@
       "lon": -76.9711,
       "jurisdiction": "DC",
       "river": "Anacostia",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "anacostia-riverkeeper", "station_id": "anacostia-park" },
-        { "source_id": "usgs-nwis", "station_id": "01651800" },
-        { "source_id": "doee-sondes", "station_id": "ANA-MID-1" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCANA00E_00" }
+        {
+          "source_id": "anacostia-riverkeeper",
+          "station_id": "anacostia-park"
+        },
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01651800"
+        },
+        {
+          "source_id": "doee-sondes",
+          "station_id": "ANA-MID-1"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCANA00E_00"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "DC's main Anacostia waterfront park; multiple informal launches along the riverwalk. ARK headquarters is co-located.",
       "verified_at": null
@@ -57,16 +100,37 @@
       "lon": -77.0044,
       "jurisdiction": "DC",
       "river": "Anacostia",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dock",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "anacostia-riverkeeper", "station_id": "buzzard-point" },
-        { "source_id": "usgs-nwis", "station_id": "01651800" },
-        { "source_id": "doee-sondes", "station_id": "ANA-LOWER-1" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCANA00E_00" }
+        {
+          "source_id": "anacostia-riverkeeper",
+          "station_id": "buzzard-point"
+        },
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01651800"
+        },
+        {
+          "source_id": "doee-sondes",
+          "station_id": "ANA-LOWER-1"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCANA00E_00"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Public kayak launch behind Nationals Park; seasonal SUP rental. Nearest ARK station: Buzzard Point.",
       "verified_at": null
@@ -79,15 +143,29 @@
       "lon": -76.9672,
       "jurisdiction": "DC",
       "river": "Hickey Run",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "anacostia-riverkeeper", "station_id": "hickey-run" },
-        { "source_id": "doee-sondes", "station_id": "ANA-MID-1" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCANA00E_00" }
+        {
+          "source_id": "anacostia-riverkeeper",
+          "station_id": "hickey-run"
+        },
+        {
+          "source_id": "doee-sondes",
+          "station_id": "ANA-MID-1"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCANA00E_00"
+        }
       ],
       "notes": "Small tributary inside National Arboretum; ARK monitors as a stormwater hotspot. Recreation is rare here; included for context and advocacy.",
       "verified_at": null
@@ -100,16 +178,33 @@
       "lon": -76.9695,
       "jurisdiction": "DC",
       "river": "Anacostia",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "anacostia-riverkeeper", "station_id": "kingman-lake" },
-        { "source_id": "usgs-nwis", "station_id": "01651800" },
-        { "source_id": "doee-sondes", "station_id": "ANA-MID-1" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCANA00E_00" }
+        {
+          "source_id": "anacostia-riverkeeper",
+          "station_id": "kingman-lake"
+        },
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01651800"
+        },
+        {
+          "source_id": "doee-sondes",
+          "station_id": "ANA-MID-1"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCANA00E_00"
+        }
       ],
       "notes": "Middle Anacostia put-in; trail access from Kingman Island. ARK's Kingman Lake station is adjacent.",
       "verified_at": null
@@ -122,16 +217,33 @@
       "lon": -76.9651,
       "jurisdiction": "DC",
       "river": "Anacostia",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "anacostia-riverkeeper", "station_id": "national-arboretum" },
-        { "source_id": "usgs-nwis", "station_id": "01651800" },
-        { "source_id": "doee-sondes", "station_id": "ANA-MID-1" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCANA00E_00" }
+        {
+          "source_id": "anacostia-riverkeeper",
+          "station_id": "national-arboretum"
+        },
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01651800"
+        },
+        {
+          "source_id": "doee-sondes",
+          "station_id": "ANA-MID-1"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCANA00E_00"
+        }
       ],
       "notes": "Riverside trail launch near the arboretum entrance; tidal Anacostia.",
       "verified_at": null
@@ -144,14 +256,29 @@
       "lon": -76.9389,
       "jurisdiction": "MD-PG",
       "river": "Anacostia",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "paved-ramp",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "anacostia-riverkeeper", "station_id": "bladensburg-waterfront-park" },
-        { "source_id": "usgs-nwis", "station_id": "01649500" },
-        { "source_id": "noaa-precip", "station_id": "KCGS" }
+        {
+          "source_id": "anacostia-riverkeeper",
+          "station_id": "bladensburg-waterfront-park"
+        },
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01649500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KCGS"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Tidal head of Anacostia; major paddler launch with rental kayaks.",
       "verified_at": null
@@ -164,14 +291,25 @@
       "lon": -76.9402,
       "jurisdiction": "MD-PG",
       "river": "Northeast Branch",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "anacostia-riverkeeper", "station_id": "northeast-branch-campus-drive" },
-        { "source_id": "usgs-nwis", "station_id": "01649500" },
-        { "source_id": "noaa-precip", "station_id": "KCGS" }
+        {
+          "source_id": "anacostia-riverkeeper",
+          "station_id": "northeast-branch-campus-drive"
+        },
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01649500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KCGS"
+        }
       ],
       "notes": "Anacostia tributary in College Park; informal put-in adjacent to the UMD campus.",
       "verified_at": null
@@ -184,14 +322,25 @@
       "lon": -76.9098,
       "jurisdiction": "MD-PG",
       "river": "Lower Beaverdam Creek",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "anacostia-riverkeeper", "station_id": "lower-beaverdam-creek" },
-        { "source_id": "usgs-nwis", "station_id": "01649500" },
-        { "source_id": "noaa-precip", "station_id": "KCGS" }
+        {
+          "source_id": "anacostia-riverkeeper",
+          "station_id": "lower-beaverdam-creek"
+        },
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01649500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KCGS"
+        }
       ],
       "notes": "Cheverly-area Anacostia tributary; ARK monitoring station with limited recreational use but included for completeness.",
       "verified_at": null
@@ -204,12 +353,17 @@
       "lon": -76.9298,
       "jurisdiction": "MD-PG",
       "river": "Northeast Branch tributary",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "gravel-ramp",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "noaa-precip", "station_id": "KCGS" }
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KCGS"
+        }
       ],
       "notes": "Small constructed lake near UMD; paddleboards common. No on-site bacterial monitoring — grade will be unknown until an upstream Northeast Branch station can be mapped.",
       "verified_at": null
@@ -222,15 +376,33 @@
       "lon": -77.0686,
       "jurisdiction": "DC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dock",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "doee-sondes", "station_id": "POT-UPPER-1" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCPMS00E_00" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "doee-sondes",
+          "station_id": "POT-UPPER-1"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCPMS00E_00"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Rental + private launch under Francis Scott Key Bridge.",
       "verified_at": null
@@ -243,15 +415,34 @@
       "lon": -77.0625,
       "jurisdiction": "DC",
       "river": "Potomac",
-      "activity_types": ["paddle", "row"],
+      "activity_types": [
+        "paddle",
+        "row"
+      ],
       "launch_type": "dock",
       "parking": "available",
       "fee": true,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "doee-sondes", "station_id": "POT-UPPER-1" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCPMS00E_00" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "doee-sondes",
+          "station_id": "POT-UPPER-1"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCPMS00E_00"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Major rowing and paddling launch near Rock Creek confluence.",
       "verified_at": null
@@ -264,14 +455,25 @@
       "lon": -77.1133,
       "jurisdiction": "DC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dock",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCPMS00E_00" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCPMS00E_00"
+        }
       ],
       "notes": "Upper Potomac in DC; boat rental seasonal. Above tidal influence.",
       "verified_at": null
@@ -284,14 +486,25 @@
       "lon": -77.0586,
       "jurisdiction": "DC",
       "river": "Rock Creek",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "none",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01652500" },
-        { "source_id": "doee-sondes", "station_id": "POT-UPPER-1" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01652500"
+        },
+        {
+          "source_id": "doee-sondes",
+          "station_id": "POT-UPPER-1"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        }
       ],
       "notes": "Confluence put-in. Limited recreation use; included for advocacy/data context.",
       "verified_at": null
@@ -304,14 +517,29 @@
       "lon": -77.0220,
       "jurisdiction": "DC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCPMS00E_00" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCPMS00E_00"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Southern tip of East Potomac Park where the Potomac and Anacostia meet. No formal launch ramp; informal entry from the seawall.",
       "verified_at": null
@@ -324,13 +552,25 @@
       "lon": -77.0398,
       "jurisdiction": "VA",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "paved-ramp",
       "parking": "available",
       "fee": true,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "NPS-managed marina north of Old Town Alexandria. Paddleboard rental in season.",
       "verified_at": null
@@ -343,13 +583,25 @@
       "lon": -77.0410,
       "jurisdiction": "VA",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Public waterfront park in Old Town with kayak access; tidal Potomac.",
       "verified_at": null
@@ -362,13 +614,25 @@
       "lon": -77.0360,
       "jurisdiction": "VA",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "NPS park beneath Woodrow Wilson Bridge; rough put-in popular with kayakers exploring the southern Potomac.",
       "verified_at": null
@@ -381,13 +645,25 @@
       "lon": -77.0466,
       "jurisdiction": "VA",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "paved-ramp",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "NPS-managed marina south of Alexandria. Swimming legality in VA waters needs verification before enabling swim toggle.",
       "verified_at": null
@@ -400,13 +676,25 @@
       "lon": -77.0148,
       "jurisdiction": "MD-PG",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dock",
       "parking": "available",
       "fee": true,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Tourist marina; paddleboard rental available.",
       "verified_at": null
@@ -419,13 +707,25 @@
       "lon": -77.0177,
       "jurisdiction": "MD-PG",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "NPS Civil War park with riverside trail; informal launch.",
       "verified_at": null
@@ -438,13 +738,25 @@
       "lon": -77.0494,
       "jurisdiction": "VA",
       "river": "Four Mile Run",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Confluence put-in near Reagan National. Four Mile Run Conservatory Foundation samples this segment but does not currently have an API.",
       "verified_at": null
@@ -457,13 +769,21 @@
       "lon": -77.2700,
       "jurisdiction": "MD-MC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "gravel-ramp",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KGAI" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KGAI"
+        }
       ],
       "notes": "C&O Canal lock with Potomac put-in. Above the fall line, freshwater.",
       "verified_at": null
@@ -476,13 +796,21 @@
       "lon": -77.2320,
       "jurisdiction": "MD-MC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "gravel-ramp",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KGAI" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KGAI"
+        }
       ],
       "notes": "C&O Canal lock with Potomac put-in; popular kayak rental seasonally.",
       "verified_at": null
@@ -495,14 +823,29 @@
       "lon": -77.0265,
       "jurisdiction": "DC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dock",
       "parking": "available",
       "fee": true,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCPMS00E_00" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCPMS00E_00"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Southwest DC waterfront mixed-use development; multiple paddle ops operate seasonally from the docks.",
       "verified_at": null
@@ -515,15 +858,33 @@
       "lon": -77.0628,
       "jurisdiction": "DC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "doee-sondes", "station_id": "POT-UPPER-1" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" },
-        { "source_id": "epa-hmw", "station_id": "DCPMS00E_00" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "doee-sondes",
+          "station_id": "POT-UPPER-1"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "epa-hmw",
+          "station_id": "DCPMS00E_00"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Public waterfront park between Key Bridge and Thompson Boat Center; informal put-in from the trail.",
       "verified_at": null
@@ -536,13 +897,25 @@
       "lon": -77.0436,
       "jurisdiction": "VA",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "Park immediately north of Reagan National runway; informal SUP / kayak launch off the Mt. Vernon Trail.",
       "verified_at": null
@@ -555,13 +928,21 @@
       "lon": -77.0510,
       "jurisdiction": "VA",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        }
       ],
       "notes": "NPS park on Columbia Island; trail-side launches with views of the Boundary Channel.",
       "verified_at": null
@@ -574,13 +955,21 @@
       "lon": -77.2073,
       "jurisdiction": "MD-MC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KGAI" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KGAI"
+        }
       ],
       "notes": "NPS C&O Canal recreation area popular with whitewater paddlers and climbers. Above the fall line.",
       "verified_at": null
@@ -593,13 +982,21 @@
       "lon": -77.2435,
       "jurisdiction": "MD-MC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "gravel-ramp",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KGAI" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KGAI"
+        }
       ],
       "notes": "Trailhead with C&O Canal access; closest formal launch to Great Falls.",
       "verified_at": null
@@ -612,13 +1009,21 @@
       "lon": -77.1389,
       "jurisdiction": "MD-MC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KGAI" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KGAI"
+        }
       ],
       "notes": "Glen Echo cultural park with trail access to the Potomac.",
       "verified_at": null
@@ -631,13 +1036,21 @@
       "lon": -77.1632,
       "jurisdiction": "MD-MC",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "gravel-ramp",
       "parking": "limited",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KGAI" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KGAI"
+        }
       ],
       "notes": "C&O Canal lock with Potomac access.",
       "verified_at": null
@@ -650,13 +1063,25 @@
       "lon": -77.0497,
       "jurisdiction": "MD-PG",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "NPS park across the Potomac from Mt. Vernon; informal launches along the riverfront trail.",
       "verified_at": null
@@ -669,13 +1094,25 @@
       "lon": -77.0299,
       "jurisdiction": "MD-PG",
       "river": "Potomac",
-      "activity_types": ["paddle"],
+      "activity_types": [
+        "paddle"
+      ],
       "launch_type": "dirt-putin",
       "parking": "available",
       "fee": false,
       "stations": [
-        { "source_id": "usgs-nwis", "station_id": "01646500" },
-        { "source_id": "noaa-precip", "station_id": "KDCA" }
+        {
+          "source_id": "usgs-nwis",
+          "station_id": "01646500"
+        },
+        {
+          "source_id": "noaa-precip",
+          "station_id": "KDCA"
+        },
+        {
+          "source_id": "noaa-tides",
+          "station_id": "8594900"
+        }
       ],
       "notes": "NPS historic fort with riverside trails; informal kayak put-in from the riverwalk.",
       "verified_at": null
