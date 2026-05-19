@@ -120,4 +120,45 @@ describe('noaa-precip connector', () => {
     expect(meta.id).toBe('noaa-precip');
     expect(meta.cadence).toBe('hourly');
   });
+
+  it('anchors the window to the freshest observation when build clock runs ahead', async () => {
+    // Build clock is 6 months ahead of the fixture observations. With the
+    // old behavior, start=2026-11-18 would land in the future and NWS would
+    // return nothing. With the fix, we ignore start, anchor to the fixture's
+    // freshest timestamp, and mark the reading as estimated because of the lag.
+    const ctx = makeContext();
+    ctx.now = () => '2026-11-18T14:00:00Z';
+    const records = await noaaFetch(ctx);
+    expect(records).toHaveLength(1);
+    expect(records[0]?.qc_flag).toBe('estimated');
+    // observed_at should be the freshest fixture observation, not the build clock.
+    expect(records[0]?.observed_at).not.toBe('2026-11-18T14:00:00.000Z');
+  });
+
+  it('infers 0 rainfall when the station reports observations but every precip field is null', async () => {
+    // METAR-derived stations like KDCA in dry weather report 500+ observations
+    // with `null` precipitation values. Treat that as 0 mm rather than missing.
+    const dryFixture = {
+      features: Array.from({ length: 24 }, (_, i) => ({
+        properties: {
+          timestamp: new Date(
+            Date.parse('2026-05-18T14:00:00Z') - i * 3600_000,
+          ).toISOString(),
+          precipitationLastHour: { value: null },
+          precipitationLast3Hours: { value: null },
+          precipitationLast6Hours: { value: null },
+        },
+      })),
+    };
+    vi.restoreAllMocks();
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify(dryFixture), {
+        headers: { 'content-type': 'application/json' },
+      }),
+    );
+    const records = await noaaFetch(makeContext());
+    expect(records).toHaveLength(1);
+    expect(records[0]?.value).toBe(0);
+    expect(records[0]?.qc_flag).toBe('estimated');
+  });
 });
