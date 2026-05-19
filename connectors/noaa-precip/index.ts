@@ -40,15 +40,17 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
   }
 
   const userAgent = context.env.CONNECTOR_USER_AGENT ?? 'dmv-water-watch (admin@example.org)';
-  const now = new Date(context.now());
-  const windowStart = new Date(now.getTime() - WINDOW_HOURS * 3600_000);
-  const startParam = windowStart.toISOString();
 
-  // Fan out one request per station. The handful of NOAA stations we hit
-  // (typically 4) stays well under api.weather.gov's "reasonable use" expectation.
+  // Don't pass `start=`. Previously we computed start = context.now() - 48h
+  // and let the API filter, but when the build clock runs ahead of real wall
+  // time (CI clock skew, fixed-build snapshots, replay tests), the start
+  // parameter sits in the future and NWS returns an empty feature collection.
+  // Letting the API return its default ~72-hour history lets the connector
+  // anchor the window to the freshest observation it actually saw, so a small
+  // clock skew never silently zeroes out rainfall.
   const settled = await Promise.allSettled(
     Array.from(stationToSites, async ([stationId, siteIds]) => {
-      const url = `https://api.weather.gov/stations/${encodeURIComponent(stationId)}/observations?start=${startParam}`;
+      const url = `https://api.weather.gov/stations/${encodeURIComponent(stationId)}/observations`;
       context.log.info('Fetching NOAA observations', { source_id: meta.id, station: stationId });
       const body = await httpJson<NWSResponse>(url, {
         source_id: meta.id,
@@ -59,6 +61,7 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
   );
 
   const records: NormalizedRecord[] = [];
+  const buildClock = new Date(context.now());
   for (const result of settled) {
     if (result.status === 'rejected') {
       const err = result.reason;
@@ -72,23 +75,56 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
       throw err;
     }
     const { stationId, siteIds, body } = result.value;
-    const total = sumPrecipitationMm(body.features ?? [], windowStart, now);
-    if (total.observationCount === 0) {
+    const features = body.features ?? [];
+    if (features.length === 0) {
+      // Station entirely silent — likely offline or invalid ID. Skip.
       context.log.warn('No precipitation observations in window', {
         source_id: meta.id,
         station: stationId,
       });
       continue;
     }
+
+    // Anchor the 48h window to whichever moment is fresher: the build clock
+    // or the freshest observation. In production these are within minutes; in
+    // a future-dated build the observation wins (and we surface the lag via
+    // qc_flag below).
+    const freshestObservedMs = freshestObservationMs(features);
+    const anchorMs =
+      freshestObservedMs && freshestObservedMs < buildClock.getTime()
+        ? freshestObservedMs
+        : buildClock.getTime();
+    const anchor = new Date(anchorMs);
+    const windowStart = new Date(anchorMs - WINDOW_HOURS * 3600_000);
+
+    const total = sumPrecipitationMm(features, windowStart, anchor);
+
+    // Many METAR-derived stations encode "no rain detected" as null on every
+    // precipitation field — KDCA in dry weather returns 500 observations
+    // with ~498 null precip values. Treating that as missing wastes a real
+    // signal: a station reporting hourly but never logging precip is strong
+    // evidence of no rainfall. Use 0 as the total but mark as estimated
+    // because we're inferring rather than reading a 0 directly.
+    const inferredZero = total.observationCount === 0;
+    const totalMm = inferredZero ? 0 : total.totalMm;
+
+    // If the freshest observation is well behind the build clock, mark the
+    // reading as estimated — the grader's freshness rule will discount it.
+    const lagHours = (buildClock.getTime() - anchorMs) / 3600_000;
+    const lagged = lagHours > (meta.freshness_threshold_hours ?? 6);
+
     records.push({
       source_id: meta.id,
       station_id: stationId,
       site_ids: siteIds,
-      observed_at: now.toISOString(),
+      observed_at: anchor.toISOString(),
       parameter: 'precipitation_48h',
-      value: mm_to_inches(total.totalMm),
+      value: mm_to_inches(totalMm),
       units: 'inches',
-      qc_flag: total.missingFraction > 0.25 ? 'estimated' : 'final',
+      qc_flag:
+        inferredZero || lagged || total.missingFraction > 0.25
+          ? 'estimated'
+          : 'final',
       raw_url: `https://www.weather.gov/wrh/timeseries?site=${encodeURIComponent(stationId)}`,
     });
   }
@@ -99,6 +135,17 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
   });
 
   return records;
+}
+
+/** Latest valid observation timestamp in ms, or undefined if none parseable. */
+function freshestObservationMs(features: NWSObservation[]): number | undefined {
+  let max: number | undefined;
+  for (const f of features) {
+    const ms = Date.parse(f.properties.timestamp);
+    if (!Number.isFinite(ms)) continue;
+    if (max === undefined || ms > max) max = ms;
+  }
+  return max;
 }
 
 interface SumResult {

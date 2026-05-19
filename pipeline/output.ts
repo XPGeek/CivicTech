@@ -73,6 +73,8 @@ export function buildSitesGeoJson(
           fee: s.fee,
           grade_paddle: pair?.paddle.grade ?? 'unknown',
           grade_swim: pair?.swim.grade ?? 'unknown',
+          stale_paddle: pair?.paddle.stale ?? false,
+          stale_swim: pair?.swim.stale ?? false,
           reason_paddle: pair?.paddle.reason ?? null,
           reason_swim: pair?.swim.reason ?? null,
           notes: s.notes ?? null,

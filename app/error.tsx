@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { Button, Card, Column, Heading, Row, Text } from '@once-ui-system/core/components';
 import { captureError } from '@lib/sentry';
+import Eyebrow from './components/Eyebrow';
 
 export default function ErrorBoundary({
   error,
@@ -19,13 +20,7 @@ export default function ErrorBoundary({
     <Column as="main" fillWidth fillHeight horizontal="center" vertical="center" padding="24">
       <Card padding="32" radius="l" gap="16" direction="column" style={{ maxWidth: 28 * 16 }}>
         <Column gap="8">
-          <Text
-            variant="label-default-s"
-            onBackground="danger-medium"
-            style={{ letterSpacing: '0.12em' }}
-          >
-            SOMETHING BROKE
-          </Text>
+          <Eyebrow tone="danger">Something broke</Eyebrow>
           <Heading variant="heading-strong-l">Hmm, that wasn&rsquo;t supposed to happen.</Heading>
           <Text variant="body-default-m" onBackground="neutral-medium">
             The data is fine — this is a frontend hiccup. Reload, or click below to retry.

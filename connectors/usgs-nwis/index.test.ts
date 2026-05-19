@@ -14,18 +14,26 @@ function makeContext(): ConnectorContext {
     sites: [
       {
         id: 'fletcher-cove',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'usgs-nwis', station_id: '01646500' }],
       },
       {
         id: 'thompson-boat-center',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'usgs-nwis', station_id: '01646500' }],
       },
       {
         id: 'bladensburg-waterfront',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'usgs-nwis', station_id: '01651800' }],
       },
       {
         id: 'not-relevant',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'doee-sondes', station_id: 'DOEE-X' }],
       },
     ],
@@ -111,7 +119,12 @@ describe('usgs-nwis connector', () => {
   it('returns empty when no sites reference this source', async () => {
     const ctx = makeContext();
     ctx.sites = [
-      { id: 'no-usgs', stations: [{ source_id: 'doee-sondes', station_id: 'X' }] },
+      {
+        id: 'no-usgs',
+        lat: 0,
+        lon: 0,
+        stations: [{ source_id: 'doee-sondes', station_id: 'X' }],
+      },
     ];
     const records = await usgsFetch(ctx);
     expect(records).toEqual([]);

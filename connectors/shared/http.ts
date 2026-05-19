@@ -10,17 +10,23 @@ export interface HttpOptions {
   timeoutMs?: number;
   /** Extra headers. User-Agent should be set by caller via env. */
   headers?: Record<string, string>;
+  /** Override the Accept header. Defaults to application/json for httpJson,
+   *  text/plain for httpText. */
+  accept?: string;
 }
 
 const TRANSIENT_STATUS = new Set([408, 425, 429, 500, 502, 503, 504]);
 
-export async function httpJson<T = unknown>(
-  url: string,
-  opts: HttpOptions,
-): Promise<T> {
+/**
+ * Single retry/timeout loop. Returns the raw response body as text; callers
+ * are responsible for parsing. `httpJson` and `httpText` wrap this with the
+ * right Accept header and (for JSON) post-parse.
+ */
+async function httpRequest(url: string, opts: HttpOptions): Promise<string> {
   const retries = opts.retries ?? 3;
   const backoffMs = opts.backoffMs ?? 500;
   const timeoutMs = opts.timeoutMs ?? 20000;
+  const accept = opts.accept ?? 'application/json';
 
   let lastError: unknown;
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -29,7 +35,7 @@ export async function httpJson<T = unknown>(
     try {
       const res = await fetch(url, {
         headers: {
-          Accept: 'application/json',
+          Accept: accept,
           ...(opts.headers ?? {}),
         },
         signal: controller.signal,
@@ -37,7 +43,7 @@ export async function httpJson<T = unknown>(
       clearTimeout(timer);
 
       if (res.ok) {
-        return (await res.json()) as T;
+        return await res.text();
       }
 
       const body = await res.text().catch(() => '');
@@ -83,6 +89,15 @@ export async function httpJson<T = unknown>(
     source_id: opts.source_id,
     cause: lastError,
   });
+}
+
+export async function httpJson<T = unknown>(url: string, opts: HttpOptions): Promise<T> {
+  const body = await httpRequest(url, { ...opts, accept: opts.accept ?? 'application/json' });
+  return JSON.parse(body) as T;
+}
+
+export async function httpText(url: string, opts: HttpOptions): Promise<string> {
+  return httpRequest(url, { ...opts, accept: opts.accept ?? 'text/plain' });
 }
 
 function sleep(ms: number): Promise<void> {

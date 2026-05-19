@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 import maplibregl, { Map as MapLibreMap, Marker } from 'maplibre-gl';
 import type { Activity, Grade, SitesGeoJson } from '@lib/types';
-import { GRADE_PIN_SVG } from '@lib/grade-style';
+import { pinSvgFor } from '@lib/grade-style';
 
 interface MapProps {
   sites: SitesGeoJson;
@@ -179,14 +179,16 @@ export default function SiteMap({
     for (const feature of sites.features) {
       const props = feature.properties;
       const grade = activity === 'paddle' ? props.grade_paddle : props.grade_swim;
+      const stale = activity === 'paddle' ? props.stale_paddle : props.stale_swim;
+      const svg = pinSvgFor(grade, stale);
+      const ariaLabel = `${props.name}, ${GRADE_LABEL[grade]} for ${activity}${
+        stale ? ' (last known)' : ''
+      }`;
       const prev = existing.get(props.id);
 
       if (prev) {
-        prev.el.innerHTML = GRADE_PIN_SVG[grade];
-        prev.el.setAttribute(
-          'aria-label',
-          `${props.name}, ${GRADE_LABEL[grade]} for ${activity}`,
-        );
+        prev.el.innerHTML = svg;
+        prev.el.setAttribute('aria-label', ariaLabel);
         continue;
       }
 
@@ -194,7 +196,7 @@ export default function SiteMap({
       el.className = 'pin';
       el.type = 'button';
       el.style.cursor = 'pointer';
-      el.innerHTML = GRADE_PIN_SVG[grade];
+      el.innerHTML = svg;
       el.addEventListener('click', (event) => {
         event.stopPropagation();
         onSelectRef.current(props.id);
@@ -205,7 +207,7 @@ export default function SiteMap({
         .addTo(map);
       // MapLibre's addTo overrides aria-label with its default "Map marker"
       // string. Reset ours after so screen readers say the site name.
-      el.setAttribute('aria-label', `${props.name}, ${GRADE_LABEL[grade]} for ${activity}`);
+      el.setAttribute('aria-label', ariaLabel);
       existing.set(props.id, { marker, el });
     }
   }, [sites, activity]);

@@ -1,8 +1,10 @@
-import { GRADE_PIN_SVG } from '@lib/grade-style';
+import { pinSvgFor } from '@lib/grade-style';
 import type { Grade } from '@lib/types';
 
 interface Props {
   grade: Grade;
+  /** Render the faded "last known" variant. Ignored for `unknown`. */
+  stale?: boolean;
   /** Box size in pixels. Defaults to 36. */
   size?: number;
 }
@@ -16,12 +18,12 @@ interface Props {
  * `el.innerHTML = ...`). If you port the SVGs to JSX components, drop the
  * raw-string path and update both this component and `Map.tsx`.
  */
-export default function GradePin({ grade, size = 36 }: Props) {
+export default function GradePin({ grade, stale = false, size = 36 }: Props) {
   return (
     <div
       aria-hidden
       style={{ width: size, height: size, flexShrink: 0 }}
-      dangerouslySetInnerHTML={{ __html: GRADE_PIN_SVG[grade] }}
+      dangerouslySetInnerHTML={{ __html: pinSvgFor(grade, stale) }}
     />
   );
 }

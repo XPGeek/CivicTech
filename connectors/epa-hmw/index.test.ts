@@ -14,6 +14,8 @@ function makeContext(): ConnectorContext {
     sites: [
       {
         id: 'buzzard-point',
+        lat: 0,
+        lon: 0,
         stations: [{ source_id: 'epa-hmw', station_id: 'DCANA00E_00' }],
       },
     ],

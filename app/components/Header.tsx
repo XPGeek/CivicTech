@@ -39,9 +39,10 @@ export default function Header() {
               style={{
                 width: 12,
                 height: 12,
-                borderRadius: 999,
+                borderRadius: 'var(--r-pill)',
                 background: 'linear-gradient(135deg, #10b981, #06b6d4)',
-                boxShadow: '0 0 0 3px rgba(16,185,129,0.18)',
+                // Brand-tinted halo (not a drop shadow — it's part of the mark).
+                boxShadow: '0 0 0 3px rgba(16, 185, 129, 0.18)',
               }}
             />
             <Text variant="label-strong-m" onBackground="neutral-strong">

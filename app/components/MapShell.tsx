@@ -6,10 +6,12 @@ import { Banner, Button, Column, Row, Text } from '@once-ui-system/core/componen
 import type { Activity, InitialData, SitePinProperties } from '@lib/types';
 import { useActivity } from '@lib/activity';
 import { fetchGrades, fetchManifest, fetchSites, fetchSources } from '@lib/client-data';
+import { haversineKm } from '../../connectors/shared/sites';
 import ActivityToggle from './ActivityToggle';
 import DetailCard from './DetailCard';
 import Disclaimer from './Disclaimer';
 import DisclaimerInterstitial from './DisclaimerInterstitial';
+import Eyebrow from './Eyebrow';
 import Header from './Header';
 import StaleBanner from './StaleBanner';
 
@@ -62,13 +64,13 @@ export default function MapShell({ initialData }: Props) {
 
   const nearestPicker = useCallback(
     (coords: [number, number]) => {
+      // `coords` is [lon, lat] (GeoJSON convention from the geolocate control).
+      const [userLon, userLat] = coords;
       let nearestId: string | null = null;
       let nearestKm = Infinity;
       for (const feature of data.sites.features) {
-        const km = haversineKm(coords, [
-          feature.geometry.coordinates[0],
-          feature.geometry.coordinates[1],
-        ]);
+        const [siteLon, siteLat] = feature.geometry.coordinates;
+        const km = haversineKm(userLat, userLon, siteLat, siteLon);
         if (km < nearestKm) {
           nearestKm = km;
           nearestId = feature.properties.id;
@@ -155,9 +157,7 @@ export default function MapShell({ initialData }: Props) {
           ) : (
             <Column padding="20" gap="16">
               <Column gap="8">
-                <Text variant="label-default-s" onBackground="brand-medium">
-                  PICK A LAUNCH
-                </Text>
+                <Eyebrow tone="brand">Pick a launch</Eyebrow>
                 <Text variant="heading-strong-m" onBackground="neutral-strong">
                   Tap a pin to see today&rsquo;s grade.
                 </Text>
@@ -186,15 +186,3 @@ export default function MapShell({ initialData }: Props) {
   );
 }
 
-function haversineKm(a: [number, number], b: [number, number]): number {
-  const R = 6371;
-  const toRad = (d: number) => (d * Math.PI) / 180;
-  const dLat = toRad(b[1] - a[1]);
-  const dLon = toRad(b[0] - a[0]);
-  const lat1 = toRad(a[1]);
-  const lat2 = toRad(b[1]);
-  const h =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
-}

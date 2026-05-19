@@ -1,12 +1,13 @@
 import {
-  ConnectorError,
   type ConnectorContext,
   type ConnectorMeta,
   type NormalizedRecord,
   type Parameter,
   type QCFlag,
+  type SiteForConnector,
 } from '../shared/types';
-import { groupStationsBySite } from '../shared/sites';
+import { httpText } from '../shared/http';
+import { nearestSiteWithin } from '../shared/sites';
 
 export const meta: ConnectorMeta = {
   id: 'usgs-wqp',
@@ -35,12 +36,27 @@ const ACCEPTED_ACTIVITY_TYPES = new Set([
   'Field Msr/Obs',
 ]);
 
-// State agencies upload to WQP with a 1-6 month lag, and some stations only
-// see a few samples a year. A 3-year lookback is the smallest window that
-// reliably returns at least one row per active station; the connector keeps
-// only the freshest sample per (station × parameter), so the artifact size
-// doesn't change.
-const LOOKBACK_DAYS = 365 * 3;
+// 1-year lookback covers a full recreation season plus state-agency upload
+// lag (typically 1-6 months). Older results are unlikely to be the freshest
+// at any active station and would bloat the build artifact for no verdict gain.
+const LOOKBACK_DAYS = 365;
+
+// How far a WQP monitoring location can sit from a launch and still be
+// considered "the same water." 1.5 km is roughly the spatial autocorrelation
+// scale of bacterial counts in tidal reaches — closer would miss the USGS
+// gauge that's typically 0.5-1.0 km from a public boat ramp, farther would
+// snap suburban storm-drain samples to mainstem-river launches.
+const MAX_MATCH_DISTANCE_KM = 1.5;
+
+// Padded bbox covering every launch in the catalog plus the nearby monitoring
+// stations. Kept slightly larger than the site bbox so an off-launch USGS
+// station at the edge still surfaces.
+const DMV_BBOX = {
+  westLon: -77.3,
+  southLat: 38.65,
+  eastLon: -76.85,
+  northLat: 39.1,
+} as const;
 
 // CSV is the documented mimeType for WQP Results. We parse with a permissive
 // splitter rather than pulling a CSV lib — the only quoted fields we care
@@ -69,13 +85,36 @@ function parseCsvLine(line: string): string[] {
   return cells;
 }
 
+interface StationLocation {
+  lat: number;
+  lon: number;
+}
+
+function parseStations(csv: string): Map<string, StationLocation> {
+  const out = new Map<string, StationLocation>();
+  const lines = csv.split(/\r?\n/).filter((l) => l.length > 0);
+  if (lines.length < 2) return out;
+
+  const headers = parseCsvLine(lines[0]!);
+  const idIdx = headers.indexOf('MonitoringLocationIdentifier');
+  const latIdx = headers.indexOf('LatitudeMeasure');
+  const lonIdx = headers.indexOf('LongitudeMeasure');
+  if (idIdx < 0 || latIdx < 0 || lonIdx < 0) return out;
+
+  for (let i = 1; i < lines.length; i++) {
+    const cells = parseCsvLine(lines[i]!);
+    const id = cells[idIdx];
+    const lat = Number.parseFloat(cells[latIdx] ?? '');
+    const lon = Number.parseFloat(cells[lonIdx] ?? '');
+    if (!id || !Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    out.set(id, { lat, lon });
+  }
+  return out;
+}
+
 export async function fetch(context: ConnectorContext): Promise<NormalizedRecord[]> {
-  // WQP uses the same USGS station IDs that the live NWIS connector does.
-  // Reuse the `usgs-nwis` station declarations so we don't ask site curators
-  // to add a second source_id for the same station.
-  const stationToSites = groupStationsBySite(context.sites, 'usgs-nwis');
-  if (stationToSites.size === 0) {
-    context.log.info('No USGS stations declared; skipping WQP', { source_id: meta.id });
+  if (context.sites.length === 0) {
+    context.log.info('No sites declared; skipping WQP', { source_id: meta.id });
     return [];
   }
 
@@ -86,52 +125,51 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
     startDate.getDate(),
   ).padStart(2, '0')}-${startDate.getFullYear()}`;
 
-  // WQP expects `USGS-` prefix and semicolon-separated multi-value lists.
-  const siteParam = Array.from(stationToSites.keys())
-    .map((s) => `USGS-${s}`)
-    .join(';');
+  // WQP expects bBox as `westLon,southLat,eastLon,northLat`.
+  const bbox = `${DMV_BBOX.westLon},${DMV_BBOX.southLat},${DMV_BBOX.eastLon},${DMV_BBOX.northLat}`;
   const characteristicParam = Object.keys(CHARACTERISTIC_MAP).join(';');
 
-  const url =
-    `https://www.waterqualitydata.us/data/Result/search` +
-    `?siteid=${encodeURIComponent(siteParam)}` +
+  // The Result endpoint doesn't include station coordinates, so we run two
+  // queries in parallel: one to discover monitoring locations in the bbox,
+  // one to pull their recent bacterial samples. Join on MonitoringLocationIdentifier.
+  const stationUrl =
+    `https://www.waterqualitydata.us/data/Station/search` +
+    `?bBox=${encodeURIComponent(bbox)}` +
     `&characteristicName=${encodeURIComponent(characteristicParam)}` +
-    `&mimeType=csv&startDateLo=${startDateLo}`;
+    `&mimeType=csv`;
+  const resultUrl =
+    `https://www.waterqualitydata.us/data/Result/search` +
+    `?bBox=${encodeURIComponent(bbox)}` +
+    `&characteristicName=${encodeURIComponent(characteristicParam)}` +
+    `&startDateLo=${startDateLo}` +
+    `&mimeType=csv`;
 
-  context.log.info('Fetching WQP results', {
+  context.log.info('Fetching WQP stations + results', {
     source_id: meta.id,
-    station_count: stationToSites.size,
+    bbox,
+    lookback_days: LOOKBACK_DAYS,
   });
 
   const userAgent = context.env.CONNECTOR_USER_AGENT ?? 'dmv-water-watch';
-  let csv: string;
-  try {
-    const res = await globalThis.fetch(url, {
-      headers: { Accept: 'text/csv', 'User-Agent': userAgent },
-    });
-    if (!res.ok) {
-      throw new ConnectorError({
-        code: `HTTP_${res.status}`,
-        message: `WQP responded ${res.status}`,
-        recoverable: res.status >= 500,
-        source_id: meta.id,
-      });
-    }
-    csv = await res.text();
-  } catch (err) {
-    if (err instanceof ConnectorError) throw err;
-    throw new ConnectorError({
-      code: 'NETWORK',
-      message: `WQP fetch failed: ${(err as Error).message}`,
-      recoverable: true,
-      source_id: meta.id,
-      cause: err,
-    });
+  const httpOpts = {
+    source_id: meta.id,
+    accept: 'text/csv',
+    headers: { 'User-Agent': userAgent },
+  };
+  const [stationCsv, resultCsv] = await Promise.all([
+    httpText(stationUrl, httpOpts),
+    httpText(resultUrl, httpOpts),
+  ]);
+
+  const stations = parseStations(stationCsv);
+  if (stations.size === 0) {
+    context.log.warn('WQP returned no stations in bbox', { source_id: meta.id });
+    return [];
   }
 
-  const lines = csv.split(/\r?\n/).filter((l) => l.length > 0);
+  const lines = resultCsv.split(/\r?\n/).filter((l) => l.length > 0);
   if (lines.length < 2) {
-    context.log.warn('WQP returned no data rows', { source_id: meta.id });
+    context.log.warn('WQP returned no result rows', { source_id: meta.id });
     return [];
   }
   const headers = parseCsvLine(lines[0]!);
@@ -141,19 +179,44 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
     monitoringLocationId: idx('MonitoringLocationIdentifier'),
     startDate: idx('ActivityStartDate'),
     startTime: idx('ActivityStartTime/Time'),
-    startTimeZone: idx('ActivityStartTime/TimeZoneCode'),
     characteristic: idx('CharacteristicName'),
     value: idx('ResultMeasureValue'),
-    unit: idx('ResultMeasure/MeasureUnitCode'),
     activityType: idx('ActivityTypeCode'),
     status: idx('ResultStatusIdentifier'),
   };
 
-  // Track the freshest sample per (stationId, parameter) — the grader only
-  // uses the freshest record, so emitting all 180 days would just bloat the
-  // build artifacts without changing any verdict.
+  // Memoize "which site does this WQP station snap to?" — a single station
+  // typically appears in hundreds of result rows, so we don't want to redo
+  // the linear nearest-neighbor scan for each.
+  const stationToSite = new Map<
+    string,
+    { site: SiteForConnector; distanceKm: number } | null
+  >();
+  const resolveSite = (wqpStationId: string) => {
+    if (stationToSite.has(wqpStationId)) return stationToSite.get(wqpStationId)!;
+    const loc = stations.get(wqpStationId);
+    if (!loc) {
+      stationToSite.set(wqpStationId, null);
+      return null;
+    }
+    const match = nearestSiteWithin(
+      loc.lat,
+      loc.lon,
+      context.sites,
+      MAX_MATCH_DISTANCE_KM,
+    );
+    stationToSite.set(wqpStationId, match);
+    return match;
+  };
+
+  // Keep only the freshest sample per (site, parameter) — the grader uses the
+  // single most recent reading at each site, so emitting older rows would bloat
+  // build artifacts without affecting any verdict.
   type Freshest = { record: NormalizedRecord; observedMs: number };
   const freshest = new Map<string, Freshest>();
+
+  let matchedRows = 0;
+  let unmatchedRows = 0;
 
   for (let i = 1; i < lines.length; i++) {
     const cells = parseCsvLine(lines[i]!);
@@ -164,18 +227,20 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
     const status = cells[col.status];
     if (status === 'Rejected') continue;
 
-    const rawValue = cells[col.value];
-    const value = Number.parseFloat(rawValue ?? '');
+    const value = Number.parseFloat(cells[col.value] ?? '');
     if (!Number.isFinite(value)) continue;
 
     const characteristic = cells[col.characteristic];
     const mapping = characteristic ? CHARACTERISTIC_MAP[characteristic] : undefined;
     if (!mapping) continue;
 
-    const fullId = cells[col.monitoringLocationId] ?? '';
-    const usgsId = fullId.startsWith('USGS-') ? fullId.slice(5) : fullId;
-    const siteIds = stationToSites.get(usgsId);
-    if (!siteIds || siteIds.length === 0) continue;
+    const wqpStationId = cells[col.monitoringLocationId];
+    if (!wqpStationId) continue;
+    const match = resolveSite(wqpStationId);
+    if (!match) {
+      unmatchedRows++;
+      continue;
+    }
 
     const datePart = cells[col.startDate];
     const timePart = cells[col.startTime] || '12:00:00';
@@ -186,7 +251,8 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
     const observedMs = Date.parse(observedAt);
     if (!Number.isFinite(observedMs)) continue;
 
-    const key = `${usgsId}::${mapping.parameter}`;
+    matchedRows++;
+    const key = `${match.site.id}::${mapping.parameter}`;
     const prev = freshest.get(key);
     if (prev && prev.observedMs >= observedMs) continue;
 
@@ -194,14 +260,14 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
       observedMs,
       record: {
         source_id: meta.id,
-        station_id: usgsId,
-        site_ids: siteIds,
+        station_id: wqpStationId,
+        site_ids: [match.site.id],
         observed_at: new Date(observedMs).toISOString(),
         parameter: mapping.parameter,
         value,
         units: mapping.unit,
         qc_flag: status === 'Accepted' ? 'final' : ('provisional' as QCFlag),
-        raw_url: `https://www.waterqualitydata.us/data/Result/search?siteid=${encodeURIComponent(fullId)}&characteristicName=${encodeURIComponent(characteristic ?? '')}&mimeType=csv`,
+        raw_url: `https://www.waterqualitydata.us/data/Result/search?siteid=${encodeURIComponent(wqpStationId)}&characteristicName=${encodeURIComponent(characteristic ?? '')}&mimeType=csv`,
       },
     });
   }
@@ -210,7 +276,9 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
   context.log.info('WQP fetch complete', {
     source_id: meta.id,
     records: records.length,
-    lookback_days: LOOKBACK_DAYS,
+    stations_in_bbox: stations.size,
+    matched_rows: matchedRows,
+    unmatched_rows: unmatchedRows,
   });
   return records;
 }

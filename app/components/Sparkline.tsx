@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
+import { Row, Text } from '@once-ui-system/core/components';
 import { GRADE_COLORS, GRADE_LABELS, GRADE_ORDINAL } from '@lib/grade-style';
 import { fetchHistory } from '@lib/client-data';
 import type { Grade, HistoryPoint } from '@lib/types';
@@ -46,41 +47,53 @@ export default function Sparkline({ siteId }: Props) {
   }, [points]);
 
   if (!points) {
+    return <div className="skeleton" aria-label="Loading history" />;
+  }
+
+  if (points.length === 0) {
     return (
-      <div className="h-16 bg-slate-100 rounded animate-pulse" aria-label="Loading history…" />
+      <Text variant="body-default-xs" onBackground="neutral-weak">
+        No history yet — first build was just now.
+      </Text>
     );
   }
-  if (points.length === 0) {
-    return <p className="text-xs text-slate-500">No history yet — first build was just now.</p>;
-  }
+
   if (points.length === 1) {
     // Single point looks weird in a bar chart; show a static pill instead.
     const [only] = points;
     if (!only) return null;
     return (
-      <div className="text-xs text-slate-700 flex items-center gap-2">
+      <Row gap="8" vertical="center">
         <span
           aria-hidden
-          className="inline-block w-3 h-3 rounded-sm"
-          style={{ backgroundColor: GRADE_COLORS[only.grade] }}
+          style={{
+            display: 'inline-block',
+            width: 12,
+            height: 12,
+            borderRadius: 'var(--r-xs)',
+            backgroundColor: GRADE_COLORS[only.grade],
+          }}
         />
-        <span>{GRADE_LABELS[only.grade]} as of {new Date(only.computed_at).toLocaleString()}</span>
-      </div>
+        <Text variant="body-default-xs" onBackground="neutral-medium">
+          {GRADE_LABELS[only.grade]} as of {new Date(only.computed_at).toLocaleString()}
+        </Text>
+      </Row>
     );
   }
 
   return (
-    <div className="h-16 w-full" aria-label="30-day grade history">
+    <div style={{ height: 64, width: '100%' }} aria-label="30-day grade history">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
           <XAxis dataKey="label" hide />
           <Tooltip
             cursor={{ fill: 'rgba(15, 23, 42, 0.05)' }}
             contentStyle={{
-              borderRadius: 6,
-              border: '1px solid #e2e8f0',
+              borderRadius: 'var(--r-sm)',
+              border: '1px solid rgba(15, 23, 42, 0.08)',
+              boxShadow: 'var(--shadow-md)',
               fontSize: 12,
-              padding: '6px 8px',
+              padding: '8px 10px',
             }}
             formatter={(_value, _name, item) => {
               const datum = item?.payload as ChartDatum | undefined;
@@ -90,7 +103,7 @@ export default function Sparkline({ siteId }: Props) {
             labelFormatter={() => ''}
             isAnimationActive={false}
           />
-          <Bar dataKey="value" isAnimationActive={false}>
+          <Bar dataKey="value" isAnimationActive={false} radius={[3, 3, 0, 0]}>
             {chartData.map((d) => (
               <Cell key={d.ts} fill={GRADE_COLORS[d.grade]} />
             ))}

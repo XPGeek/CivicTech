@@ -118,11 +118,14 @@ export interface ConnectorContext {
 }
 
 /**
- * A site, projected to just the fields a connector needs: the station IDs
- * that the site declares for this connector's source.
+ * A site, projected to just the fields a connector needs:
+ *   - declared stations (for connectors that match by station ID)
+ *   - geographic position (for connectors that match by proximity, e.g. WQP)
  */
 export interface SiteForConnector {
   id: string;
+  lat: number;
+  lon: number;
   stations: { source_id: string; station_id: string }[];
 }
 
@@ -183,6 +186,14 @@ export interface GradeOutput {
   grade: Grade;
   computed_at: string;
   reason: string;
+  /**
+   * True when the grade was computed from bacteria older than the 7-day
+   * freshness window (still within a 90-day "recent enough to show with a
+   * caveat" window). The grade itself is the threshold-based verdict that
+   * the stale reading implies; consumers should render it muted and surface
+   * the age. Grades older than 90 days fall through to `grade: 'unknown'`.
+   */
+  stale?: boolean;
   signals: {
     bacteria?: SignalState;
     rainfall?: SignalState;

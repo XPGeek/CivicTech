@@ -75,3 +75,33 @@ export const GRADE_PIN_SVG: Record<Grade, string> = {
       <circle cx="16" cy="16" r="11" fill="white" stroke="#9ca3af" stroke-width="3" stroke-dasharray="3 2"/>
     </svg>`,
 };
+
+/**
+ * Faded variant for grades computed from bacteria past the 7-day freshness
+ * window but within the 90-day grace window. Same shape and color as the
+ * fresh pin (so the colorblind triple-encoding still works), but rendered
+ * at 55% opacity with a dashed white outline to signal "last-known, not now."
+ *
+ * `unknown` is intentionally excluded — a "stale unknown" is a contradiction;
+ * unknown means no data, not old data.
+ */
+export const GRADE_STALE_PIN_SVG: Record<Exclude<Grade, 'unknown'>, string> = {
+  green: `
+    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Paddle-safe (last known)">
+      <circle cx="16" cy="16" r="11" fill="#10b981" fill-opacity="0.55" stroke="white" stroke-width="3" stroke-dasharray="3 2"/>
+    </svg>`,
+  yellow: `
+    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Caution (last known)">
+      <polygon points="16,4 28,26 4,26" fill="#f59e0b" fill-opacity="0.55" stroke="white" stroke-width="3" stroke-linejoin="round" stroke-dasharray="3 2"/>
+    </svg>`,
+  red: `
+    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Avoid (last known)">
+      <rect x="5" y="5" width="22" height="22" fill="#dc2626" fill-opacity="0.55" stroke="white" stroke-width="3" stroke-dasharray="3 2"/>
+    </svg>`,
+};
+
+/** Returns the right pin SVG for a (grade, stale) pair. Unknown ignores stale. */
+export function pinSvgFor(grade: Grade, stale: boolean): string {
+  if (stale && grade !== 'unknown') return GRADE_STALE_PIN_SVG[grade];
+  return GRADE_PIN_SVG[grade];
+}
