@@ -78,7 +78,7 @@ export const GRADE_PIN_SVG: Record<Grade, string> = {
 
 /**
  * Faded variant for grades computed from bacteria past the 7-day freshness
- * window but within the 30-day grace window. Same shape and color as the
+ * window but within the 90-day grace window. Same shape and color as the
  * fresh pin (so the colorblind triple-encoding still works), but rendered
  * at 55% opacity with a dashed white outline to signal "last-known, not now."
  *

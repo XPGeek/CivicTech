@@ -121,7 +121,7 @@ interface BacteriaState {
   stale: boolean;
   /**
    * The threshold-based pass/caution/fail that the stale reading implies.
-   * Set only when bacteria is stale but within the 30-day grace window, so
+   * Set only when bacteria is stale but within the 90-day grace window, so
    * the rubric can emit a faded grade rather than gray "unknown."
    */
   staleVerdict?: 'pass' | 'caution' | 'fail';
@@ -149,10 +149,10 @@ function computeBacteriaState(
     bacteria.value <= threshold ? 'pass' : bacteria.value <= 2 * threshold ? 'caution' : 'fail';
 
   if (age > BACTERIA_MAX_AGE_HOURS) {
-    // Within the 30-day grace window: the reading is past freshness but recent
+    // Within the 90-day grace window: the reading is past freshness but recent
     // enough that the threshold-based verdict still carries informational value.
     // The frontend renders it faded; we surface the implied verdict here so the
-    // pin shows a color rather than gray. Past 30 days, fall back to "stale".
+    // pin shows a color rather than gray. Past 90 days, fall back to "stale".
     const within_grace = age <= BACTERIA_STALE_GRACE_HOURS;
     return {
       state: {
@@ -338,6 +338,15 @@ type Dominant =
   | 'out_of_season'
   | 'unknown';
 
+const STALE_VERDICT_MAP: Record<
+  'pass' | 'caution' | 'fail',
+  { verdict: Grade; dominant: Dominant }
+> = {
+  pass: { verdict: 'green', dominant: 'bacteria_pass' },
+  caution: { verdict: 'yellow', dominant: 'bacteria_caution' },
+  fail: { verdict: 'red', dominant: 'bacteria_fail' },
+};
+
 function combine(
   bacteria: BacteriaState,
   rainfall: RainfallState,
@@ -349,23 +358,12 @@ function combine(
     sonde.worstStatus !== 'missing' &&
     sonde.worstStatus !== 'fail';
 
-  // No fresh signal anywhere — but bacteria within the 30-day grace window can
+  // No fresh signal anywhere — but bacteria within the 90-day grace window can
   // still imply a (stale) grade. The frontend renders it faded with a "sampled
   // N days ago" caveat.
   if (bacteria.stale && sonde.worstStatus === 'missing') {
     if (bacteria.staleVerdict) {
-      const verdict: Grade =
-        bacteria.staleVerdict === 'pass'
-          ? 'green'
-          : bacteria.staleVerdict === 'caution'
-            ? 'yellow'
-            : 'red';
-      const dominant: Dominant =
-        bacteria.staleVerdict === 'pass'
-          ? 'bacteria_pass'
-          : bacteria.staleVerdict === 'caution'
-            ? 'bacteria_caution'
-            : 'bacteria_fail';
+      const { verdict, dominant } = STALE_VERDICT_MAP[bacteria.staleVerdict];
       return { verdict, dominant, outOfSeason: false, stale: true };
     }
     return { verdict: 'unknown', dominant: 'unknown', outOfSeason: false, stale: false };

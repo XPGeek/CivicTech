@@ -1,5 +1,4 @@
 import {
-  ConnectorError,
   type ConnectorContext,
   type ConnectorMeta,
   type NormalizedRecord,
@@ -7,6 +6,7 @@ import {
   type QCFlag,
   type SiteForConnector,
 } from '../shared/types';
+import { httpText } from '../shared/http';
 import { nearestSiteWithin } from '../shared/sites';
 
 export const meta: ConnectorMeta = {
@@ -90,21 +90,6 @@ interface StationLocation {
   lon: number;
 }
 
-async function fetchCsv(url: string, userAgent: string): Promise<string> {
-  const res = await globalThis.fetch(url, {
-    headers: { Accept: 'text/csv', 'User-Agent': userAgent },
-  });
-  if (!res.ok) {
-    throw new ConnectorError({
-      code: `HTTP_${res.status}`,
-      message: `WQP responded ${res.status} for ${url}`,
-      recoverable: res.status >= 500,
-      source_id: meta.id,
-    });
-  }
-  return res.text();
-}
-
 function parseStations(csv: string): Map<string, StationLocation> {
   const out = new Map<string, StationLocation>();
   const lines = csv.split(/\r?\n/).filter((l) => l.length > 0);
@@ -166,23 +151,15 @@ export async function fetch(context: ConnectorContext): Promise<NormalizedRecord
   });
 
   const userAgent = context.env.CONNECTOR_USER_AGENT ?? 'dmv-water-watch';
-  let stationCsv: string;
-  let resultCsv: string;
-  try {
-    [stationCsv, resultCsv] = await Promise.all([
-      fetchCsv(stationUrl, userAgent),
-      fetchCsv(resultUrl, userAgent),
-    ]);
-  } catch (err) {
-    if (err instanceof ConnectorError) throw err;
-    throw new ConnectorError({
-      code: 'NETWORK',
-      message: `WQP fetch failed: ${(err as Error).message}`,
-      recoverable: true,
-      source_id: meta.id,
-      cause: err,
-    });
-  }
+  const httpOpts = {
+    source_id: meta.id,
+    accept: 'text/csv',
+    headers: { 'User-Agent': userAgent },
+  };
+  const [stationCsv, resultCsv] = await Promise.all([
+    httpText(stationUrl, httpOpts),
+    httpText(resultUrl, httpOpts),
+  ]);
 
   const stations = parseStations(stationCsv);
   if (stations.size === 0) {
